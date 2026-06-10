@@ -3,10 +3,12 @@
 //botones
 const startButton = document.getElementById("start-button");
 const recordtButton = document.getElementById("record-button");
+const registButton = document.getElementById("regist-button");
 // pantallas
 const homeScreen = document.getElementById("home-screen");
 const loginScreen = document.getElementById("login-screen");
 const recordScreen = document.getElementById("record-screen");
+const codeScreen = document.getElementById("code-screen");
 
 startButton.addEventListener("click", () => {
     homeScreen.classList.add("hidden");
@@ -18,18 +20,7 @@ recordtButton.addEventListener("click", () => {
     recordScreen.classList.remove("hidden");
 })
 
-//esto es para la contraseña no tocar por ahora cuidadito gabriel
-function registrar() {
-  const password = document.getElementById("password").value;
-  const confirmPassword =
-    document.getElementById("confirmPassword").value;
-
-  if (password !== confirmPassword) {
-    document.getElementById("mensaje").textContent =
-      "Las contraseñas no coinciden";
-    return;
-  }
-
-  document.getElementById("mensaje").textContent =
-    "Registro exitoso";
-}
+registButton.addEventListener("click", () => {
+    recordScreen.classList.add("hidden");
+    codeScreen.classList.remove("hidden");
+})

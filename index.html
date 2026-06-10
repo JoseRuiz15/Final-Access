@@ -133,7 +133,7 @@
                 </div>
                 <!--boton de registro-->
                 <div class="flex justify-center items-center">
-                    <button onclick="registrar()" class="text-[10px] pixel-font bg-black/30 text-white ronded h-10 w-[350px] mt-[20px] rounded-[5px] transition-all duration-300 hover:text-white hover:shadow-[0_0_40px_#00AAFF] hover:bg-[#00AAFF] hover:scale-105"> <!--el oneclick es para obligar a que considan la contraseña-->
+                    <button id="regist-button" class="text-[10px] pixel-font bg-black/30 text-white ronded h-10 w-[350px] mt-[20px] rounded-[5px] transition-all duration-300 hover:text-white hover:shadow-[0_0_40px_#00AAFF] hover:bg-[#00AAFF] hover:scale-105"> <!--el oneclick es para obligar a que considan la contraseña-->
                         REGISTRARSE
                     </button>
                 </div>
@@ -143,6 +143,22 @@
         </section>
 
         <!-- Fin Pantalla Login -->
+
+         <!-- inicio pantalla codigo-->
+          <section id="code-screen" class="hidden">
+            <!--fondo codigo-->
+            <img src="img/sesion.png" alt="pantalla de login" 
+            class="absolute inset-0 w-full h-full object-cover" />
+            <!--cuadro de verificacion de codigo-->
+             <div class="relative z-10 flex items-center justify-center min-h-screen">
+                <div class="w-[510px] h-[700px]
+                    bg-black/50
+                    rounded-3xl
+                    backdrop-blur-sm">
+                </div>
+             </div>
+
+          </section>
 
 
     </main>
