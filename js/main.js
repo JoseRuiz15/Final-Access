@@ -1,6 +1,7 @@
 
 // Codigo para el boton (INICIAR), para pasar de la pantalla de inicio a la pantalla de login
 //botones
+const enterButton = document.getElementById("enter-button");
 const startButton = document.getElementById("start-button");
 const recordtButton = document.getElementById("record-button");
 const registButton = document.getElementById("regist-button");
@@ -22,5 +23,10 @@ recordtButton.addEventListener("click", () => {
 
 registButton.addEventListener("click", () => {
     recordScreen.classList.add("hidden");
+    codeScreen.classList.remove("hidden");
+})
+
+enterButton.addEventListener("click", () => {
+    loginScreen.classList.add("hidden");
     codeScreen.classList.remove("hidden");
 })
