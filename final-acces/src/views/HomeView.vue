@@ -4,42 +4,33 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 function irLogin() {
-    router.push('/login')
+  router.push('/login')
 }
 </script>
 
 <template>
+  <section id="home-screen">
+    <!-- Fondo -->
+    <img
+      src="/img/Fondo Final-Acces.png"
+      alt="Fondo Final-Acces"
+      class="absolute inset-0 w-full h-full object-cover"
+    />
 
-    <section id="home-screen">
+    <!-- Contenido -->
+    <div id="home-content" class="relative z-10 flex items-end justify-center min-h-screen">
+      <!-- Efecto de luz -->
+      <div class="absolute bottom-28 flex justify-center w-full">
+        <div class="w-56 h-20 rounded-full bg-[#9747FF] opacity-30 blur-3xl"></div>
+      </div>
 
-        <!-- Fondo -->
-        <img
-            src="/img/Fondo Final-Acces.png"
-            alt="Fondo Final-Acces"
-            class="absolute inset-0 w-full h-full object-cover"
-        />
-
-        <!-- Contenido -->
-        <div
-            id="home-content"
-            class="relative z-10 flex items-end justify-center min-h-screen"
-        >
-
-            <!-- Efecto de luz -->
-            <div class="absolute bottom-28 flex justify-center w-full">
-                <div class="w-56 h-20 rounded-full bg-[#9747FF] opacity-30 blur-3xl"></div>
-            </div>
-
-            <!-- Botón iniciar -->
-            <button
-                @click="irLogin"
-                class="text-[10px] relative z-20 bg-[#9747FF] text-black pixel-font py-3 px-8 rounded-lg mb-24 transition-all duration-300 hover:text-white hover:shadow-[0_0_25px_#9747FF] hover:scale-105"
-            >
-                INICIAR
-            </button>
-
-        </div>
-
-    </section>
-
+      <!-- Botón iniciar -->
+      <button
+        @click="irLogin"
+        class="font-goldman text-[10px] relative z-20 bg-[#9747FF] text-black py-3 px-8 rounded-lg mb-24 transition-all duration-300 hover:text-white hover:shadow-[0_0_25px_#9747FF] hover:scale-105"
+      >
+        INICIAR
+      </button>
+    </div>
+  </section>
 </template>

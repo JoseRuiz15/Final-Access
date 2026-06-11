@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Goldman:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import "tailwindcss";
+
+.font-goldman {
+    font-family: "Goldman", sans-serif;
+}
+
+.font-pixel {
+    font-family: "Press Start 2P", cursive;
+}
+
+.font-inter {
+    font-family: "Inter", sans-serif;
+}
+
+.font-orbitron {
+    font-family: "Orbitron", sans-serif;
+}
