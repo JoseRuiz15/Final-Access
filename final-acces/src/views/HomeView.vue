@@ -11,9 +11,7 @@ function irLogin() {
 <template>
   <section id="home-screen">
     <!-- Fondo -->
-    <img
-      src="/img/Fondo Final-Acces.png"
-      alt="Fondo Final-Acces"
+    <img src="/img/fondoinicio.png" alt="Fondo Final-Acces"
       class="absolute inset-0 w-full h-full object-cover"
     />
 
