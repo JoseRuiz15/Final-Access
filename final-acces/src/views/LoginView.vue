@@ -1,3 +1,18 @@
+<!--Funcion para pasar a las paginas-->
+<script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+function irRegister() {
+  router.push('/register')
+}
+
+function irGameMode() {
+  router.push('/gamemode')
+}
+</script>
+
 <template>
     <section id="login-screen" class="relative">
             <!--fondo login-->
@@ -29,7 +44,7 @@
                 </div>
                 <!--boton inicio de sesion-->
                 <div class="flex justify-center items-center">
-                    <button id="enter-button" class="text-[10px] font-pixel bg-black/30 text-white rounded h-10 w-[350px] mt-10 rounded-[5px] transition-all duration-300 hover:text-white hover:shadow-[0_0_40px_#00AAFF] hover:bg-[#00AAFF] hover:scale-105">
+                    <button @click="irGameMode" id="enter-button" class="text-[10px] font-pixel bg-black/30 text-white rounded h-10 w-[350px] mt-10 rounded-[5px] transition-all duration-300 hover:text-white hover:shadow-[0_0_40px_#00AAFF] hover:bg-[#00AAFF] hover:scale-105">
                         INGRESAR
                     </button>
                 </div>
@@ -39,7 +54,7 @@
                  </div>
                  <!--registrarse-->
                  <div class="flex justify-center items-center">
-                    <button  id="record-button" class="font-pixel text-[#1FD0E4] text-[15px]">registrate aqui</button>
+                    <button @click="irRegister" id="record-button" class="font-pixel text-[#1FD0E4] text-[15px]">registrate aqui</button>
                  </div>
 
           </div>
@@ -47,3 +62,5 @@
         </div>
         </section>
 </template>
+
+<!--NOTA: Agregar un botoncito que diga "MANTENER SESION INICIADA" que este abajo del cuadro de texto de la contraseña--> 
