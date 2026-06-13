@@ -5,6 +5,7 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import GameModeView from '../views/GameModeView.vue'
 import CodeVerificationView from '../views/CodeVerificationView.vue'
+import LobbyView from '../views/LobbyView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -33,6 +34,11 @@ const router = createRouter({
       path: '/codeverification',
       name: 'codeverification',
       component: CodeVerificationView
+    },
+    {
+      path: '/lobby',
+      name: 'lobby',
+      component: LobbyView
     }
   ]
 })
