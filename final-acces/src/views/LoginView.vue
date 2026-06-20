@@ -8,15 +8,15 @@ function irRegister() {
   router.push('/register')
 }
 
-function irGameMode() {
-  router.push('/gamemode')
+function irLobby() {
+  router.push('/lobby')
 }
 </script>
 
 <template>
     <section id="login-screen" class="relative">
             <!--fondo login-->
-            <img src="/img/sesion.png" alt="pantalla de login" 
+            <img src="/img/sesion.png" alt="pantalla de login"
             class="absolute inset-0 w-full h-full object-cover" />
             <!--cuadro-->
             <div class="relative z-10 flex items-center justify-center min-h-screen">
@@ -44,7 +44,7 @@ function irGameMode() {
                 </div>
                 <!--boton inicio de sesion-->
                 <div class="flex justify-center items-center">
-                    <button @click="irGameMode" id="enter-button" class="text-[10px] font-pixel bg-black/30 text-white rounded h-10 w-[350px] mt-10 rounded-[5px] transition-all duration-300 hover:text-white hover:shadow-[0_0_40px_#00AAFF] hover:bg-[#00AAFF] hover:scale-105">
+                    <button @click="irLobby" id="enter-button" class="text-[10px] font-pixel bg-black/30 text-white rounded h-10 w-[350px] mt-10 rounded-[5px] transition-all duration-300 hover:text-white hover:shadow-[0_0_40px_#00AAFF] hover:bg-[#00AAFF] hover:scale-105">
                         INGRESAR
                     </button>
                 </div>
@@ -63,4 +63,4 @@ function irGameMode() {
         </section>
 </template>
 
-<!--NOTA: Agregar un botoncito que diga "MANTENER SESION INICIADA" que este abajo del cuadro de texto de la contraseña--> 
+<!--NOTA: Agregar un botoncito que diga "MANTENER SESION INICIADA" que este abajo del cuadro de texto de la contraseña-->
