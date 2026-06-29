@@ -1,11 +1,25 @@
+<script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+function irGameMode() {
+  router.push('/gamemode')
+}
+
+function irCharacters() {
+  router.push('/characters')
+}
+</script>
+
 <template>
-  <h1>Lobby</h1>
-  <section id="lobby-screen">
-    <!--fondo-->
+<section id="lobby-screen">
+    <!--fondo del lobby-->
     <img src="/img/lobbyjuego.png" alt="imagen del lobby" class="absolute inset-0 w-full h-full object-cover">
     <!--cuadro de lobby-->
     <div class="relative min-h-screen">
-      <div class="w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border border-4 border-[#2D2F4B] flex items-center justifi-center ">
+      <!--cuadro de arriba-->
+      <div class="w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border border-4 border-[#2D2F4B] flex items-center justifi-center  ">
         <!--cuadro de ususario-->
         <div class="bg-[#050711] w-[450px] h-[100px] border border-4 border-[#2D2F4B] ml-[10px] rounded-lg flex items-center">
           <!--cuadro de foto de perfil-->
@@ -20,12 +34,12 @@
           <h1 class="text-[#CF56D2] font-pixel">INICIO</h1>
         </div>
         <!--para pasar donde los personajes-->
-        <button class=" ml-15 mt-15">
-          <h1 class="text-[#876988] font-pixel">PERSONAJES</h1>
+        <button class=" ml-15 mt-15" >
+          <h1 class="text-[#876988] font-pixel hover:text-[#CF56D2] hover:text-shadow-[0_0_40px_#CF56D2]" @click="irCharacters">PERSONAJES</h1>
         </button>
         <!--para pasar a la tienda-->
         <button class=" ml-15 mt-15">
-          <h1 class="text-[#876988] font-pixel">TIENDA</h1>
+          <h1 class="text-[#876988] font-pixel hover:text-[#CF56D2] hover:text-shadow-[0_0_40px_#CF56D2]">TIENDA</h1>
         </button>
         <!--puntos-->
         <div>
@@ -33,18 +47,52 @@
         </div>
         <!--ajustes, mensajes y cierre de secion-->
         <div class="w-[50px] h-[50px] border border-3 border-[#41334B] rounded-lg ml-10">
-          <img src="" alt="imagen de ajustes">
+          <img src="" alt="ajustes">
         </div>
         <div class="w-[50px] h-[50px] border border-3 border-[#41334B] rounded-lg ml-5">
-          <img src="" alt="imagen de mensajes">
+          <img src="" alt="mensajes">
         </div>
         <div class="w-[50px] h-[50px] border border-3 border-[#41334B] rounded-lg ml-5">
-          <img src="" alt="imagen de cierre de secion">
+          <img src="" alt="cierre de secion">
         </div>
-
+      </div>
+      <!--cuadros de calificatoria-->
+      <div class="h-20 w-80 border border-4 border-[#00FFEA] mt-20 ml-10 bg-[#000004] rounded-lg flex items-center">
+        <div class="h-15 w-15 border border-3 border-white ml-[10px] rounded-lg">
+          <img src="" alt="imagen">
+        </div>
+        <h1 class="text-[#9898BD] font-pixel text-[15px] ml-[10px]">CLASIFICATORIA</h1>
+      </div>
+      <div class="h-20 w-80 border border-4 border-[#00FFEA] mt-10 ml-10 bg-[#000004] rounded-lg flex">
+        <div class="h-15 w-15 border border-3 border-white ml-[10px] rounded-lg mt-[7px]">
+          <img src="" alt="imagen">
+        </div>
+        <div class="mt-[10px]">
+          <h1 class="text-[#9898BD] font-pixel text-[15px] ml-[10px] ">AMIGOS</h1>
+          <p class="text-[#777787] font-pixel text-[12px] ml-[10px]">CONECTADOS: 0</p>
+        </div>
+      </div>
+      <!--caja de misiones-->
+      <div class="bg-[#000208] w-80 h-40 ml-300 -mt-65 border border-3 border-[#2D2F4B] rounded-lg ">
+        <div class="border-b-3 border-[#8450C2] ">
+          <p class="text-[#8450C2] ml-10 mt-[5px] font-pixel text-[13px]">MISIONES DIARIAS</p>
+        </div>
+        <div class="flex items-center">
+          <p class="text-[#6F89A5] ml-5 mt-[15px] font-pixel text-[10px]">JUEGA 2 PARTIDAS</p>
+          <p class="text-[#6F89A5] font-pixel text-[10px] ml-20 mt-5">0/2</p>
+        </div>
+        <div class="flex items-center">
+          <p class="text-[#6F89A5] ml-5 mt-[15px] font-pixel text-[10px]">ELIMINA 10 ENEMIGOS</p>
+          <p class="text-[#6F89A5] font-pixel text-[10px] ml-12 mt-5">0/10</p>
+        </div>
+        <div class="flex items-center">
+          <p class="text-[#6F89A5] ml-5 mt-[15px] font-pixel text-[10px]">GANA 1 PARTIDA</p>
+          <p class="text-[#6F89A5] font-pixel text-[10px] ml-25 mt-5">0/1</p>
+        </div>
 
       </div>
+      <!--boton de juego-->
+      <button class="bg-[#2A1A4B] h-15 w-80 ml-300 mt-65 text-white font-pixel rounded-lg border border-4 border-[#B17BE3] transition-all duration-300 hover:text-white hover:shadow-[0_0_40px_#E2CCF6] hover:bg-[#B17BE3] hover:scale-105 hover:border-[#CDA3F3]" @click="irGameMode">JUGAR</button>
     </div>
   </section>
-</template>
-eun
+  </template> 

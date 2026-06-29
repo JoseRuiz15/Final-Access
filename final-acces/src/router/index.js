@@ -6,6 +6,8 @@ import RegisterView from '../views/RegisterView.vue'
 import GameModeView from '../views/GameModeView.vue'
 import CodeVerificationView from '../views/CodeVerificationView.vue'
 import LobbyView from '../views/LobbyView.vue'
+import CharactersView from '../views/CharactersView.vue'
+import MultiplayerView from '../views/MultiplayerView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -39,6 +41,16 @@ const router = createRouter({
       path: '/lobby',
       name: 'lobby',
       component: LobbyView
+    },
+    {
+      path: '/characters',
+      name: 'characters',
+      component: CharactersView
+    },
+    {
+      path: '/multiplayer',
+      name: 'multiplayer',
+      component: MultiplayerView
     }
   ]
 })
