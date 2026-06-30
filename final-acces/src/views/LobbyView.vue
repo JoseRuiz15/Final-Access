@@ -24,7 +24,7 @@ function irCharacters() {
         <div class="bg-[#050711] w-[450px] h-[100px] border border-4 border-[#2D2F4B] ml-[10px] rounded-lg flex items-center">
           <!--cuadro de foto de perfil-->
           <div class="w-[100px] h-[90px] border border-3 border-[#444665] rounded-lg">
-            <img src="" alt="imagende perfil">
+            <img src="/img/perfil.png" alt="imagende perfil">
           </div>
           <!--texto del nombre proximo a cambio-->
           <h1 class="text-white text-start ml-10 text-[30px]">DIN_03</h1>
