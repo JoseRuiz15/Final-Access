@@ -6,11 +6,23 @@ const router = useRouter()
 function irMultiplayer() {
   router.push('/multiplayer')
 }
+function irLobby() {
+  router.push('/lobby')
+}
 </script>
 <template>
     <!--fondo del modo de juego-->
     <img src="/img/a.png" alt="imagen del fondo" class="h-full w-full absolute inset-0 objet-cover">
+     
+    <button
+      class="absolute top-6 left-6 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:shadow-[0_0_30px_#FF00D9] transition-all duration-300"
+      @click="irLobby"
+    >
+      &lt;- VOLVER AL MENU
+    </button>
+    
     <div class=" relative min-h-screen flex items-center justify-center">
+        
         <div class="h-120 w-150 bg-[#0C0C0C]/50 rounded-lg backdrop-blur-sm">
             <!--texto que mas quieres que te diga-->
             <p class="text-[#1FD0E4] font-pixel mt-10 text-center">SELECCIONA EL MODO DE JUEGO</p>

@@ -12,7 +12,12 @@ function irLobby() {
         <!--fondo del multijugador-->
         <img src="/img/partida.png" alt="imagen del multi" class="h-full w-full absolute inset-0 objet-cover -z-10">
         
-        <button class="text-white font-pixel text-[13px] mt-10 ml-10" @click="irLobby"><-  VOLVER AL MENU</button>
+        <button
+      class="absolute top-6 left-6 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:shadow-[0_0_30px_#FF00D9] transition-all duration-300"
+      @click="irLobby"
+    >
+      &lt;- VOLVER AL MENU
+    </button>
         <!--cuadro para crear sala-->
         <div class="bg-[#100f55cc]/70 h-[450px] w-[464px] absolute left-[250px] top-[100px] backdrop-blur-sm rounded-lg">
             <!--texto-->
