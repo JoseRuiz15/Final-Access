@@ -14,46 +14,50 @@ function irCharacters() {
 
 <template>
 <section id="lobby-screen">
-    <!--fondo del lobby-->
-    <img src="/img/lobbyjuego.png" alt="imagen del lobby" class="absolute inset-0 w-full h-full object-cover">
+    
+    
+    
     <!--cuadro de lobby-->
-    <div class="relative min-h-screen">
+    <div class="relative min-h-screen overflow-hidden">
+      <!--fondo del lobby-->
+      <img src="/img/lobby2.png" alt="imagen del lobby" class="absolute inset-0 w-full h-full object-cover -z-10">
       <!--cuadro de arriba-->
       <div class="w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border border-4 border-[#2D2F4B] flex items-center justifi-center  ">
         <!--cuadro de ususario-->
-        <div class="bg-[#050711] w-[450px] h-[100px] border border-4 border-[#2D2F4B] ml-[10px] rounded-lg flex items-center">
+        <div class="bg-[#050711] w-[450px] h-[110px] border border-4 border-[#2D2F4B] ml-[10px] rounded-lg flex items-center">
           <!--cuadro de foto de perfil-->
-          <div class="w-[100px] h-[90px] border border-3 border-[#444665] rounded-lg">
+          <div class="w-[100px] h-[100px] border border-3 border-[#444665] rounded-lg">
             <img src="/img/perfil.png" alt="imagende perfil">
           </div>
           <!--texto del nombre proximo a cambio-->
           <h1 class="text-white text-start ml-10 text-[30px]">DIN_03</h1>
         </div>
         <!--inico-->
-        <div class=" ml-25 mt-15">
+        <div class="absolute left-[500px] top-[90px]">
           <h1 class="text-[#CF56D2] font-pixel">INICIO</h1>
         </div>
         <!--para pasar donde los personajes-->
-        <button class=" ml-15 mt-15" >
+        <button class="absolute left-[700px] top-[90px]" >
           <h1 class="text-[#876988] font-pixel hover:text-[#CF56D2] hover:text-shadow-[0_0_40px_#CF56D2]" @click="irCharacters">PERSONAJES</h1>
         </button>
         <!--para pasar a la tienda-->
-        <button class=" ml-15 mt-15">
+        <button class=" absolute left-[1000px] top-[90px]">
           <h1 class="text-[#876988] font-pixel hover:text-[#CF56D2] hover:text-shadow-[0_0_40px_#CF56D2]">TIENDA</h1>
         </button>
         <!--puntos-->
-        <div>
-          <h1 class="font-pixel text-[20px] text-[#FB00FF] ml-30">12.000</h1>
+        <div class="absolute right-[500px] flex">
+          <img src="/img/moneda.png" alt="puntos" class="h-[30px]">
+          <h1 class="font-pixel text-[20px] text-[#FB00FF] ">12.000</h1>
         </div>
         <!--ajustes, mensajes y cierre de secion-->
-        <div class="w-[50px] h-[50px] border border-3 border-[#41334B] rounded-lg ml-10">
-          <img src="" alt="ajustes">
+        <div class="w-[50px] h-[50px] border border-3 border-[#41334B] rounded-lg absolute right-[300px]">
+          <img src="/img/ajustes.png" alt="ajustes">
         </div>
-        <div class="w-[50px] h-[50px] border border-3 border-[#41334B] rounded-lg ml-5">
-          <img src="" alt="mensajes">
+        <div class="w-[50px] h-[50px] border border-3 border-[#41334B] rounded-lg absolute right-[200px]">
+          <img src="/img/mensajes.png" alt="mensajes">
         </div>
-        <div class="w-[50px] h-[50px] border border-3 border-[#41334B] rounded-lg ml-5">
-          <img src="" alt="cierre de secion">
+        <div class="w-[50px] h-[50px] border border-3 border-[#41334B] rounded-lg absolute right-[100px]">
+          <img src="/img/salida.png" alt="cierre de secion">
         </div>
       </div>
       <!--cuadros de calificatoria-->
@@ -73,7 +77,7 @@ function irCharacters() {
         </div>
       </div>
       <!--caja de misiones-->
-      <div class="bg-[#000208] w-80 h-40 ml-300 -mt-65 border border-3 border-[#2D2F4B] rounded-lg ">
+      <div class="bg-[#000208] w-80 h-40 absolute top-[250px] right-[50px] border border-3 border-[#2D2F4B] rounded-lg ">
         <div class="border-b-3 border-[#8450C2] ">
           <p class="text-[#8450C2] ml-10 mt-[5px] font-pixel text-[13px]">MISIONES DIARIAS</p>
         </div>
@@ -92,7 +96,7 @@ function irCharacters() {
 
       </div>
       <!--boton de juego-->
-      <button class="bg-[#2A1A4B] h-15 w-80 ml-300 mt-65 text-white font-pixel rounded-lg border border-4 border-[#B17BE3] transition-all duration-300 hover:text-white hover:shadow-[0_0_40px_#E2CCF6] hover:bg-[#B17BE3] hover:scale-105 hover:border-[#CDA3F3]" @click="irGameMode">JUGAR</button>
+      <button class="bg-[#2A1A4B] h-15 w-80 absolute top-[700px] right-[50px] text-white font-pixel rounded-lg border border-4 border-[#B17BE3] transition-all duration-300 hover:text-white hover:shadow-[0_0_40px_#E2CCF6] hover:bg-[#B17BE3] hover:scale-105 hover:border-[#CDA3F3]" @click="irGameMode">JUGAR</button>
     </div>
   </section>
   </template> 
