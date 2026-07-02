@@ -6,6 +6,10 @@ const router = useRouter()
 function irLobby() {
   router.push('/lobby')
 }
+
+function irCreate() {
+  router.push('/create')
+}
 </script>
 <template>
     <div class="relative min-h-screen">
@@ -13,7 +17,7 @@ function irLobby() {
         <img src="/img/partida.png" alt="imagen del multi" class="h-full w-full absolute inset-0 objet-cover -z-10">
         
         <button
-      class="absolute top-6 left-6 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:shadow-[0_0_30px_#FF00D9] transition-all duration-300"
+      class="absolute top-6 left-6 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9] transition-all duration-300"
       @click="irLobby"
     >
       &lt;- VOLVER AL MENU
@@ -33,7 +37,7 @@ function irLobby() {
                     CONECTAR
                 </button>
                 <!--boton para crear partida-->
-                <button class=" h-[60px] w-[424px] mt-10 ml-5 font-pixel rounded-lg border text-[#53f4ff] border-4 border-[#53f4ff] hover:scale-105 hover:shadow-[0_0_40px_#53f4ff] hover:text-white">
+                <button class=" h-[60px] w-[424px] mt-10 ml-5 font-pixel rounded-lg border text-[#53f4ff] border-4 border-[#53f4ff] hover:scale-105 hover:shadow-[0_0_40px_#53f4ff] hover:text-white" @click="irCreate">
                     CREAR PARTIDA
                 </button>
         </div>

@@ -9,6 +9,7 @@ import LobbyView from '../views/LobbyView.vue'
 import CharactersView from '../views/CharactersView.vue'
 import MultiplayerView from '../views/MultiplayerView.vue'
 import StoreView from '@/views/StoreView.vue'
+import CreateView from '@/views/CreateView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -57,6 +58,11 @@ const router = createRouter({
     path: '/store',
     name: 'store',
     component: StoreView
+    },
+    {
+    path: '/create',
+    name: 'create',
+    component: CreateView
     }
   ]
 })
