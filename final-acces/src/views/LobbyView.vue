@@ -44,14 +44,14 @@ onMounted(() => {
         class="w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
       >
         <!-- Usuario -->
-        <div
-          class="bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
-        >
+        <div class="bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center">
           <div class="w-[100px] h-[100px] border-3 border-[#444665] rounded-lg overflow-hidden">
             <img src="/img/perfil.png" alt="imagen de perfil" class="w-full h-full object-cover" />
           </div>
-
-          <h1 class="text-white ml-10 text-[30px]">DIN_03</h1>
+          <div class="flex flex-col ml-10"> 
+            <p class="text-white text-[30px] font-pixel">DIN_03</p>
+            <p class="text-[#FB00FF] text-[14px] font-pixel mt-1">Nivel 1</p>
+          </div>
         </div>
 
         <!-- Menú central -->

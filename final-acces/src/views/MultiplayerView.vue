@@ -21,7 +21,7 @@ function irCreate() {
       @click="irLobby"
     >
       &lt;- VOLVER AL MENU
-    </button>
+    </button>npom
         <!--cuadro para crear sala-->
         <div class="bg-[#190C2D]/70 h-[563px] w-[463px] absolute left-[250px] top-[100px] backdrop-blur-sm rounded-lg">
             <!--texto-->

@@ -3,6 +3,7 @@ import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
 import { ref } from 'vue'
 
+const mostrarConfirmacion = ref(false)
 const personajeSeleccionado = ref(null)
 
 function seleccionarPersonaje(personaje) {
@@ -11,6 +12,10 @@ function seleccionarPersonaje(personaje) {
 
 const router = useRouter()
 
+function irLoggin() {
+  router.push('/login')
+}
+
 function irLobby() {
   router.push('/lobby')
 }
@@ -18,6 +23,9 @@ function irLobby() {
 function irCharacters() {
   router.push('/characters')
 }
+onMounted(() => {
+  initFlowbite()
+})
 </script>
 
 <template>
@@ -31,8 +39,7 @@ function irCharacters() {
     <!-- Contenido -->
     <div class="relative flex flex-col items-center justify-center">
       <!-- Barra superior -->
-      <header
-        class="w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
+      <header class="w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
       >
         <!-- Usuario -->
         <div
@@ -41,8 +48,10 @@ function irCharacters() {
           <div class="w-[100px] h-[100px] border-3 border-[#444665] rounded-lg overflow-hidden">
             <img src="/img/perfil.png" alt="imagen de perfil" class="w-full h-full object-cover" />
           </div>
-
-          <h1 class="text-white ml-10 text-[30px]">DIN_03</h1>
+            <div class="flex flex-col ml-10"> 
+              <p class="text-white text-[30px] font-pixel">DIN_03</p>
+              <p class="text-[#FB00FF] text-[14px] font-pixel mt-1">Nivel 1</p>
+            </div>
         </div>
 
         <!-- Menú central -->
@@ -75,15 +84,15 @@ function irCharacters() {
             <h1 class="font-pixel text-[20px] text-[#FB00FF]">12.000</h1>
           </div>
 
-          <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden">
+          <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
             <img src="/img/ajustes.png" alt="ajustes" class="w-full h-full object-cover" />
           </button>
 
-          <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden">
+          <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
             <img src="/img/mensajes.png" alt="mensajes" class="w-full h-full object-cover" />
           </button>
 
-          <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden">
+          <button @click="mostrarConfirmacion = true" class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
             <img src="/img/salida.png" alt="cierre de sesión" class="w-full h-full object-cover" />
           </button>
         </div>
@@ -158,4 +167,26 @@ function irCharacters() {
       </div>
 
   </section>
+  <div v-if="mostrarConfirmacion" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+
+  <div class="w-[700px] h-[400px] bg-black border-4 border-[#8B7A91] rounded-lg">
+    <h1 class="font-pixel text-[#FB00FF] text-3xl text-center mt-8">
+      ¿ESTÁS SEGURO DE QUE QUIERES SALIR?
+    </h1>
+
+    <div class="flex flex-col items-center gap-8 mt-16">
+
+      <button @click="irLoggin" class="font-pixel text-white w-[250px] h-[60px] bg-[#2A1A4B] rounded-xl border-2 border-fuchsia-500 transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2">
+        SI
+      </button>
+
+      <button
+        @click="mostrarConfirmacion = false"
+        class="font-pixel text-white w-[250px] h-[60px] bg-[#2A1A4B] rounded-xl border-2 border-fuchsia-500 transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
+      >
+        NO
+      </button>
+    </div>
+  </div>
+</div>
 </template>

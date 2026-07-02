@@ -1,8 +1,12 @@
 <script setup>
 import { useRouter } from 'vue-router'
-
+import { onMounted } from 'vue'
+const mostrarConfirmacion = ref(false)
 const router = useRouter()
 
+function irLoggin() {
+  router.push('/login')
+}
 function irLobby() {
   router.push('/lobby')
 }
@@ -38,56 +42,80 @@ const personajes = [
     descripcion: 'Un personaje ofensivo que causa mucho daño en poco tiempo, ideal para entrar fuerte en batalla.'
   }
 ]
+
+onMounted(() => {
+  initFlowbite()
+})
+
 </script>
 
 <template>
 <section id="lobby-screen">
-
+  <img
+      src="/img/lobby2.png"
+      alt="imagen del la tienda"
+      class="absolute inset-0 w-full h-full object-cover -z-10"
+    />
 
     <div class="relative z-10 min-h-screen">
-      <!--fondo del lobby-->
-      <img src="/img/lobbyjuego.png" alt="imagen del lobby" class="absolute inset-0 w-full h-full object-cover -z-10">
-
-      <div class="w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border border-4 border-[#2D2F4B] flex items-center justifi-center  ">
-        <!--cuadro de ususario-->
-        <div class="bg-[#050711] w-[450px] h-[110px] border border-4 border-[#2D2F4B] ml-[10px] rounded-lg flex items-center">
-          <!--cuadro de foto de perfil-->
-          <div class="w-[100px] h-[100px] border border-3 border-[#444665] rounded-lg">
-            <img src="/img/perfil.png" alt="imagende perfil">
+      <header class="w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
+      >
+        <!-- Usuario -->
+        <div
+          class="bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
+        >
+          <div class="w-[100px] h-[100px] border-3 border-[#444665] rounded-lg overflow-hidden">
+            <img src="/img/perfil.png" alt="imagen de perfil" class="w-full h-full object-cover" />
           </div>
-          <!--texto del nombre proximo a cambio-->
-          <h1 class="text-white text-start ml-10 text-[30px]">DIN_03</h1>
+          <div class="flex flex-col ml-10"> 
+            <p class="text-white text-[30px] font-pixel">DIN_03</p>
+            <p class="text-[#FB00FF] text-[14px] font-pixel mt-1">Nivel 1</p>
+          </div>
         </div>
-        <!--inico-->
+
+        <!-- Menú central -->
         <nav class="flex items-center gap-20 ml-16">
-                <button @click="irLobby">
-                  <h1 class="text-[#876988] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]">INICIO</h1>
-                </button>
-                <!--para pasar donde los personajes-->
-                <button>
-                  <h1 class="text-[#FB00FF] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]">PERSONAJES</h1>
-                </button>
-                <!--para pasar a la tienda-->
-                <button @click="irStore">
-                  <h1 class="text-[#876988] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]">TIENDA</h1>
-                </button>
+          <button @click="irLobby">
+            <h1 class="text-[#876988] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]">
+              INICIO
+            </h1>
+          </button>
+
+          <button @click="irCharacters">
+            <h1 class="text-[#FB00FF] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]">
+              PERSONAJES
+            </h1>
+          </button>
+
+          <button @click="irStore">
+            <h1
+              class="text-[#876988] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]"
+            >
+              TIENDA
+            </h1>
+          </button>
         </nav>
-        <!--puntos-->
-        <div class="absolute right-[500px] flex">
-          <img src="/img/moneda.png" alt="puntos" class="h-[30px]">
-          <h1 class="font-pixel text-[20px] text-[#FB00FF] ">12.000</h1>
+
+        <!-- Acciones derecha -->
+        <div class="ml-auto flex items-center gap-8">
+          <div class="flex items-center gap-2">
+            <img src="/img/moneda.png" alt="puntos" class="h-[30px]" />
+            <h1 class="font-pixel text-[20px] text-[#FB00FF]">12.000</h1>
+          </div>
+
+          <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
+            <img src="/img/ajustes.png" alt="ajustes" class="w-full h-full object-cover" />
+          </button>
+
+          <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
+            <img src="/img/mensajes.png" alt="mensajes" class="w-full h-full object-cover" />
+          </button>
+
+          <button @click="mostrarConfirmacion = true" class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
+            <img src="/img/salida.png" alt="cierre de sesión" class="w-full h-full object-cover" />
+          </button>
         </div>
-        <!--ajustes, mensajes y cierre de secion-->
-        <div class="w-[50px] h-[50px] border border-3 border-[#41334B] rounded-lg absolute right-[300px]">
-          <img src="/img/ajustes.png" alt="ajustes">
-        </div>
-        <div class="w-[50px] h-[50px] border border-3 border-[#41334B] rounded-lg absolute right-[200px]">
-          <img src="/img/mensajes.png" alt="mensajes">
-        </div>
-        <div class="w-[50px] h-[50px] border border-3 border-[#41334B] rounded-lg absolute right-[100px]">
-          <img src="/img/salida.png" alt="cierre de secion">
-        </div>
-      </div>
+      </header>
 
       <!-- cuadro del centro -->
 <div class="min-h-[calc(100vh-150px)] flex items-center justify-center">
@@ -166,4 +194,26 @@ const personajes = [
 
     </div>
 </section>
+<div v-if="mostrarConfirmacion" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+
+  <div class="w-[700px] h-[400px] bg-black border-4 border-[#8B7A91] rounded-lg">
+    <h1 class="font-pixel text-[#FB00FF] text-3xl text-center mt-8">
+      ¿ESTÁS SEGURO DE QUE QUIERES SALIR?
+    </h1>
+
+    <div class="flex flex-col items-center gap-8 mt-16">
+
+      <button @click="irLoggin" class="font-pixel text-white w-[250px] h-[60px] bg-[#2A1A4B] rounded-xl border-2 border-fuchsia-500 transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2">
+        SI
+      </button>
+
+      <button
+        @click="mostrarConfirmacion = false"
+        class="font-pixel text-white w-[250px] h-[60px] bg-[#2A1A4B] rounded-xl border-2 border-fuchsia-500 transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
+      >
+        NO
+      </button>
+    </div>
+  </div>
+</div>
 </template>
