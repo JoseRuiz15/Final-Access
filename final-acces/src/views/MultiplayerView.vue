@@ -105,7 +105,7 @@ function irCreate() {
                     <div class="bg-[#7DF4FF]/10  rounded-lg h-[50px] text-center  ml-[235px] mt-5 w-[163.67px]">
                         <h1 class="text-[#7DF4FF]">MODO COLABORATIV0</h1>
                     </div>
-                    <h1 class="text-[#ECDCFF] mt-5 ml-[5ñ5px]">4/5</h1>
+                    <h1 class="text-[#ECDCFF] mt-5 ml-[55px]">4/5</h1>
                     <button class="text-[#7DF4FF] text-[13px] border border-[#7DF4FF] h-5 mt-5 ml-10 tex-center w-[60px]hover:scale-105 hover:shadow-[0_0_40px_#7DF4FF]">UNIRSE</button>
                 </div>
                 
