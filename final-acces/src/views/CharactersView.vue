@@ -65,7 +65,7 @@ const personajes = [
                 </button>
                 <!--para pasar donde los personajes-->
                 <button>
-                  <h1 class="text-[#876988] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]">PERSONAJES</h1>
+                  <h1 class="text-[#FB00FF] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]">PERSONAJES</h1>
                 </button>
                 <!--para pasar a la tienda-->
                 <button @click="irStore">

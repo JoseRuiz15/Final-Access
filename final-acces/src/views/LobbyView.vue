@@ -49,7 +49,7 @@ onMounted(() => {
 
         <!-- Menú central -->
         <nav class="flex items-center gap-20 ml-16">
-          <h1 class="text-[#FB00FF] font-pixel">INICIO</h1>
+          <h1 class="text-[#FB00FF] hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2] font-pixel">INICIO</h1>
 
           <button @click="irCharacters">
             <h1

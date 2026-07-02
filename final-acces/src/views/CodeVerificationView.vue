@@ -1,3 +1,12 @@
+<script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+function irLobby() {
+  router.push('/lobby')
+}
+</script>
 <template>
     <section id="code-screen" class="relative">
             <!--fondo codigo-->
@@ -47,11 +56,11 @@
                  
                  <div class="flex items-center justify-center mt-[20px] gap-[80px]">
                     <div class="flex items-center justify-center border border-4 border-[#DCF284] w-[180px] rounded-lg bg-[#67AC57] hover:border-[#c8ff00]">
-                    <button class="text-black font-pixel text-center text-[15px] bg-[#67AC57] border border-4 border-[#247439] rounded-lg w-[180px] transition-all duration-300 hover:text-white hover:shadow-[0_0_40px_#00ff00] hover:bg-[#00ff00] hover:scale-105 hover:border-[#0fc70f]">VERIFICAR</button>
+                    <button class="text-black font-pixel text-center text-[15px] bg-[#67AC57] border border-4 border-[#247439] rounded-lg w-[180px] transition-all duration-300 hover:text-white hover:shadow-[0_0_40px_#00ff00] hover:bg-[#00ff00] hover:scale-105 hover:border-[#0fc70f]" @click="irLobby">VERIFICAR</button>
                     </div>
 
                     <div class="flex items-center justify-center border border-4 border-[#615694] w-[180px] rounded-lg bg-[#3F2F6B]">
-                    <button class="text-[#A282DC] font-pixel text-center text-[10px] bg-[#3F2F6B] border border-4 border-[#1F1C46] rounded-lg w-[300px] ">REENVIAR CODIGO</button>
+                    <button class="text-[#A282DC] font-pixel text-center text-[10px] bg-[#3F2F6B] border border-4 border-[#1F1C46] rounded-lg w-[300px]">REENVIAR CODIGO</button>
                     </div>
                  </div>
                  <!--cronometro-->
