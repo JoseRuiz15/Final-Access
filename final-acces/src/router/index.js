@@ -7,6 +7,7 @@ import GameModeView from '../views/GameModeView.vue'
 import CodeVerificationView from '../views/CodeVerificationView.vue'
 import LobbyView from '../views/LobbyView.vue'
 import CharactersView from '../views/CharactersView.vue'
+import LevelsView from '../views/LevelsView.vue'
 import MultiplayerView from '../views/MultiplayerView.vue'
 import StoreView from '@/views/StoreView.vue'
 import CreateView from '@/views/CreateView.vue'
@@ -48,6 +49,11 @@ const router = createRouter({
       path: '/characters',
       name: 'characters',
       component: CharactersView
+    },
+    {
+      path: '/levels',
+      name: 'levels',
+      component: LevelsView
     },
     {
       path: '/multiplayer',

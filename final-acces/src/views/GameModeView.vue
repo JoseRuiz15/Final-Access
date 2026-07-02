@@ -3,6 +3,10 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
+function irLevels() {
+  router.push('/levels')
+}
+
 function irMultiplayer() {
   router.push('/multiplayer')
 }
@@ -35,7 +39,7 @@ function irLobby() {
             <!--cajas para el modo de juego-->
            <div class="flex items-center justify-center mt-[5px]">
             <!--solo jugador-->
-              <button class="bg-white h-70 w-50 rounded-lg hover:scale-105 hover:shadow-[0_0_40px_#FF00D9]">
+              <button class="bg-white h-70 w-50 rounded-lg hover:scale-105 hover:shadow-[0_0_40px_#FF00D9]" @click="irLevels">
                     <img src="/img/solo.png" alt="img solo jugador" class="rounded-lg">
                 </button>
                 <!--multijugador-->
