@@ -38,9 +38,77 @@ function irLobby() {
                 </button>
         </div>
         <div class="h-[720px] w-[793px] bg-[#190C2D]/70 absolute top-[80px] right-[200px] backdrop-blur-sm rounded-lg border border-[#3B494B]">
-            <div class="h-10 w-[500px] ml-5 mt-5 ">
+            <div class="ml-5 mt-5 ">
                 <h1 class="text-[#ECDCFF] font-pixel text-[20px]">BUSCADOR DE PARTIDAS</h1>
+                <div class="h-[1px] w-[750px] bg-[#4A4A6A]"></div>
             </div>
+            <div class="ml-5 mt-5 flex">
+                <h1 class="text-[#B9CACB] font-pixel text-[10px]">NOMBRE DEL SERVIDOR</h1>
+                <h1 class="text-[#B9CACB] font-pixel text-[10px] ml-[250px]">MODO</h1>
+                <h1 class="text-[#B9CACB] font-pixel text-[10px] ml-[90px]">JUGADPRES</h1>
+            </div>
+            <div class="ml-5 h-[1px] w-[750px] bg-[#4A4A6A]"></div>
+            <!--contenedor que mantiene los servers-->
+            <div class="h-[565px] w-[744.67px] mt-5 ml-[5px]">
+                <!--servidores competitivo-->
+                <div class="bg-[#211536]/50 w-[736.67px] h-[72px] ml-5 mt-5 flex">
+                    <h1 class="text-[#DBFCFF] mt-5 ml-[10px]">NEON_STRIKE_US_EAST</h1>
+                    <div class="bg-[#D1BCFF]/10 rounded-lg h-[25px] ml-[200px] mt-5">
+                        <h1 class="text-[#D1BCFF]">MODO COMPETITIVO</h1>
+                    </div>
+                    <h1 class="text-[#ECDCFF] mt-5 ml-[65px]">3/5</h1>
+                    <button class="text-[#7DF4FF] text-[13px] border border-[#7DF4FF] h-5 mt-5 ml-10 tex-center w-[60px]hover:scale-105 hover:shadow-[0_0_40px_#7DF4FF]">UNIRSE</button>
+                </div>
+                <!--colavorativo-->
+                <div class="bg-[#211536]/50 w-[736.67px] h-[72px] ml-5 mt-[5px] flex">
+                    <h1 class="text-[#DBFCFF] mt-5 ml-[10px]">CYBER_BRAWL_EU_01</h1>
+                    <div class="bg-[#FF506E]/20 rounded-lg h-[50px] text-center  ml-[200px] mt-5 w-[163.67px]">
+                        <h1 class="text-[#FFB2B8]">MODO COLABORATIV0</h1>
+                    </div>
+                    <h1 class="text-[#ECDCFF] mt-5 ml-[65px]">2/5</h1>
+                    <button class="text-[#7DF4FF] text-[13px] border border-[#7DF4FF] h-5 mt-5 ml-[45px] tex-center w-[60px]hover:scale-105 hover:shadow-[0_0_40px_#7DF4FF]">UNIRSE</button>
+                </div>
+                <!--servidores competitivo-->
+                <div class="bg-[#211536]/50 w-[736.67px] h-[72px] ml-5 mt-[5px] flex">
+                    <h1 class="text-[#DBFCFF] mt-5 ml-[10px]">UNDERGROUND_FIGHT_CLUB</h1>
+                    <div class="bg-[#D1BCFF]/10 rounded-lg h-[25px] ml-[153px] mt-5">
+                        <h1 class="text-[#D1BCFF]">MODO COMPETITIVO</h1>
+                    </div>
+                    <h1 class="text-[#FF506E] mt-5 ml-[65px]">5/5</h1>
+                    <button class="text-[#3B494B] text-[13px] border border-[#3B494B] h-5 mt-5 ml-[35px] tex-center w-[60px]">LLENO</button>
+                </div>
+                <!--colavorativo-->
+                <div class="bg-[#211536]/50 w-[736.67px] h-[72px] ml-5 mt-[5px] flex">
+                    <h1 class="text-[#DBFCFF] mt-5 ml-[10px]">CORPORATE_HEIST_V2</h1>
+                    <div class="bg-[#7DF4FF]/10  rounded-lg h-[50px] text-center  ml-[200px] mt-5 w-[163.67px]">
+                        <h1 class="text-[#7DF4FF]">MODO COLABORATIV0</h1>
+                    </div>
+                    <h1 class="text-[#ECDCFF] mt-5 ml-[65px]">4/5</h1>
+                    <button class="text-[#7DF4FF] text-[13px] border border-[#7DF4FF] h-5 mt-5 ml-[35px] tex-center w-[60px]hover:scale-105 hover:shadow-[0_0_40px_#7DF4FF]">UNIRSE</button>
+                </div>
+                <!--servidores competitivo-->
+                <div class="bg-[#211536]/50 w-[736.67px] h-[72px] ml-5 mt-[5px] flex">
+                    <h1 class="text-[#DBFCFF] mt-5 ml-[10px]">UNDERGROUND_FIGHT_CLUB</h1>
+                    <div class="bg-[#D1BCFF]/10 rounded-lg h-[25px] ml-[153px] mt-5">
+                        <h1 class="text-[#D1BCFF]">MODO COMPETITIVO</h1>
+                    </div>
+                    <h1 class="text-[#ECDCFF] mt-5 ml-[65px]">1/5</h1>
+                    <button class="text-[#7DF4FF] text-[13px] border border-[#7DF4FF] h-5 mt-5 ml-[40px] tex-center w-[60px]hover:scale-105 hover:shadow-[0_0_40px_#7DF4FF]">UNIRSE</button>
+                </div>
+                <!--colavorativo-->
+                <div class="bg-[#211536]/50 w-[736.67px] h-[72px] ml-5 mt-[5px] flex">
+                    <h1 class="text-[#DBFCFF] mt-5 ml-[10px]">NEON_DISTRICT_7</h1>
+                    <div class="bg-[#7DF4FF]/10  rounded-lg h-[50px] text-center  ml-[235px] mt-5 w-[163.67px]">
+                        <h1 class="text-[#7DF4FF]">MODO COLABORATIV0</h1>
+                    </div>
+                    <h1 class="text-[#ECDCFF] mt-5 ml-[5ñ5px]">4/5</h1>
+                    <button class="text-[#7DF4FF] text-[13px] border border-[#7DF4FF] h-5 mt-5 ml-10 tex-center w-[60px]hover:scale-105 hover:shadow-[0_0_40px_#7DF4FF]">UNIRSE</button>
+                </div>
+                
+                
+                
+            </div>
+            
 
         </div>
     </div>
