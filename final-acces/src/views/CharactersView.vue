@@ -42,8 +42,8 @@ const personajes = [
 
 <template>
 <section id="lobby-screen">
-    
-    
+
+
     <div class="relative z-10 min-h-screen">
       <!--fondo del lobby-->
       <img src="/img/lobbyjuego.png" alt="imagen del lobby" class="absolute inset-0 w-full h-full object-cover -z-10">
@@ -88,7 +88,7 @@ const personajes = [
           <img src="/img/salida.png" alt="cierre de secion">
         </div>
       </div>
-   
+
       <!-- cuadro del centro -->
 <div class="min-h-[calc(100vh-150px)] flex items-center justify-center">
   <div class="h-[480px] w-[1350px] bg-[#000313] border-4 border-[#20273C] rounded-lg flex">
@@ -162,8 +162,8 @@ const personajes = [
 
   </div>
 </div>
-      
-      
+
+
     </div>
 </section>
 </template>
