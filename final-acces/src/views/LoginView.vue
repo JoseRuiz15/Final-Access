@@ -54,7 +54,7 @@ function irLobby() {
                  </div>
                  <!--registrarse-->
                  <div class="flex justify-center items-center">
-                    <button @click="irRegister" id="record-button" class="font-pixel text-[#1FD0E4] text-[15px]">registrate aqui</button>
+                    <button @click="irRegister" id="record-button" class="font-pixel text-[#1FD0E4] text-[15px]  hover:text-shadow-[0_0_40px_#00e5ff]">registrate aqui</button>
                  </div>
 
           </div>
