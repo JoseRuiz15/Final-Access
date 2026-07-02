@@ -3,6 +3,7 @@ import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
 import { initFlowbite } from 'flowbite'
 import { ref } from 'vue'
+
 const mostrarConfirmacion = ref(false)
 const router = useRouter()
 
@@ -81,15 +82,15 @@ onMounted(() => {
             <h1 class="font-pixel text-[20px] text-[#FB00FF]">12.000</h1>
           </div>
 
-          <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden">
+          <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
             <img src="/img/ajustes.png" alt="ajustes" class="w-full h-full object-cover" />
           </button>
 
-          <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden">
+          <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
             <img src="/img/mensajes.png" alt="mensajes" class="w-full h-full object-cover" />
           </button>
 
-          <button @click="mostrarConfirmacion = true" class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden">
+          <button @click="mostrarConfirmacion = true" class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
             <img src="/img/salida.png"
                 alt="cierre de sesión"
                 class="w-full h-full object-cover"/>
@@ -298,7 +299,7 @@ onMounted(() => {
 
           <!-- Botón jugar -->
           <button
-            class="bg-[#2A1A4B] h-15 w-80 text-white font-pixel rounded-lg border-4 border-[#B17BE3] transition-all duration-300 hover:text-white hover:shadow-[0_0_40px_#E2CCF6] hover:bg-[#B17BE3] hover:scale-105 hover:border-[#CDA3F3]"
+            class="bg-[#2A1A4B] h-15 w-80 text-white font-pixel rounded-lg border-4 border-[#B17BE3] transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
             @click="irGameMode"
           >
             JUGAR
