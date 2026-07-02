@@ -22,7 +22,16 @@ function irCreate() {
         <h1 class="text-[#BCDBFF] font-pixel text-[40px] text-center mt-10">CONFIGURACION DE PARTIDA</h1>
         <h1 class="text-[#ffffff] font-pixel text-[20px] ml-10 ">ESTABLECER PARAMETROS DEL SERVIDOR</h1>
         <div class="h-[1px] w-full bg-[#8B8A8A]"></div>
-
+        <!--para colocar nombre al servidor-->
+        <h1 class="text-[#00FFEA] font-pixel ml-10 mt-10 ">NOMBRE DEL SERVIDOR</h1>
+        <div class="mt-[20px] ml-10">
+          <input
+            type="text"
+            id="server"
+            class="text-white font-orbitron login-input w-[960px] bg-[#675462]/30 rounded-[5px] h-[62px]"
+          />
+        </div>
+        <!--termina aqui-->
     </div>
     </div>
 </template>
