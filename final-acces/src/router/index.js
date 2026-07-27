@@ -11,6 +11,7 @@ import LevelsView from '../views/LevelsView.vue'
 import MultiplayerView from '../views/MultiplayerView.vue'
 import StoreView from '@/views/StoreView.vue'
 import CreateView from '@/views/CreateView.vue'
+import LoadingScene from '@/views/LoadingScene.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -69,7 +70,13 @@ const router = createRouter({
     path: '/create',
     name: 'create',
     component: CreateView
+    },
+    {
+    path: '/loading',
+    name: 'loading',
+    component: LoadingScene
     }
+    
   ]
 })
 

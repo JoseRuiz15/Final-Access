@@ -7,8 +7,8 @@ const router = useRouter()
 const mostrarModalNivel = ref(false)
 const nivelSeleccionado = ref(null)
 
-function irNivel1() {
-    router.push('/nivel1')
+function irLoadingScene() {
+    router.push('/loading')
 }
 function seleccionarNivel(nivel) {
     nivelSeleccionado.value = nivel
@@ -158,7 +158,7 @@ function obtenerDescripcion() {
         <!-- Botones -->
         <div class="flex justify-center gap-10 mt-10">
 
-            <button @click="irNivel1" class="w-[220px] h-14 bg-[#00AAFF] rounded-xl border-2 border-cyan-400 font-pixel  transition-all duration-300 hover:border-cyan-400 hover:shadow-[0_0_20px_#00AAFF] hover:-translate-y-2">
+            <button @click="irLoadingScene" class="w-[220px] h-14 bg-[#00AAFF] rounded-xl border-2 border-cyan-400 font-pixel  transition-all duration-300 hover:border-cyan-400 hover:shadow-[0_0_20px_#00AAFF] hover:-translate-y-2">
                 JUGAR
             </button>
 
