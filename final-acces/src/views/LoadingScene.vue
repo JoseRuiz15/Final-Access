@@ -1,17 +1,75 @@
 
 <script setup>
+import { ref, onMounted} from 'vue'
+
+    const dialogos = [
+    {
+        personaje: "/img/pose1.png",
+        cuadro: "/img/textbox.png",
+        texto: "Que tal cadete, bienvenido, es hora de empezar tu mision."
+    },
+    {
+        personaje: "/img/pose2.png",
+        cuadro: "/img/textbox.png",
+        texto: "Para avanzar de nivel debes destruir cajas y econtrar llaves escondidas."
+    },
+    {
+        personaje: "/img/pose3.png",
+        cuadro: "/img/textbox.png",
+        texto: "Si escoges llaves incorrectas pierdes tiempo, escoge bien y escapa antes de que el contador llegue a 0."
+    }
+]
+
+    const sonidoEscritura = new Audio("/audio/audioText.mp3")
+    
+    
+    function reproducirSonido() {
+        sonidoEscritura.currentTime = 0 
+        sonidoEscritura.play()
+    }
+
+    const dialogoActual = ref(0)
+
+    function siguienteDialogo() {
+    dialogoActual.value++
+    escribirTexto()
+}
+
+    const textoMostrado =ref("")
+
+    function escribirTexto() {
+
+        textoMostrado.value = ""
+        let indice = 0
+        const intervalo = setInterval(()=>{
+
+            textoMostrado.value += dialogos[dialogoActual.value].texto[indice]
+            reproducirSonido()
+            indice++
+            if(indice >= dialogos[dialogoActual.value].texto.length){
+                clearInterval(intervalo)
+            }
+        },40)
+        } 
+
+onMounted(() => {
+    escribirTexto()
+})
+
 </script>
 
 
 <template> 
-    <section>
-        <button class="absolute top-6 left-6 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9] transition-all duration-300" @click="irLobby">
-                &lt;- VOLVER AL MENU
-        </button>
+    <section @click="siguienteDialogo">
+        <img src = "/img/loadingscene.png" alt="loading" class="absolute inset-0 w-full h-full">
+        <img :src="dialogos[dialogoActual].personaje" alt="loading" class="absolute top-[393px] left-[650px]">
 
-        <div class="relative w-[1920px] h-[1080px]">
-            <img src = "/img/loadingscene.png" alt="loading" class="w-full h-full">
-            <img src = "/img/textbox.png" alt="loading" class="absolute top-[40%] left-[45%]">
-        </div>    
+        <div class="absolute top-[200px] left-[850px]">
+            <img :src="dialogos[dialogoActual].cuadro" alt="loading" class="w-[780px] h-[250px]">
+            <p class="absolute top-[20px] left-[50px] w-[700px] text-black font-pixel text-[20px] leading-8">
+            {{ textoMostrado }}
+             </p>\
+        </div>
+        
     </section>
 </template>
