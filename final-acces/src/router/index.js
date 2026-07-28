@@ -12,6 +12,7 @@ import MultiplayerView from '../views/MultiplayerView.vue'
 import StoreView from '@/views/StoreView.vue'
 import CreateView from '@/views/CreateView.vue'
 import LoadingScene from '@/views/LoadingScene.vue'
+import MissionView from '@/views/MissionView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -75,6 +76,11 @@ const router = createRouter({
     path: '/loading',
     name: 'loading',
     component: LoadingScene
+    },
+    {
+      path: '/mission',
+      name: 'mission',
+      component: MissionView
     }
     
   ]
