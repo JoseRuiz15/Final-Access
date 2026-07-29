@@ -1,5 +1,9 @@
 <script setup>
 import { ref, onMounted} from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
 
     const textoCompleto = "Para pasar el nivel necesitas esta Llave de plata del grupo comun la cual podras encontrar en cajas que tendras que destruir."
     const textoMostrado = ref("")
@@ -21,6 +25,11 @@ import { ref, onMounted} from 'vue'
     onMounted(() => {
         escribirTexto()
     })
+
+    function irAlJuego() {
+        router.push('/game')
+    }
+   
 </script>
 
 
@@ -41,7 +50,7 @@ import { ref, onMounted} from 'vue'
             </div>
         </div>
 
-        <button class="absolute bottom-20 right-20 text-white px-10 py-4 rounded-xl font-pixel transition-all duration-300 hover:text-white hover:bg-[#9747FF] hover:shadow-[0_0_25px_#9747FF] hover:scale-105">
+        <button @click="irAlJuego" class="absolute bottom-20 right-20 text-white px-10 py-4 rounded-xl font-pixel transition-all duration-300 hover:text-white hover:bg-[#9747FF] hover:shadow-[0_0_25px_#9747FF] hover:scale-105">
         JUGAR
         </button>
 

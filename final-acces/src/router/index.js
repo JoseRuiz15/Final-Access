@@ -13,6 +13,7 @@ import StoreView from '@/views/StoreView.vue'
 import CreateView from '@/views/CreateView.vue'
 import LoadingScene from '@/views/LoadingScene.vue'
 import MissionView from '@/views/MissionView.vue'
+import GameView from '@/views/GameView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -81,8 +82,12 @@ const router = createRouter({
       path: '/mission',
       name: 'mission',
       component: MissionView
+    },
+    {
+      path: '/game',
+      name: 'game',
+      component: GameView
     }
-    
   ]
 })
 
