@@ -14,11 +14,54 @@ class Level1Scene extends Phaser.Scene {
             "/img/defaultCharacter.png"
         );
 
+        this.load.spritesheet(
+            "playerWalk",
+            "/img/PlayerWalk.png",
+            {
+                frameWidth: 32,
+                frameHeight: 32
+            }
+        );
+
+        this.load.spritesheet(
+            "playerJump",
+            "/img/playerJump.png",
+            {
+                frameWidth: 32,
+                frameHeight: 32
+            }
+        );
+
     }
 
     create() {
 
         console.log("Nivel 1 iniciado");
+
+        this.anims.create({
+            key: "caminar",
+
+            frames: this.anims.generateFrameNumbers("playerWalk", {
+                start: 0,
+                end: 7
+            }),
+
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.anims.create ({
+            key: "saltar",
+
+            frames: this.anims.generateFrameNumbers("playerJump", {
+
+                start: 0,
+                end: 6
+            }),
+            frameRate: 3,
+            repeat: 0
+
+        });
 
         this.player = new Player(
             this,
@@ -27,7 +70,9 @@ class Level1Scene extends Phaser.Scene {
             "player"
         );
 
-        this.suelo = this.physics.add.staticGroup();
+
+    
+       this.suelo = this.physics.add.staticGroup();
 
         this.suelo.create(640, 680, null)
             .setSize(1280, 80)
@@ -36,9 +81,9 @@ class Level1Scene extends Phaser.Scene {
         this.physics.add.collider(
             this.player,
             this.suelo
-        );    
 
-        }
+        );
+    }
 
     update() {
 

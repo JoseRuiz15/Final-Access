@@ -13,6 +13,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
+        
+       
         this.teclas = scene.input.keyboard.addKeys({
 
             izquierda: Phaser.Input.Keyboard.KeyCodes.A,
@@ -24,9 +26,17 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     mover() {
 
+        //const estabaEnElAire = !this.body.blocked.down;
+
         if (this.teclas.izquierda.isDown) {
             
             this.setVelocityX(-this.velocidad);
+
+            this.setFlipX(true);
+
+            if (this.body.blocked.down) {
+                this.play("caminar", true);
+            }
 
         }
 
@@ -34,12 +44,21 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             
             this.setVelocityX(this.velocidad);
 
+            this.setFlipX(false);
+
+            if (this.body.blocked.down) {
+                this.play("caminar", true);
+            }
+
         }
 
         else {
 
             this.setVelocityX(0);
 
+         if (this.body.blocked.down) {
+            this.setTexture("player");
+        }
         }
 
         
@@ -47,10 +66,18 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
             this.setVelocityY(-500);
 
+            this.play("saltar", true);
+
         }
 
+        if (!this.body.blocked.down) {
+
+            this.play("saltar", true)
+
+        }
     }
 
+       
 }
 
 export default Player;
