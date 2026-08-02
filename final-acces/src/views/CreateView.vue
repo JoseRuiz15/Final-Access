@@ -1,4 +1,4 @@
-<script setup>
+git <script setup>
 import { useRouter } from 'vue-router'
 import { ref } from "vue"
 

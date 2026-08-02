@@ -9,19 +9,8 @@ class Level1Scene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image(
-            "enemy",
-            "/img/enemy.png"
-        )
-        this.load.spritesheet(
-            "enemyWalk",
-            "/img/enemyWalk.png",
-            {
-                frameWidth: 32,
-                frameHeight: 32
-            }
-        )
 
+        // JUGADOR
         this.load.image(
             "player",
             "/img/defaultCharacter.png"
@@ -45,11 +34,34 @@ class Level1Scene extends Phaser.Scene {
             }
         );
 
+        this.load.spritesheet(
+            "playerAttack",
+            "/img/playerAttack.png",
+            {
+                frameWidth: 48,
+                frameHeight: 32
+            }
+        );
+
+
+        // ENEMIGO
+
+        this.load.spritesheet(
+            "enemyWalk",
+            "/img/enemyWalk.png",
+            {
+                frameWidth: 48,
+                frameHeight: 32
+            }
+        )
+
     }
 
     create() {
 
         console.log("Nivel 1 iniciado");
+
+        // ANIMACIONES DEL JUGADOR
 
         this.anims.create({
             key: "caminar",
@@ -76,6 +88,18 @@ class Level1Scene extends Phaser.Scene {
 
         });
 
+        this.anims.create({
+            key: "atacar",
+
+            frames: this.anims.generateFrameNumbers("playerAttack", {
+                start: 0,
+                end: 12
+            }),
+
+            frameRate: 12,
+            repeat: 0
+        });
+
         this.player = new Player(
             this,
             300,
@@ -83,29 +107,60 @@ class Level1Scene extends Phaser.Scene {
             "player"
         );
 
-        this.enemy = new Enemy (
+        this.player.on ("animationcomplete-atacar",
+        () =>{
+
+        this.player.ataque = false;
+
+        this.player.setTexture("player");
+
+        }
+    
+    );
+
+
+        //ANIMACIONES DEL ENEMIGO
+
+        this.anims.create({
+            key: "enemyWalk",
+            frames: this.anims.generateFrameNumbers("enemyWalk", {
+                start: 0,
+                end: 4
+            }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        // ENEMIGO
+        this.enemy = new Enemy(
             this,
-            500,
+            600,
             300,
-            "enemy"
+            "enemyWalk"
         );
 
-    
+        //FISICAS DEL SUELO
        this.suelo = this.physics.add.staticGroup();
 
         this.suelo.create(640, 680, null)
             .setSize(1280, 80)
             .setVisible(false);
         
-        //this.physics.add.collider(
-           // this.player,
-           // this.suelo,
-            //this.enemy
-            
-        //);
-        this.physics.add.collider(this.player, this.suelo);
-        this.physics.add.collider(this.enemy, this.suelo)
+        this.physics.add.collider(
+            this.player,
+            this.suelo
+
+        );
+
+        this.physics.add.collider(
+            this.enemy,
+            this.suelo
+        );
     }
+
+
+
+
 
     update() {
 
