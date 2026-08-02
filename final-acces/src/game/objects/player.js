@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import attack from "./attack.js";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
 
@@ -10,6 +11,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.velocidad = 200;
         this.daño = 20;
 
+        this.ataque = false;
+
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
@@ -19,12 +22,19 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
             izquierda: Phaser.Input.Keyboard.KeyCodes.A,
             derecha: Phaser.Input.Keyboard.KeyCodes.D,
-            saltar: Phaser.Input.Keyboard.KeyCodes.SPACE
+            saltar: Phaser.Input.Keyboard.KeyCodes.SPACE,
+            atacar: Phaser.Input.Keyboard.KeyCodes.L
 
         });
     }
 
     mover() {
+
+        if(this.ataque){
+
+            return;
+
+        }
 
         //const estabaEnElAire = !this.body.blocked.down;
 
@@ -56,7 +66,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
             this.setVelocityX(0);
 
-         if (this.body.blocked.down) {
+         if (this.body.blocked.down && !this.ataque) {
             this.setTexture("player");
         }
         }
@@ -70,11 +80,49 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         }
 
-        if (!this.body.blocked.down) {
+        if (!this.body.blocked.down && !this.ataque) {
 
             this.play("saltar", true)
 
         }
+
+        if (Phaser.Input.Keyboard.JustDown(this.teclas.atacar)
+        ){
+            this.atacar();
+        }
+    }
+
+
+    atacar() {
+
+        this.ataque = true;
+
+        this.setVelocityX(0);
+
+        this.play("atacar");
+
+        let offsetX;
+
+    if (this.flipX) {
+
+        offsetX = -35;
+
+    } else {
+
+        offsetX = 35;
+
+    }
+
+    const ataque = new attack(
+
+        this.scene,
+        this.x + offsetX,
+        this.y,
+        40,
+        30
+
+    );
+
     }
 
        
