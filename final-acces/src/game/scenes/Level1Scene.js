@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import Player from "../objects/player.js";
+import Enemy from "../objects/enemy.js";
 
 class Level1Scene extends Phaser.Scene {
 
@@ -163,6 +164,7 @@ class Level1Scene extends Phaser.Scene {
     update() {
 
         this.player.mover();
+        this.enemy.mover();
 
     }
 

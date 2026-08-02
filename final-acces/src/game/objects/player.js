@@ -37,7 +37,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         }
 
         //const estabaEnElAire = !this.body.blocked.down;
-
         if (this.teclas.izquierda.isDown) {
             
             this.setVelocityX(-this.velocidad);
