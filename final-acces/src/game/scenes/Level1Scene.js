@@ -55,11 +55,32 @@ class Level1Scene extends Phaser.Scene {
             }
         )
 
+        this.load.spritesheet(
+            "enemy2Attack",
+            "/img/enemy2attack.png",
+            {
+                frameWidth: 48,
+                frameHeight: 32
+            }
+        )
+
+
+        this.load.spritesheet(
+            "proyectile",
+            "/img/enemy2attackeffect.png",
+            {
+                frameWidth:48,
+                frameHeight: 32
+            }
+        )
+
     }
 
     create() {
 
         console.log("Nivel 1 iniciado");
+        
+        this.proyectiles = this.physics.add.group();
 
         // ANIMACIONES DEL JUGADOR
 
@@ -131,6 +152,19 @@ class Level1Scene extends Phaser.Scene {
             repeat: -1
         });
 
+        //animacion de ataque 
+
+        this.anims.create({
+            key: "enemyAttack",
+            frames: this.anims.generateFrameNumbers("enemy2Attack", {
+                start: 0,
+                end: 4
+            }),
+            frameRate: 10, 
+            repeat: -1
+
+        });
+
         // ENEMIGO
         this.enemy = new Enemy(
             this,
@@ -156,10 +190,34 @@ class Level1Scene extends Phaser.Scene {
             this.enemy,
             this.suelo
         );
+
+         //aniamcion del proyectil
+         this.anims.create({
+            key: "proyectile",
+            frames: this.anims.generateFrameNumbers("proyectile",{
+
+                start: 0,
+                end: 5
+            }),
+            frameRate: 10, 
+            repeat: -1
+    });
+
+
+
+
+    this.physics.add.overlap(
+        this.player, 
+        this.proyectiles,
+
+        (player, bala) => {
+
+            player.recibirDaño(20);
+
+            bala.destroy();
+        }
+    );
     }
-
-
-
 
 
     update() {

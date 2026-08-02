@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import Projectile from "./projectile";
 
 class Enemy extends Phaser.Physics.Arcade.Sprite {
 
@@ -13,6 +14,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.velocidad = 100;
         this.daño = 20;
         this.atacando = false;
+        this.puedeDisparar = true;
         
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -38,13 +40,24 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
             this.play("enemyWalk", true);
         }
 
-        if(distancia < 20) {
+        if(distancia < 100) {
             this.setVelocityX(0);
+
+            if(!this.anims.isPlaying || this.anims.currentAnim.key !== "enemyAttack") {
+            this.play("enemyAttack", true);
+         }
             this.atacar();
             return;
+        }else {
+
+            this.setVelocityX(this.velocidad);
+
+            this.play("enemyWalk", true);
         }
 
         if (distancia < 250) {
+            
+
             if (this.scene.player.x < this.x) {
                 this.setVelocityX(-this.velocidad);
                 this.setFlipX(false);
@@ -82,14 +95,44 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     }
 
+        //ataque del enemigo
     atacar() {
+        console.log("Entró a atacar");
+
+
+        
+        if (!this.puedeDisparar) {
+            console.log("no puede disparar");
+            return;
+        }
+
+        this.puedeDisparar = false;
+        
+        console.log("Voy a crear la bala");
+
+        const direccion = this.scene.player.x < this.x ? -1 : 1;
+
+        console.log("Voy a crear la bala");
+
+        const bala =new Projectile(
+            this.scene,
+            this.x,
+            this.y,
+            "proyectile"
+        );
+
+        console.log("Bala creada");
+
+        bala.disparar(direccion);
+
+        this.scene.time.delayedCall(1500, () => {
+            this.puedeDisparar = true;
+        });
+
+
         if (this.atacando) return;
 
         this.atacando = true;
-
-        console.log("ataque");
-
-        this.scene.player.vida -= this.daño;
 
         
         this.scene.time.delayedCall(800, () => {
@@ -97,6 +140,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
             this.atacando =  false;
         });
     }
+
     
 }
 
