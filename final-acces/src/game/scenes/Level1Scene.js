@@ -125,14 +125,15 @@ class Level1Scene extends Phaser.Scene {
             key: "enemyWalk",
             frames: this.anims.generateFrameNumbers("enemyWalk", {
                 start: 0,
-                end: 7
+                end: 4
             }),
             frameRate: 10,
             repeat: -1
         });
 
         // ENEMIGO
-        this.enemy = this.physics.add.sprite(
+        this.enemy = new Enemy(
+            this,
             600,
             300,
             "enemyWalk"

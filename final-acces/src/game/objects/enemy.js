@@ -34,6 +34,10 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
                 this.scene.player.y
         );
 
+        if (this.anims.currentAnim?.key !== "enemyWalk") {
+            this.play("enemyWalk", true);
+        }
+
         if(distancia < 20) {
             this.setVelocityX(0);
             this.atacar();
@@ -43,28 +47,31 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         if (distancia < 250) {
             if (this.scene.player.x < this.x) {
                 this.setVelocityX(-this.velocidad);
-                this.setFlipX(true);
+                this.setFlipX(false);
             } else {
 
                 this.setVelocityX(this.velocidad);
-                this.setFlipX(false);
+                this.setFlipX(true);
             }
             return;
         }
 
+    
+        // Mover al enemigo
         this.setVelocityX(this.velocidad * this.direccion);
 
+        // Siempre mirar hacia donde se mueve
+        this.setFlipX(this.direccion === 1);
+
+        // Cambiar de dirección al chocar
         if (this.body.blocked.right) {
             this.direccion = -1;
-            this.setFlipX(true);
         }
 
         if (this.body.blocked.left) {
             this.direccion = 1;
-            this.setFlipX(false);
         }
     }
-
     recibirDaño(daño) {
 
         this.vida -= daño;
