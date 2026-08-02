@@ -24,12 +24,12 @@ const router = useRouter()
     {
         personaje: "/img/pose4.png",
         cuadro: "/img/textbox.png",
-        texto: "Ten cuidado con los enemigos, pierdes tiempo y  una vida cada que te disparan."
+        texto: "Ten cuidado con los enemigos, pierdes tiempo y una vida cada que te disparan."
     },
     {
         personaje: "/img/pose5.png",
         cuadro: "/img/textbox.png",
-        texto: "Buena suerte, escoje bien y completa todas las misiones"
+        texto: "Buena suerte, escoge bien y completa todas las misiones"
     }
 
 ]

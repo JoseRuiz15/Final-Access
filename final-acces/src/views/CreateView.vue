@@ -1,7 +1,9 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import { ref } from "vue"
 
 const router = useRouter()
+const modo = ref("competitivo")
 
 function irMultiplayer() {
   router.push('/multiplayer')
@@ -31,6 +33,63 @@ function irCreate() {
             class="text-white font-orbitron login-input w-[960px] bg-[#675462]/30 rounded-[5px] h-[62px]"
           />
         </div>
+
+        <!--escoger modo de juego-->
+
+        <h1 class="text-[#00FFEA] font-pixel ml-10 mt-10 ">MODO DE JUEGO</h1>
+        <div class="flex gap-8">
+
+    <!-- Competitivo -->
+    <div class="mt-5 ml-10"
+
+        @click="modo = 'competitivo'"
+        :class="[
+            'w-[379px] h-[76px] rounded cursor-pointer flex items-center px-4 border-l-4 transition-all',
+            modo === 'competitivo'
+                ? 'border-cyan-300 bg-[#2B2746]'
+                : 'border-cyan-900 bg-[#23203B]'
+        ]"
+    >
+        <div
+            :class="[
+                'w-4 h-4 rounded-full border-2 mr-3',
+                modo === 'competitivo'
+                    ? 'bg-blue-500 border-white'
+                    : 'border-white'
+            ]"
+        ></div>
+
+        <span class="text-white font-pixel">
+            COMPETITIVO
+        </span>
+    </div>
+
+    <!-- Colaborativo -->
+    <div class="mt-5 ml-20"
+        @click="modo = 'colaborativo'"
+        :class="[
+            'w-[379px] h-[76px] rounded cursor-pointer flex items-center px-4 border-l-4 transition-all',
+            modo === 'colaborativo'
+                ? 'border-cyan-300 bg-[#2B2746]'
+                : 'border-cyan-900 bg-[#23203B]'
+        ]"
+    >
+        <div
+            :class="[
+                'w-4 h-4 rounded-full border-2 mr-3',
+                modo === 'colaborativo'
+                    ? 'bg-blue-500 border-blue-500'
+                    : 'border-white'
+            ]"
+        ></div>
+
+        <span class="text-white font-pixel">
+            COLABORATIVO
+        </span>
+    </div>
+
+</div>
+
         <!--termina aqui-->
     </div>
     </div>
