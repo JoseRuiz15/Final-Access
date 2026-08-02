@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import Player from "../objects/player.js";
+import Enemy from "../objects/enemy.js";
 
 class Level1Scene extends Phaser.Scene {
 
@@ -8,6 +9,18 @@ class Level1Scene extends Phaser.Scene {
     }
 
     preload() {
+        this.load.image(
+            "enemy",
+            "/img/enemy.png"
+        )
+        this.load.spritesheet(
+            "enemyWalk",
+            "/img/enemyWalk.png",
+            {
+                frameWidth: 32,
+                frameHeight: 32
+            }
+        )
 
         this.load.image(
             "player",
@@ -70,6 +83,12 @@ class Level1Scene extends Phaser.Scene {
             "player"
         );
 
+        this.enemy = new Enemy (
+            this,
+            500,
+            300,
+            "enemy"
+        );
 
     
        this.suelo = this.physics.add.staticGroup();
@@ -78,16 +97,20 @@ class Level1Scene extends Phaser.Scene {
             .setSize(1280, 80)
             .setVisible(false);
         
-        this.physics.add.collider(
-            this.player,
-            this.suelo
-
-        );
+        //this.physics.add.collider(
+           // this.player,
+           // this.suelo,
+            //this.enemy
+            
+        //);
+        this.physics.add.collider(this.player, this.suelo);
+        this.physics.add.collider(this.enemy, this.suelo)
     }
 
     update() {
 
         this.player.mover();
+        this.enemy.mover();
 
     }
 

@@ -29,7 +29,7 @@ const router = useRouter()
     {
         personaje: "/img/pose5.png",
         cuadro: "/img/textbox.png",
-        texto: "Buena suerte, escoge bien y completa todas las misiones"
+        texto: "Buena suerte, escoje bien y completa todas las misiones"
     }
 
 ]
