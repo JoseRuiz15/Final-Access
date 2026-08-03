@@ -15,6 +15,17 @@ onMounted(() => {
 
         parent: 'game-container',
 
+        pixelArt: true,
+
+        render: {
+            antialias: false
+        },
+
+        scale: {
+            mode: Phaser.Scale.ENVELOP,
+            autoCenter: Phaser.Scale.CENTER_BOTH
+        },  
+
         physics: {
             default: 'arcade',
             arcade: {
@@ -40,7 +51,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-
-    <div id="game-container"></div>
-
+  <div
+    id="game-container"
+    style="
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    "
+  ></div>
 </template>
