@@ -43,6 +43,15 @@ class Level1Scene extends Phaser.Scene {
             }
         );
 
+        this.load.spritesheet(
+            "playerDamage",
+            "/img/playerDamage.png",
+            {
+                frameWidth: 48,
+                frameHeight: 32
+            }
+        );
+
 
         // ENEMIGO
 
@@ -120,6 +129,16 @@ class Level1Scene extends Phaser.Scene {
             frameRate: 12,
             repeat: 0
         });
+         this.anims.create({
+        key: "playerDie",
+        frames: this.anims.generateFrameNumbers("playerDamage", {
+            start: 0,
+            end: 5
+        }),
+        frameRate: 8,
+        repeat: 0
+    });
+
 
         this.player = new Player(
             this,
@@ -128,6 +147,20 @@ class Level1Scene extends Phaser.Scene {
             "player"
         );
 
+        this.player.on("animationcomplete-playerDie", () => {
+
+            this.player.body.enable = false;
+
+            this.time.delayedCall(1000, () => {
+
+                this.player.respawn();
+            });
+
+
+
+        });
+
+        
         this.player.on ("animationcomplete-atacar",
         () =>{
 
@@ -138,6 +171,8 @@ class Level1Scene extends Phaser.Scene {
         }
     
     );
+
+   
 
 
         //ANIMACIONES DEL ENEMIGO
@@ -203,8 +238,16 @@ class Level1Scene extends Phaser.Scene {
             repeat: -1
     });
 
+    this.physics.add.overlap(
+    this.player,
+    this.proyectiles,
+    (player, proyectil) => {
 
+        player.recibirDaño(20);
+        proyectil.destroy();
 
+    }
+);
 
     this.physics.add.overlap(
         this.player, 
@@ -226,6 +269,8 @@ class Level1Scene extends Phaser.Scene {
         this.enemy.mover();
 
     }
+
+    
 
 }
 

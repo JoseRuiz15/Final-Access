@@ -88,7 +88,14 @@ function irCreate() {
         </span>
     </div>
 
-</div>
+
+        </div>
+    <div class="flex items-center">
+        <h1 class="text-[#00FFEA] font-pixel ml-10 mt-10 ">PRIVACIDAD</h1>
+        <h1 class="text-[#00FFEA] font-pixel ml-[350px] mt-10 ">LIMITE DE JUGADORES</h1>
+    </div>
+    
+    
 
         <!--termina aqui-->
     </div>

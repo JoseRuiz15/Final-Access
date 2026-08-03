@@ -6,12 +6,16 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture) {
 
         super(scene, x, y, texture);
+        
+        this.spawnX = x;
+        this.spawnY = y;
 
         this.vida = 100;
         this.velocidad = 200;
         this.daño = 20;
 
         this.ataque = false;
+        this.muerto = false;
 
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -29,6 +33,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     mover() {
+
+        if (this.muerto) {
+            return;
+        }
 
         if(this.ataque){
 
@@ -65,7 +73,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
             this.setVelocityX(0);
 
-         if (this.body.blocked.down && !this.ataque) {
+         if (this.body.blocked.down && !this.ataque && !this.muerto) {
             this.setTexture("player");
         }
         }
@@ -122,6 +130,52 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     );
 
+    this.scene.physics.add.overlap(
+        ataque,
+        this.scene.enemy,
+        (ataque, enemigo) => {
+            enemigo.recibirDaño(this.daño);
+
+            ataque.destroy();
+        }
+    )
+
+    }
+
+    recibirDaño(daño) {
+
+        this.vida -= daño;
+
+        console.log("vida de jugador:", this.vida);
+
+        if (this.vida <= 0) {
+
+            this.vida = 0;
+
+            this.muerto = true;
+
+           this.setVelocity(0, 0);
+
+           this.play("playerDie");
+        }
+    }
+
+    respawn() {
+        this.vida = 100;
+        
+        this.setPosition(this.spawnX, this.spawnY);
+
+        this.setVelocity(0, 0);
+
+        this.setActive(true);
+
+        this.setVisible(true);
+
+        this.body.enable = true;
+
+        this.setTexture("player");
+
+        this.muerto = false;
     }
 
        

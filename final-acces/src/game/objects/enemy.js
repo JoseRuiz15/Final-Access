@@ -29,6 +29,18 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 }
 
     mover() {
+         if (!this.scene.player || !this.scene.player.active) {
+
+            this.setVelocityX(this.velocidad * this.direccion);
+
+            this.setFlipX(this.direccion === 1);
+
+            if(this.body.blocked.rigth) {
+                this.direccion = -1;
+            }
+
+            return;
+         }
         const distancia = Phaser.Math.Distance.Between(
                 this.x,
                 this.y, 
@@ -121,9 +133,20 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
             "proyectile"
         );
 
-        console.log("Bala creada");
-
         bala.disparar(direccion);
+
+        //detectar si la bala golpea al jugador
+
+        this.scene.physics.add.overlap(
+            bala,
+            this.scene.player, 
+            (bala, player) => {
+
+                player.recibirDaño(this.daño);
+
+                bala.destroy();
+            }
+        )
 
         this.scene.time.delayedCall(1500, () => {
             this.puedeDisparar = true;
