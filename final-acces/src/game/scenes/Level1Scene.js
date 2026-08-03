@@ -6,31 +6,29 @@ class Level1Scene extends Phaser.Scene {
 
     constructor() {
         super("Level1Scene");
+        this.recibiendoDaño = false;
     }
+
+
 
     preload() {
 
-        // MAPA
-
+          // FONDO PARALLAX
+        this.load.image("parallax", "/img/parallax_background_layer_1.png");
+        this.load.image("parallax2", "/img/parallax_background_layer_2.png");
+        this.load.image("parallax3", "/img/parallax_background_layer_3.png");
+        this.load.image("parallax4", "/img/parallax_background_layer_4.png");
+        this.load.image("parallax5", "/img/parallax_background_layer_5.png");
+        // MAPA Y TILESETS
         this.load.tilemapTiledJSON(
             "level1",
             "/maps/Mapa_level_1.json"
         );
 
-        //Fondo parallax
-        this.load.image("parallax", "img/parallax_background_layer_1.png");
-        this.load.image("parallax2", "img/parallax_background_layer_2.png");
-        this.load.image("parallax3", "img/parallax_background_layer_3.png");
-        this.load.image("parallax4", "img/parallax_background_layer_4.png");
-        this.load.image("parallax5", "img/parallax_background_layer_5.png");
-
-        //Pisos del mapa
-        this.load.image("box", "tiles/box.png");
-        this.load.image("decorations", "tiles/decorations.png");
-        this.load.image("ground", "tiles/ground.png");
-        this.load.image("walls", "tiles/walls.png");
-
-
+        this.load.image("ground", "/tiles/ground.png");
+        this.load.image("decorations", "/tiles/decorations.png");
+        this.load.image("box", "/tiles/box.png");
+        this.load.image("walls", "/tiles/walls.png");
         // JUGADOR
         this.load.image(
             "player",
@@ -39,7 +37,7 @@ class Level1Scene extends Phaser.Scene {
 
         this.load.spritesheet(
             "playerWalk",
-            "/img/PlayerWalk.png",
+            "/img/playerWalk.png",
             {
                 frameWidth: 32,
                 frameHeight: 32
@@ -68,7 +66,16 @@ class Level1Scene extends Phaser.Scene {
             "playerDamage",
             "/img/playerDamage.png",
             {
-                frameWidth: 48,
+                frameWidth: 32,
+                frameHeight: 32
+            }
+        );
+
+        this.load.spritesheet(
+            "playerDead",
+            "/img/playerDead.png",
+            {
+                frameWidth: 64,
                 frameHeight: 32
             }
         );
@@ -87,7 +94,7 @@ class Level1Scene extends Phaser.Scene {
 
         this.load.spritesheet(
             "enemy2Attack",
-            "/img/enemy2attack.png",
+            "/img/enemyAttack.png",
             {
                 frameWidth: 48,
                 frameHeight: 32
@@ -96,7 +103,7 @@ class Level1Scene extends Phaser.Scene {
 
         this.load.spritesheet(
             "explosion",
-            "/img/explosion-robot-escarabajo.png",
+            "/img/explosion.png",
             {
                 frameWidth: 48,
                 frameHeight: 32
@@ -104,8 +111,8 @@ class Level1Scene extends Phaser.Scene {
         )
 
         this.load.spritesheet(
-            "enemyDead",
-            "/img/enemyDead.png",
+            "enemyDamage",
+            "/img/enemyDamage.png",
             {
                 frameWidth: 48,
                 frameHeight: 32
@@ -266,15 +273,30 @@ class Level1Scene extends Phaser.Scene {
             frameRate: 12,
             repeat: 0
         });
-         this.anims.create({
-        key: "playerDie",
-        frames: this.anims.generateFrameNumbers("playerDamage", {
+
+        this.anims.create({
+          key: "playerDie",
+
+        frames: this.anims.generateFrameNumbers("playerDead", {
             start: 0,
             end: 5
         }),
-        frameRate: 8,
+
+        frameRate: 12,
         repeat: 0
-    });
+        });
+
+        this.anims.create({
+    key: "playerDamage",
+
+        frames: this.anims.generateFrameNumbers("playerDamage", {
+            start: 0,
+            end: 5 // Cambia este número según los cuadros que tenga tu spritesheet
+        }),
+
+        frameRate: 12,
+        repeat: 0
+        });
 
 
         this.player = new Player(
@@ -288,7 +310,7 @@ class Level1Scene extends Phaser.Scene {
 
             this.player.body.enable = false;
 
-            this.time.delayedCall(1000, () => {
+            this.time.delayedCall(100, () => {
 
                 this.player.respawn();
             });
@@ -297,21 +319,34 @@ class Level1Scene extends Phaser.Scene {
 
         });
 
-        
+
         this.cameras.main.startFollow(this.player);
 
-        this.player.on ("animationcomplete-atacar",
-        () =>{
 
-        this.player.ataque = false;
+      this.player.on("animationcomplete-atacar", () => {
+
+          console.log("Terminó ataque");
+
+          this.player.ataque = false;
+
+          if (!this.player.muerto) {
+              this.player.setTexture("player");
+          }
+
+      });
+
+    this.player.on("animationcomplete-playerDamage", () => {
+
+      if (!this.player.muerto && this.player.body.blocked.down) {
+          this.player.setTexture("player");
+      }
+
+        this.player.recibiendoDaño = false;
 
         this.player.setTexture("player");
 
-        }
+    });
 
-    );
-
-   
 
 
         //ANIMACIONES DEL ENEMIGO
@@ -340,10 +375,22 @@ class Level1Scene extends Phaser.Scene {
         });
 
         this.anims.create({
+          key: "enemyDamage",
 
-            key: "enemyDeath",
+          frames: this.anims.generateFrameNumbers("enemyDamage", {
+              start: 0,
+              end: 4 // o el último frame que tenga
+          }),
 
-            frames: this.anims.generateFrameNumbers("enemyDead", {
+          frameRate: 12,
+          repeat: 0
+      });
+
+        this.anims.create({
+
+            key: "explosion",
+
+            frames: this.anims.generateFrameNumbers("explosion", {
 
                 start: 0,
                 end: 5
@@ -355,127 +402,143 @@ class Level1Scene extends Phaser.Scene {
             repeat: 0
 
         });
-        this.anims.create({
-            key: "explosion",
-
-            frames: this.anims.generateFrameNumbers("explosion", {
-                start: 0,
-                end: 7   // Cambia este número según los cuadros que tenga tu spritesheet
-            }),
-
-            frameRate: 12,
-            repeat: 0
-        });
 
         // ENEMIGO
-        this.enemy = new Enemy(
+
+        this.enemies = this.add.group();
+
+        const enemy1 = new Enemy(
             this,
             600,
             300,
             "enemyWalk"
         );
 
-        this.enemy.on("animationcomplete-enemyDeath", () => {
+        const enemy2 = new Enemy(
+            this,
+            1100,
+            300,
+            "enemyWalk"
+        );
 
-            const explosion = this.add.sprite(
-                this.enemy.x,
-                this.enemy.y,
-                "explosion"
-            );
+        const enemy3 = new Enemy(
+            this,
+            1700,
+            300,
+            "enemyWalk"
+        );
 
-            explosion.play("explosion");
+        this.enemies.addMultiple([
+            enemy1,
+            enemy2,
+            enemy3
+        ]);
 
-            this.enemy.destroy();
+          this.enemies.getChildren().forEach(enemy => {
 
-            explosion.on("animationcomplete-explosion", () => {
+          enemy.on("animationcomplete-enemyDamage", () => {
 
-            explosion.destroy();
+              enemy.recibiendoDaño = false;
 
-            });
+              if (!enemy.muerto) {
 
-        });
+                  enemy.play("enemyWalk");
+
+              }
+
+          });
+
+      });
+
+      this.enemies.getChildren().forEach(enemy => {
+
+          enemy.on("animationcomplete-enemyDeath", () => {
+
+              const explosion = this.add.sprite(
+
+                  enemy.x,
+                  enemy.y,
+                  "explosion"
+
+              );
+
+              explosion.play("explosion");
+
+              enemy.destroy();
+
+              explosion.on(
+
+                  "animationcomplete-explosion",
+
+                  () => explosion.destroy()
+
+              );
+
+          });
+
+      });
 
         //FISICAS DEL SUELO
-       //this.suelo = this.physics.add.staticGroup();
-
-        //this.suelo.create(640, 680, null)
-           // .setSize(1280, 80)
-            //.setVisible(false);
 
         this.physics.add.collider(
             this.player,
             groundLayer
         );
 
-        this.physics.add.collider(
-            this.enemy,
-            groundLayer
-        );
+        this.enemies.getChildren().forEach(enemy => {
+
+            this.physics.add.collider(
+                enemy,
+                groundLayer
+            );
+
+        });
 
         this.physics.add.collider(
             this.player,
             cratesLayer
         );
 
-         //aniamcion del proyectil
-         this.anims.create({
+        //aniamcion del proyectil
+        this.anims.create({
             key: "proyectile",
-            frames: this.anims.generateFrameNumbers("proyectile",{
-
+            frames: this.anims.generateFrameNumbers("proyectile", {
                 start: 0,
                 end: 5
             }),
             frameRate: 10,
             repeat: -1
-    });
+        });
 
-    this.physics.add.overlap(
-    this.player,
-    this.proyectiles,
-    (player, proyectil) => {
-
-        player.recibirDaño(20);
-        proyectil.destroy();
-
+        this.physics.add.overlap(
+            this.player,
+            this.proyectiles,
+            (player, proyectil) => {
+                player.recibirDaño(20);
+                proyectil.destroy();
+            }
+        );
     }
-);
-
-    this.physics.add.overlap(
-        this.player,
-        this.proyectiles,
-
-        (player, bala) => {
-
-            player.recibirDaño(20);
-
-            bala.destroy();
-        }
-    );
-    }
-
 
     update() {
-
         if (this.player && this.player.active) {
-        this.player.mover();
+            this.player.mover();
         }
 
-        if (this.enemy && this.enemy.active) {
-        this.enemy.mover();
-        }
+        this.enemies.getChildren().forEach(enemy => {
+            if (enemy.active) {
+                enemy.mover();
+            }
+        });
 
-const camX = this.cameras.main.scrollX;
+        const camX = this.cameras.main.scrollX;
 
-this.bg1.tilePositionX += ((camX * 0.08) - this.bg1.tilePositionX) * 0.08;
-this.bg2.tilePositionX += ((camX * 0.15) - this.bg2.tilePositionX) * 0.08;
-this.bg3.tilePositionX += ((camX * 0.25) - this.bg3.tilePositionX) * 0.08;
-this.bg4.tilePositionX += ((camX * 0.40) - this.bg4.tilePositionX) * 0.08;
-this.bg5.tilePositionX += ((camX * 0.60) - this.bg5.tilePositionX) * 0.08;
-
+        this.bg1.tilePositionX += ((camX * 0.08) - this.bg1.tilePositionX) * 0.08;
+        this.bg2.tilePositionX += ((camX * 0.15) - this.bg2.tilePositionX) * 0.08;
+        this.bg3.tilePositionX += ((camX * 0.25) - this.bg3.tilePositionX) * 0.08;
+        this.bg4.tilePositionX += ((camX * 0.40) - this.bg4.tilePositionX) * 0.08;
+        this.bg5.tilePositionX += ((camX * 0.60) - this.bg5.tilePositionX) * 0.08;
     }
-
-    
-
 }
 
 export default Level1Scene;

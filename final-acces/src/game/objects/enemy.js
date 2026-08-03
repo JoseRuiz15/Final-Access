@@ -7,32 +7,54 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         super(scene, x, y, texture);
 
-        this.vida = 50;
-        this.velocidad = 100;
+        this.setScale(1.5);
+
+        this.vida = 40;
+        this.velocidad = 70;
         this.daño = 20;
+
         this.direccion = 1;
-        this.velocidad = 100;
-        this.daño = 20;
+
         this.atacando = false;
         this.puedeDisparar = true;
+        this.recibiendoDaño = false;
         this.muerto = false;
+
         this.limiteIzquierdo = 700;
         this.limiteDerecho = 1100;
-        this.direccion = 1;
-        
+
         scene.add.existing(this);
         scene.physics.add.existing(this);
-        
+
         this.setCollideWorldBounds(true);
     }
 
-    create() {
-
-    this.enemigo = new Enemy(this, 500, 300, "enemy");
-
-}
-
     mover() {
+
+    if (this.muerto) {
+        this.setVelocity(0);
+        return;
+    }
+
+    if (this.recibiendoDaño) {
+        this.setVelocity(0);
+        return;
+    }
+
+    if (this.atacando) {
+        this.setVelocity(0);
+        return;
+    }
+
+    if (!this.scene.player || !this.scene.player.active) {
+        return;
+    }
+
+
+      if (this.recibiendoDaño) {
+          this.setVelocityX(0);
+          return;
+      }
 
         if (this.muerto) {
         this.setVelocity(0);
@@ -44,7 +66,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 
             this.setFlipX(this.direccion === 1);
 
-            if(this.body.blocked.rigth) {
+            if(this.body.blocked.right) {
                 this.direccion = -1;
             }
 
@@ -52,12 +74,12 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
          }
         const distancia = Phaser.Math.Distance.Between(
                 this.x,
-                this.y, 
+                this.y,
                 this.scene.player.x,
                 this.scene.player.y
         );
 
-        if (this.anims.currentAnim?.key !== "enemyWalk") {
+        if (!this.anims.isPlaying) {
             this.play("enemyWalk", true);
         }
 
@@ -77,7 +99,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         }
 
         if (distancia < 250) {
-            
+
 
             if (this.scene.player.x < this.x) {
                 this.setVelocityX(-this.velocidad);
@@ -90,7 +112,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
             return;
         }
 
-    
+
         // Mover al enemigo
         this.setVelocityX(this.velocidad * this.direccion);
 
@@ -114,87 +136,90 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
             this.direccion = 1;
         }
     }
-    recibirDaño(daño) {
+recibirDaño(daño) {
 
-    if (this.muerto) return;
+    if (this.muerto || this.recibiendoDaño) return;
 
     this.vida -= daño;
-
-    console.log("Vida enemigo:", this.vida);
 
     if (this.vida <= 0) {
 
         this.vida = 0;
-
         this.muerto = true;
 
-        this.setVelocity(0, 0);
-
-        this.body.enable = false;
+        this.setVelocity(0);
 
         this.play("enemyDeath");
 
+    } else {
+
+        this.recibiendoDaño = true;
+        this.setVelocity(0);
+        this.play("enemyDamage");
+
     }
+
 }
 
         //ataque del enemigo
-    atacar() {
-        console.log("Entró a atacar");
+      atacar() {
+
+          if (this.atacando || this.muerto || this.recibiendoDaño)
+              return;
+
+          if (!this.puedeDisparar)
+              return;
+
+          this.atacando = true;
+          this.puedeDisparar = false;
+
+          this.play("enemyAttack");
+
+          const direccion =
+              this.scene.player.x < this.x ? -1 : 1;
+
+          const bala = new Projectile(
+
+              this.scene,
+              this.x,
+              this.y,
+              "proyectile"
+
+          );
+
+          bala.disparar(direccion);
+
+          this.scene.physics.add.overlap(
+
+              bala,
+
+              this.scene.player,
+
+              (bala, player) => {
+
+                  player.recibirDaño(this.daño);
+
+                  bala.destroy();
+
+              }
+
+          );
+
+          this.scene.time.delayedCall(800, () => {
+
+              this.atacando = false;
+
+          });
+
+          this.scene.time.delayedCall(1500, () => {
+
+              this.puedeDisparar = true;
+
+          });
+
+      }
 
 
-        
-        if (!this.puedeDisparar) {
-            console.log("no puede disparar");
-            return;
-        }
-
-        this.puedeDisparar = false;
-        
-        console.log("Voy a crear la bala");
-
-        const direccion = this.scene.player.x < this.x ? -1 : 1;
-
-        console.log("Voy a crear la bala");
-
-        const bala =new Projectile(
-            this.scene,
-            this.x,
-            this.y,
-            "proyectile"
-        );
-
-        bala.disparar(direccion);
-
-        //detectar si la bala golpea al jugador
-
-        this.scene.physics.add.overlap(
-            bala,
-            this.scene.player, 
-            (bala, player) => {
-
-                player.recibirDaño(this.daño);
-
-                bala.destroy();
-            }
-        )
-
-        this.scene.time.delayedCall(1500, () => {
-            this.puedeDisparar = true;
-        });
-
-
-        if (this.atacando) return;
-
-        this.atacando = true;
-
-        
-        this.scene.time.delayedCall(800, () => {
-
-            this.atacando =  false;
-        });
-    }
-
-    
 }
 
 export default Enemy;

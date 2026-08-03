@@ -1,12 +1,12 @@
 import Phaser from "phaser";
-import attack from "./attack.js";
+import AttackHitbox from "./attackHitbox.js";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
 
     constructor(scene, x, y, texture) {
 
         super(scene, x, y, texture);
-        
+
         this.spawnX = x;
         this.spawnY = y;
 
@@ -17,9 +17,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.ataque = false;
         this.muerto = false;
+        this.recibiendoDaño = false;
 
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        this.body.setCollideWorldBounds(true);
 
 
 
@@ -35,8 +37,17 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     mover() {
 
+        if (this.recibiendoDaño) {
+            return;
+        }
+
         if (this.muerto) {
             return;
+        }
+
+        if (Phaser.Input.Keyboard.JustDown(this.teclas.atacar)
+        ){
+            this.atacar();
         }
 
         if(this.ataque){
@@ -45,7 +56,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         }
 
-        
         //const estabaEnElAire = !this.body.blocked.down;
         if (this.teclas.izquierda.isDown) {
 
@@ -95,81 +105,83 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         }
 
-        if (Phaser.Input.Keyboard.JustDown(this.teclas.atacar)
-        ){
-            this.atacar();
-        }
+
     }
 
 
-  atacar() {
+atacar() {
 
-    // Evita iniciar otro ataque si ya está atacando
-    if (this.ataque) return;
+    if (this.ataque || this.recibiendoDaño || this.muerto) {
+        return;
+    }
+
+    this.setVelocityX(0);
 
     this.ataque = true;
 
     this.play("atacar");
 
-    let offsetX = this.flipX ? -30 : 30;
+    const offsetX = this.flipX ? -30 : 30;
 
-    const hitbox = this.scene.add.zone(
+    const hitbox = new AttackHitbox(
+        this.scene,
         this.x + offsetX,
         this.y,
         40,
-        30
-    );
-
-    this.scene.physics.add.existing(hitbox);
-
-    hitbox.body.setAllowGravity(false);
-
-    // Hacer daño al enemigo
-    this.scene.physics.add.overlap(
-        hitbox,
-        this.scene.enemy,
-        (hitbox, enemigo) => {
-
-            enemigo.recibirDaño(this.daño);
-
-            hitbox.destroy();
-
-        },
-        null,
+        30,
+        this.daño,
         this
     );
 
-    // Destruir el hitbox después de un momento
-    this.scene.time.delayedCall(150, () => {
+    this.scene.physics.add.overlap(
 
-        if (hitbox.active) {
+        hitbox,
+
+        this.scene.enemies,
+
+        (hitbox, enemigo) => {
+
+            enemigo.recibirDaño(hitbox.damage);
+
             hitbox.destroy();
+
         }
 
-    });
+    );
 
 }
-    recibirDaño(daño) {
 
-        this.vida -= daño;
+recibirDaño(daño) {
 
-        console.log("vida de jugador:", this.vida);
+    if (this.muerto || this.recibiendoDaño) return;
+    this.ataque = false;
+    this.vida -= daño;
 
-        if (this.vida <= 0) {
+    if (this.vida <= 0) {
 
-            this.vida = 0;
+        this.vida = 0;
+        this.muerto = true;
 
-            this.muerto = true;
+        this.setVelocity(0,0);
 
-           this.setVelocity(0, 0);
+        this.play("playerDie");
 
-           this.play("playerDie");
-        }
     }
+    else {
+
+        this.recibiendoDaño = true;
+
+        this.setVelocity(0,0);
+
+        this.play("playerDamage");
+
+    }
+
+}
 
     respawn() {
         this.vida = 100;
-        
+
         this.setPosition(this.spawnX, this.spawnY);
 
         this.setVelocity(0, 0);
@@ -183,6 +195,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.setTexture("player");
 
         this.muerto = false;
+        this.recibiendoDaño = false;
+        this.ataque = false;
     }
 
 
