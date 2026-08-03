@@ -15,6 +15,10 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.daño = 20;
         this.atacando = false;
         this.puedeDisparar = true;
+        this.muerto = false;
+        this.limiteIzquierdo = 700;
+        this.limiteDerecho = 1100;
+        this.direccion = 1;
         
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -29,6 +33,11 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 }
 
     mover() {
+
+        if (this.muerto) {
+        this.setVelocity(0);
+        return;
+    }
          if (!this.scene.player || !this.scene.player.active) {
 
             this.setVelocityX(this.velocidad * this.direccion);
@@ -87,6 +96,14 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         // Siempre mirar hacia donde se mueve
         this.setFlipX(this.direccion === 1);
+        if (this.x <= this.limiteIzquierdo) {
+            this.direccion = 1;
+        }
+
+        if (this.x >= this.limiteDerecho) {
+            this.direccion = -1;
+        }
+
 
         // Cambiar de dirección al chocar
         if (this.body.blocked.right) {
@@ -99,13 +116,26 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
     recibirDaño(daño) {
 
-        this.vida -= daño;
+    if (this.muerto) return;
 
-        if (this.vida <= 0) {
-            this.destroy();
-        }
+    this.vida -= daño;
+
+    console.log("Vida enemigo:", this.vida);
+
+    if (this.vida <= 0) {
+
+        this.vida = 0;
+
+        this.muerto = true;
+
+        this.setVelocity(0, 0);
+
+        this.body.enable = false;
+
+        this.play("enemyDeath");
 
     }
+}
 
         //ataque del enemigo
     atacar() {
