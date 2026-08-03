@@ -21,7 +21,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         scene.add.existing(this);
         scene.physics.add.existing(this);
-        this.body.setCollideWorldBounds(true);
+        this.body.setCollideWorldBounds(false);
 
 
 
@@ -149,6 +149,21 @@ atacar() {
 
     );
 
+      this.scene.physics.add.overlap(
+
+      hitbox,
+
+      this.scene.boxes,
+
+      (hitbox, caja) => {
+
+          caja.romper();
+
+      }
+
+  );
+
+
 }
 
 recibirDaño(daño) {
@@ -176,7 +191,6 @@ recibirDaño(daño) {
         this.play("playerDamage");
 
     }
-
 }
 
     respawn() {

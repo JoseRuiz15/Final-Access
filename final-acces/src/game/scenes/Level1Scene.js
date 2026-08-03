@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import Player from "../objects/player.js";
 import Enemy from "../objects/enemy.js";
+import Box from "../objects/box.js";
 
 class Level1Scene extends Phaser.Scene {
 
@@ -19,6 +20,7 @@ class Level1Scene extends Phaser.Scene {
         this.load.image("parallax3", "/img/parallax_background_layer_3.png");
         this.load.image("parallax4", "/img/parallax_background_layer_4.png");
         this.load.image("parallax5", "/img/parallax_background_layer_5.png");
+
         // MAPA Y TILESETS
         this.load.tilemapTiledJSON(
             "level1",
@@ -29,6 +31,18 @@ class Level1Scene extends Phaser.Scene {
         this.load.image("decorations", "/tiles/decorations.png");
         this.load.image("box", "/tiles/box.png");
         this.load.image("walls", "/tiles/walls.png");
+
+        //CAJAS
+        this.load.spritesheet(
+            "crateBreak",
+            "/img/crateBreak.png",
+          {
+            frameWidth: 32,
+            frameHeight: 32
+          }
+
+        );
+
         // JUGADOR
         this.load.image(
             "player",
@@ -82,7 +96,6 @@ class Level1Scene extends Phaser.Scene {
 
 
         // ENEMIGO
-
         this.load.spritesheet(
             "enemyWalk",
             "/img/enemyWalk.png",
@@ -135,9 +148,7 @@ class Level1Scene extends Phaser.Scene {
 
         console.log("Nivel 1 iniciado");
 
-        // ==========================
         // FONDO PARALLAX
-        // ==========================
 
         this.bg1 = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, "parallax").setOrigin(0);
         this.bg2 = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, "parallax2").setOrigin(0);
@@ -175,6 +186,7 @@ class Level1Scene extends Phaser.Scene {
         this.bg3.setDepth(-3);
         this.bg4.setDepth(-2);
         this.bg5.setDepth(-1);
+
         //creacion del mapa
 
         const map = this.make.tilemap({ key: "level1" });
@@ -189,11 +201,6 @@ class Level1Scene extends Phaser.Scene {
             [groundTiles, decorationTiles, boxTiles]
         );
 
-        const cratesLayer = map.createLayer(
-            "Crates",
-            [groundTiles, decorationTiles, boxTiles]
-        );
-        cratesLayer.setCollisionByExclusion([-1]);
 
         const wallsLayer = map.createLayer(
             "Walls",
@@ -215,8 +222,18 @@ class Level1Scene extends Phaser.Scene {
         groundLayer.setCollisionByExclusion([-1]);
 
 
+
+
+
         // Camara y seguimiento del jugador
         this.cameras.main.setBounds(
+            0,
+            0,
+            map.widthInPixels,
+            map.heightInPixels
+        );
+
+        this.physics.world.setBounds(
             0,
             0,
             map.widthInPixels,
@@ -229,8 +246,6 @@ class Level1Scene extends Phaser.Scene {
             this.scale.width,
             this.scale.height
         );
-
-
 
 
         this.proyectiles = this.physics.add.group();
@@ -291,7 +306,7 @@ class Level1Scene extends Phaser.Scene {
 
         frames: this.anims.generateFrameNumbers("playerDamage", {
             start: 0,
-            end: 5 // Cambia este número según los cuadros que tenga tu spritesheet
+            end: 5
         }),
 
         frameRate: 12,
@@ -301,8 +316,8 @@ class Level1Scene extends Phaser.Scene {
 
         this.player = new Player(
             this,
-            300,
-            300,
+            60,
+            400,
             "player"
         );
 
@@ -379,7 +394,8 @@ class Level1Scene extends Phaser.Scene {
 
           frames: this.anims.generateFrameNumbers("enemyDamage", {
               start: 0,
-              end: 4 // o el último frame que tenga
+              end: 4
+
           }),
 
           frameRate: 12,
@@ -407,26 +423,18 @@ class Level1Scene extends Phaser.Scene {
 
         this.enemies = this.add.group();
 
-        const enemy1 = new Enemy(
-            this,
-            600,
-            300,
-            "enemyWalk"
-        );
+        const enemy1 = new Enemy(this,700,550,"enemyWalk");
+        enemy1.limiteIzquierdo = 670;
+        enemy1.limiteDerecho = 1100;
 
-        const enemy2 = new Enemy(
-            this,
-            1100,
-            300,
-            "enemyWalk"
-        );
+        const enemy2 = new Enemy(this,1100,550,"enemyWalk");
+        enemy2.limiteIzquierdo = 670;
+        enemy2.limiteDerecho = 1100;
 
-        const enemy3 = new Enemy(
-            this,
-            1700,
-            300,
-            "enemyWalk"
-        );
+        const enemy3 = new Enemy(this,1600,300,"enemyWalk");
+        enemy3.limiteIzquierdo = 1600;
+        enemy3.limiteDerecho = 2100;
+
 
         this.enemies.addMultiple([
             enemy1,
@@ -450,33 +458,16 @@ class Level1Scene extends Phaser.Scene {
 
       });
 
-      this.enemies.getChildren().forEach(enemy => {
+      //CREACION DE LAS CAJAS
+      this.boxes = this.physics.add.group();
 
-          enemy.on("animationcomplete-enemyDeath", () => {
+      this.boxes.add(new Box(this,780,210));
+      this.boxes.add(new Box(this,812,210));
+      this.boxes.add(new Box(this,844,210));
+      this.boxes.add(new Box(this,812,178));
 
-              const explosion = this.add.sprite(
+      this.boxes.add(new Box(this,920,435));
 
-                  enemy.x,
-                  enemy.y,
-                  "explosion"
-
-              );
-
-              explosion.play("explosion");
-
-              enemy.destroy();
-
-              explosion.on(
-
-                  "animationcomplete-explosion",
-
-                  () => explosion.destroy()
-
-              );
-
-          });
-
-      });
 
         //FISICAS DEL SUELO
 
@@ -491,12 +482,15 @@ class Level1Scene extends Phaser.Scene {
                 enemy,
                 groundLayer
             );
-
         });
 
         this.physics.add.collider(
-            this.player,
-            cratesLayer
+            this.boxes,
+            groundLayer
+        );
+        this.physics.add.collider(
+          this.boxes,
+          this.boxes
         );
 
         //aniamcion del proyectil
@@ -520,7 +514,19 @@ class Level1Scene extends Phaser.Scene {
         );
     }
 
+    mostrarExplosion(x, y) {
+        const explosion = this.add.sprite(x, y, "explosion");
+        explosion.play("explosion");
+        explosion.once("animationcomplete-explosion", () => explosion.destroy());
+    }
+
     update() {
+
+        if (this.player.active && this.player.y > 900) {
+            this.player.recibirDaño(9999);
+        }
+        console.log(this.player.y);
+
         if (this.player && this.player.active) {
             this.player.mover();
         }

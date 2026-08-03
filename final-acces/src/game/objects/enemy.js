@@ -10,7 +10,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.setScale(1.5);
 
         this.vida = 40;
-        this.velocidad = 70;
+        this.velocidad = 50;
         this.daño = 20;
 
         this.direccion = 1;
@@ -20,8 +20,9 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.recibiendoDaño = false;
         this.muerto = false;
 
-        this.limiteIzquierdo = 700;
+        this.limiteIzquierdo = 670;
         this.limiteDerecho = 1100;
+
 
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -98,17 +99,25 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
             this.play("enemyWalk", true);
         }
 
-        if (distancia < 250) {
+        if (distancia < 10) {
 
 
-            if (this.scene.player.x < this.x) {
+        if (this.scene.player.x < this.x) {
+
+            if (this.x > this.limiteIzquierdo) {
                 this.setVelocityX(-this.velocidad);
-                this.setFlipX(false);
             } else {
-
-                this.setVelocityX(this.velocidad);
-                this.setFlipX(true);
+                this.setVelocityX(0);
             }
+
+        } else {
+
+            if (this.x < this.limiteDerecho) {
+                this.setVelocityX(this.velocidad);
+            } else {
+                this.setVelocityX(0);
+            }
+        }
             return;
         }
 
@@ -146,10 +155,11 @@ recibirDaño(daño) {
 
         this.vida = 0;
         this.muerto = true;
-
         this.setVelocity(0);
+        this.body.enable = false;
 
-        this.play("enemyDeath");
+        this.scene.mostrarExplosion(this.x, this.y);
+        this.destroy();
 
     } else {
 
@@ -223,4 +233,3 @@ recibirDaño(daño) {
 }
 
 export default Enemy;
-
