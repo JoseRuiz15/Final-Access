@@ -14,6 +14,7 @@ class Level1Scene extends Phaser.Scene {
 
 
     preload() {
+        console.log(this.textures.get("playerJump").frameTotal);
 
           // FONDO PARALLAX
         this.load.image("parallax", "/img/parallax_background_layer_1.png");
@@ -71,11 +72,27 @@ class Level1Scene extends Phaser.Scene {
 
         this.load.spritesheet(
             "playerWalk",
-            "/img/playerWalk.png",
+            "/img/PlayerWalk.png",
             {
                 frameWidth: 32,
                 frameHeight: 32
             }
+        );
+        //hud 
+        
+        this.load.image(
+            "hudObjetivo",
+            "/img/hubObjetivo.png"
+        );
+
+        this.load.image(
+            "hudTiempo",
+            "/img/hubTiempo.png"
+        );
+
+        this.load.image(
+            "hudVida",
+            "/img/hubVida.png"
         );
 
         this.load.spritesheet(
@@ -270,6 +287,31 @@ class Level1Scene extends Phaser.Scene {
 
         this.proyectiles = this.physics.add.group();
 
+        //hud
+        
+        // Cuadro de vidas
+this.hudVida = this.add.image(170, 70, "hudVida")
+    .setScrollFactor(0)
+    .setDepth(1000);
+
+this.hudVida.setDisplaySize(300, 130);
+
+
+// Cuadro del objetivo
+this.hudObjetivo = this.add.image(640, 70, "hudObjetivo")
+    .setScrollFactor(0)
+    .setDepth(1000);
+
+this.hudObjetivo.setDisplaySize(300, 130);
+
+
+// Cuadro del tiempo
+this.hudTiempo = this.add.image(1110, 70, "hudTiempo")
+    .setScrollFactor(0)
+    .setDepth(1000);
+
+this.hudTiempo.setDisplaySize(300, 130);
+
         // ANIMACIONES DEL JUGADOR
 
         this.anims.create({
@@ -284,6 +326,7 @@ class Level1Scene extends Phaser.Scene {
             repeat: -1
         });
 
+        
         this.anims.create ({
             key: "saltar",
 
@@ -332,6 +375,8 @@ class Level1Scene extends Phaser.Scene {
         frameRate: 12,
         repeat: 0
         });
+
+        
 
 
         this.player = new Player(
