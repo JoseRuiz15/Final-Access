@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import Player from "../objects/player.js";
 import Enemy from "../objects/enemy.js";
 import Box from "../objects/box.js";
+import Key from "../objects/key.js";
 
 class Level1Scene extends Phaser.Scene {
 
@@ -42,6 +43,25 @@ class Level1Scene extends Phaser.Scene {
           }
 
         );
+
+        //LLAVES
+        this.load.image("key1", "/img/keys/Key1-SILVER.png",
+
+        );
+        this.load.spritesheet("key2", "/img/keys/Key2-SILVER.png",
+          {
+            frameWidth: 10,
+            frameHeight: 28,
+          }
+        );
+
+        this.load.spritesheet("key6", "/img/keys/Key6-SILVER.png",
+          {
+            frameWidth: 16,
+            frameHeight: 35
+          }
+        );
+
 
         // JUGADOR
         this.load.image(
@@ -419,6 +439,19 @@ class Level1Scene extends Phaser.Scene {
 
         });
 
+       //Animacion de las llaves
+      this.anims.create({
+        key: "key2Spin",
+
+        frames: this.anims.generateFrameNumbers("key2",{
+          start:0,
+          end: 11
+        }),
+
+        frameRate: 12,
+        repeat: -1
+      });
+
         // ENEMIGO
 
         this.enemies = this.add.group();
@@ -461,12 +494,27 @@ class Level1Scene extends Phaser.Scene {
       //CREACION DE LAS CAJAS
       this.boxes = this.physics.add.group();
 
-      this.boxes.add(new Box(this,780,210));
+      this.boxes.add(
+        new Box(this,780,210,{
+          texture: "key2",
+          grupo: "keys",
+          color: "silver",
+          efecto: "ninguno",
+          correcta: true
+        }));
       this.boxes.add(new Box(this,812,210));
       this.boxes.add(new Box(this,844,210));
       this.boxes.add(new Box(this,812,178));
 
       this.boxes.add(new Box(this,920,435));
+
+
+      //LLAVES
+      this.keys = this.physics.add.group({
+        classType: Key
+      });
+
+
 
 
         //FISICAS DEL SUELO
@@ -492,6 +540,12 @@ class Level1Scene extends Phaser.Scene {
           this.boxes,
           this.boxes
         );
+
+        this.physics.add.collider(
+          this.keys,
+          groundLayer
+        );
+
 
         //aniamcion del proyectil
         this.anims.create({

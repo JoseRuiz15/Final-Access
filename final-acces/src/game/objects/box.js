@@ -1,8 +1,10 @@
 import Phaser from "phaser";
+import Key from "../objects/key.js";
 
 class Box extends Phaser.Physics.Arcade.Sprite {
 
-    constructor(scene, x, y) {
+    constructor(scene, x, y, keyData = null ) {
+
 
         super(scene, x, y, "crateBreak");
 
@@ -27,11 +29,30 @@ class Box extends Phaser.Physics.Arcade.Sprite {
 
         }
 
+
         this.on("animationcomplete-boxBreak", () => {
 
-          this.destroy();
+            if (this.keyData) {
 
-      });
+                const llave = new Key(
+                    this.scene,
+                    this.x,
+                    this.y,
+                    this.keyData.texture,
+                    this.keyData
+                );
+                llave.setVelocityY(-220);
+                llave.setVelocityX(
+                    Phaser.Math.Between(-40, 40)
+                );
+                
+                this.scene.keys.add(llave);
+
+            }
+
+            this.destroy();
+
+        });
 
 
 
@@ -40,6 +61,10 @@ class Box extends Phaser.Physics.Arcade.Sprite {
 
         // Mostrar la caja intacta
         this.setFrame(0);
+
+        this.keyData = keyData;
+
+
 
     }
 
