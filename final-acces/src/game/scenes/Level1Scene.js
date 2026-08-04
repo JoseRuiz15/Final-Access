@@ -29,6 +29,15 @@ class Level1Scene extends Phaser.Scene {
     this.load.image('box', '/tiles/box.png')
     this.load.image('walls', '/tiles/walls.png')
 
+    //TUTORIAL
+
+    this.load.image('imgSaltar', '/img/imgSaltar.png')
+    this.load.image('imgDerecha', '/img/imgDerecha.png')
+    this.load.image('imgIzquierda', '/img/imgIzquierda.png')
+    this.load.image('imgAtacar','/img/imgAtacar.png')
+    this.load.image('imgInsertarLlave', '/img/imgInsertarLlave.png')
+
+
     //CAJAS
     this.load.spritesheet('crateBreak', '/img/crateBreak.png', {
       frameWidth: 32,
@@ -50,6 +59,9 @@ class Level1Scene extends Phaser.Scene {
       frameHeight: 35,
     })
 
+    //Puerta
+    this.load.image("greenDoor", "/img/greenDoor.png")
+    this.load.image("redDoor","/img/redDoor.png")
     // JUGADOR
     this.load.image('player', '/img/defaultCharacter.png')
 
@@ -149,8 +161,8 @@ class Level1Scene extends Phaser.Scene {
 
     const map = this.make.tilemap({ key: 'level1' })
     const groundTiles = map.addTilesetImage('ground', 'ground')
-    this.doors = map.getObjectLayer('Door');
-    console.log(this.doors);
+    this.doors = map.getObjectLayer('DoorObjet');
+    console.log(this.doors.objects[0].properties);
     const decorationTiles = map.addTilesetImage('decorations', 'decorations')
     const boxTiles = map.addTilesetImage('box', 'box')
     const wallTiles = map.addTilesetImage('walls', 'walls')
@@ -164,11 +176,36 @@ class Level1Scene extends Phaser.Scene {
 
     wallsLayer.setCollisionByExclusion([-1])
 
-    map.createLayer('Door', [groundTiles, decorationTiles, boxTiles])
+   this.doorLayer = map.createLayer('Door', [groundTiles, decorationTiles, boxTiles])
 
     const groundLayer = map.createLayer('Ground', [groundTiles, decorationTiles, boxTiles])
 
+    const puerta = this.doors.objects[0];
+
+      this.puertaSprite = this.add.image(
+          puerta.x + 32,
+          puerta.y + 32,
+          'redDoor'
+      );
+
     groundLayer.setCollisionByExclusion([-1])
+
+
+    this.imgSaltar = this.add.image(530,800, 'imgSaltar')
+    this.imgSaltar.setScale(0.25)
+
+    this.imgDerecha = this.add.image(300,600, 'imgDerecha')
+    this.imgDerecha.setScale(0.25)
+
+     this.imgIzquierda = this.add.image(150,600, 'imgIzquierda')
+    this.imgIzquierda.setScale(0.25)
+
+    this.imgAtacar = this.add.image(700,650, 'imgAtacar')
+    this.imgAtacar.setScale(0.25)
+
+    this.imgInsertarLlave = this.add.image(1600,500, 'imgInsertarLlave')
+    this.imgInsertarLlave.setScale(0.25)
+
 
 
     // Camara y seguimiento del jugador
@@ -242,7 +279,7 @@ class Level1Scene extends Phaser.Scene {
       repeat: 0,
     })
 
-    this.player = new Player(this, 60, 400, 'player')
+    this.player = new Player(this, 230, 600, 'player')
 
     this.player.on('animationcomplete-playerDie', () => {
       this.player.body.enable = false
@@ -340,7 +377,7 @@ class Level1Scene extends Phaser.Scene {
 
     this.enemies = this.add.group()
 
-    const enemy1 = new Enemy(this, 700, 550, 'enemyWalk')
+    const enemy1 = new Enemy(this, 700, 650, 'enemyWalk')
     enemy1.vida = 20
     enemy1.limiteIzquierdo = 670
     enemy1.limiteDerecho = 1100
@@ -350,7 +387,7 @@ class Level1Scene extends Phaser.Scene {
     enemy2.limiteIzquierdo = 670
     enemy2.limiteDerecho = 1100
 
-    const enemy3 = new Enemy(this, 1600, 300, 'enemyWalk')
+    const enemy3 = new Enemy(this, 1500, 650, 'enemyWalk')
     enemy3.vida = 20
     enemy3.limiteIzquierdo = 1600
     enemy3.limiteDerecho = 2100
@@ -450,6 +487,9 @@ class Level1Scene extends Phaser.Scene {
   }
 
   update() {
+
+    const presionoG = Phaser.Input.Keyboard.JustDown(this.teclaG);
+
     if (this.player.active && this.player.y > 900) {
       this.player.recibirDaño(9999)
     }
@@ -493,10 +533,60 @@ class Level1Scene extends Phaser.Scene {
       this.imgRecogerLlave.setVisible(false)
     }
 
-    if (Phaser.Input.Keyboard.JustDown(this.teclaG) && this.llaveCercana) {
+    if (presionoG && this.llaveCercana) {
       this.player.recogerLlave(this.llaveCercana)
       this.llaveCercana = null
     }
+
+    this.puertaCercana = null
+
+    this.doors.objects.forEach((puerta) => {
+
+        const distancia = Phaser.Math.Distance.Between(
+            this.player.x,
+            this.player.y,
+            puerta.x,
+            puerta.y
+        )
+
+        if (distancia < 80) {
+            this.puertaCercana = puerta
+           if (distancia < 80) {
+
+                this.puertaCercana = puerta
+
+                const llaveNecesaria = puerta.properties.find(
+                    p => p.name === "llave_necesaria"
+                )?.value
+
+                const tieneLlave = this.player.llaves.some(
+                    llave => llave.texture === llaveNecesaria
+                )
+
+                console.log("Necesita:", llaveNecesaria)
+                console.log("¿Tiene la llave?", tieneLlave)
+                console.log(
+                    Phaser.Input.Keyboard.JustDown(this.teclaG),
+                    tieneLlave,
+                    puerta.abierta
+                );
+
+                if (
+                    presionoG &&
+                    tieneLlave &&
+                    !puerta.abierta
+                ) {
+                    console.log("Puerta abierta");
+
+                    this.puertaSprite.setTexture("greenDoor");
+
+                    puerta.abierta = true;
+                }
+            }
+
+        }
+
+    })
   }
 }
 

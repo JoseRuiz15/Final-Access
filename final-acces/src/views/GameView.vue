@@ -18,9 +18,9 @@ onMounted(() => {
 
         pixelArt: true,
 
-        render: {
-            antialias: false
-        },
+       render: {
+           antialias: false
+       },
 
         scale: {
             mode: Phaser.Scale.ENVELOP,
@@ -31,7 +31,7 @@ onMounted(() => {
             default: 'arcade',
             arcade: {
                 gravity: { y: 800 },
-                debug: true
+                debug: false
             }
         },
 
