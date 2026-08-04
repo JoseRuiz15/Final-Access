@@ -19,6 +19,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.muerto = false;
         this.recibiendoDaño = false;
 
+        //Inventario de la llave
+        this.llaves = [];
+
         scene.add.existing(this);
         scene.physics.add.existing(this);
         this.body.setCollideWorldBounds(false);
@@ -171,6 +174,20 @@ atacar() {
   );
 
 
+}
+recogerLlave(llave) {
+
+    this.llaves.push({
+        texture:llave.texture.key,
+        grupo: llave.grupo,
+        color: llave.color,
+        efecto: llave.efecto,
+        correcta: llave.correcta
+    });
+
+    console.log("Inventario:", this.llaves);
+
+    llave.destroy();
 }
 
 recibirDaño(daño) {

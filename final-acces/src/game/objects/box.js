@@ -10,6 +10,7 @@ class Box extends Phaser.Physics.Arcade.Sprite {
 
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        console.log(this.body.constructor.name);
 
         if (!scene.anims.exists("boxBreak")) {
 
@@ -41,12 +42,17 @@ class Box extends Phaser.Physics.Arcade.Sprite {
                     this.keyData.texture,
                     this.keyData
                 );
-                llave.setVelocityY(-220);
-                llave.setVelocityX(
-                    Phaser.Math.Between(-40, 40)
-                );
 
-                this.scene.keys.add(llave);
+            //salto de la llave
+            llave.y -= 100;
+
+            this.scene.time.delayedCall(0, () => {
+                llave.setVelocityY(-150);
+                llave.setVelocityX(0);
+
+            });
+
+            this.scene.keys.add(llave);
 
             }
 
