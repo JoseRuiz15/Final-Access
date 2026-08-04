@@ -76,7 +76,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.setFlipX(false);
 
             if (this.body.blocked.down) {
-                this.play("caminar", true);
+                //this.play("caminar", true);
+                const anim = this.scene.anims.get("caminar");
+
+                if (!anim) {
+                    console.error("No existe la animación caminar");
+                } else {
+                    this.play("caminar", true);
+                }
             }
 
         }
@@ -101,7 +108,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         if (!this.body.blocked.down && !this.ataque) {
 
-            this.play("saltar", true)
+            this.play("saltar", true);
 
         }
 
