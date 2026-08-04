@@ -2,6 +2,7 @@
 import { onMounted, onBeforeUnmount } from 'vue'
 import Phaser from 'phaser'
 import Level1Scene from '@/game/scenes/Level1Scene.js'
+import Hud from "@/components/HUD.vue";
 
 let game
 
@@ -24,7 +25,7 @@ onMounted(() => {
         scale: {
             mode: Phaser.Scale.ENVELOP,
             autoCenter: Phaser.Scale.CENTER_BOTH
-        },  
+        },
 
         physics: {
             default: 'arcade',
@@ -51,6 +52,35 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+
+  <div
+    class="relative"
+    style="
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    "
+  >
+
+    <!-- Phaser -->
+    <div
+      id="game-container"
+      style="
+        width: 100%;
+        height: 100%;
+      "
+    ></div>
+
+    <!-- HUD -->
+    <Hud />
+
+  </div>
+
+</template>
+
+
+<!--
+<template>
   <div
     id="game-container"
     style="
@@ -60,3 +90,6 @@ onBeforeUnmount(() => {
     "
   ></div>
 </template>
+-->
+
+

@@ -72,28 +72,14 @@ class Level1Scene extends Phaser.Scene {
 
         this.load.spritesheet(
             "playerWalk",
-            "/img/PlayerWalk.png",
+            "/img/playerWalk.png",
             {
                 frameWidth: 32,
                 frameHeight: 32
             }
         );
-        //hud 
-        
-        this.load.image(
-            "hudObjetivo",
-            "/img/hubObjetivo.png"
-        );
+        //hud
 
-        this.load.image(
-            "hudTiempo",
-            "/img/hubTiempo.png"
-        );
-
-        this.load.image(
-            "hudVida",
-            "/img/hubVida.png"
-        );
 
         this.load.spritesheet(
             "playerJump",
@@ -184,31 +170,27 @@ class Level1Scene extends Phaser.Scene {
     create() {
 
         console.log("Nivel 1 iniciado");
+        this.cameras.main.setZoom(0.8);
 
         // FONDO PARALLAX
 
-        this.bg1 = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, "parallax").setOrigin(0);
-        this.bg2 = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, "parallax2").setOrigin(0);
-        this.bg3 = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, "parallax3").setOrigin(0);
-        this.bg4 = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, "parallax4").setOrigin(0);
-        this.bg5 = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, "parallax5").setOrigin(0);
+        // Cada capa cubre exactamente el viewport. Se conserva el zoom de la
+        // cámara, compensando su reducción solamente en el fondo.
+        const fondoAncho = this.scale.width / this.cameras.main.zoom;
+        const fondoAlto = this.scale.height / this.cameras.main.zoom;
+        const fondoX = (this.scale.width - fondoAncho) / 2;
+        const fondoY = (this.scale.height - fondoAlto) / 2;
 
-        // Escala para que ocupen toda la pantalla
-        const scale = Math.max(
-            this.scale.width / 512,
-            this.scale.height / 288
-        );
+        this.bg1 = this.add.tileSprite(fondoX, fondoY, fondoAncho, fondoAlto, "parallax").setOrigin(0);
+        this.bg2 = this.add.tileSprite(fondoX, fondoY, fondoAncho, fondoAlto, "parallax2").setOrigin(0);
+        this.bg3 = this.add.tileSprite(fondoX, fondoY, fondoAncho, fondoAlto, "parallax3").setOrigin(0);
+        this.bg4 = this.add.tileSprite(fondoX, fondoY, fondoAncho, fondoAlto, "parallax4").setOrigin(0);
+        this.bg5 = this.add.tileSprite(fondoX, fondoY, fondoAncho, fondoAlto, "parallax5").setOrigin(0);
 
-        this.bg1.setScale(scale);
-        this.bg2.setScale(scale);
-        this.bg3.setScale(scale);
-        this.bg4.setScale(scale);
-        this.bg5.setScale(scale);
-
-        this.bg5.y = 100;
-        this.bg4.y = 90;
-        this.bg3.y = 80;
-        this.bg2.y = 70;
+        this.bg5.y = fondoY + 150;
+        this.bg4.y = fondoY + 120;
+        this.bg3.y = fondoY + 80;
+        this.bg2.y = fondoY + 70;
 
         // Mantenerlas fijas en la cámara
         this.bg1.setScrollFactor(0);
@@ -287,30 +269,7 @@ class Level1Scene extends Phaser.Scene {
 
         this.proyectiles = this.physics.add.group();
 
-        //hud
-        
-        // Cuadro de vidas
-this.hudVida = this.add.image(170, 70, "hudVida")
-    .setScrollFactor(0)
-    .setDepth(1000);
 
-this.hudVida.setDisplaySize(300, 130);
-
-
-// Cuadro del objetivo
-this.hudObjetivo = this.add.image(640, 70, "hudObjetivo")
-    .setScrollFactor(0)
-    .setDepth(1000);
-
-this.hudObjetivo.setDisplaySize(300, 130);
-
-
-// Cuadro del tiempo
-this.hudTiempo = this.add.image(1110, 70, "hudTiempo")
-    .setScrollFactor(0)
-    .setDepth(1000);
-
-this.hudTiempo.setDisplaySize(300, 130);
 
         // ANIMACIONES DEL JUGADOR
 
@@ -326,7 +285,7 @@ this.hudTiempo.setDisplaySize(300, 130);
             repeat: -1
         });
 
-        
+
         this.anims.create ({
             key: "saltar",
 
@@ -376,7 +335,7 @@ this.hudTiempo.setDisplaySize(300, 130);
         repeat: 0
         });
 
-        
+
 
 
         this.player = new Player(
@@ -400,7 +359,7 @@ this.hudTiempo.setDisplaySize(300, 130);
         });
 
 
-        this.cameras.main.startFollow(this.player);
+      this.cameras.main.startFollow(this.player);
 
 
       this.player.on("animationcomplete-atacar", () => {
@@ -581,10 +540,17 @@ this.hudTiempo.setDisplaySize(300, 130);
             this.boxes,
             groundLayer
         );
-        this.physics.add.collider(
-          this.boxes,
-          this.boxes
-        );
+
+        this.boxes.getChildren().forEach(box => {
+    console.log(box.body.allowGravity, box.body.immovable);
+});
+ const cajas = this.boxes.getChildren();
+
+for (let i = 0; i < cajas.length; i++) {
+    for (let j = i + 1; j < cajas.length; j++) {
+        this.physics.add.collider(cajas[i], cajas[j]);
+    }
+}
 
         this.physics.add.collider(
           this.keys,

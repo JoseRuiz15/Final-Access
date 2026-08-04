@@ -45,7 +45,7 @@ class Box extends Phaser.Physics.Arcade.Sprite {
                 llave.setVelocityX(
                     Phaser.Math.Between(-40, 40)
                 );
-                
+
                 this.scene.keys.add(llave);
 
             }
@@ -64,7 +64,10 @@ class Box extends Phaser.Physics.Arcade.Sprite {
 
         this.keyData = keyData;
 
-
+console.log(
+    "Gravity:", this.body.allowGravity,
+    "Immovable:", this.body.immovable
+);
 
     }
 
