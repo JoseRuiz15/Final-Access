@@ -149,9 +149,12 @@ class Level1Scene extends Phaser.Scene {
 
     const map = this.make.tilemap({ key: 'level1' })
     const groundTiles = map.addTilesetImage('ground', 'ground')
+    this.doors = map.getObjectLayer('Door');
+    console.log(this.doors);
     const decorationTiles = map.addTilesetImage('decorations', 'decorations')
     const boxTiles = map.addTilesetImage('box', 'box')
     const wallTiles = map.addTilesetImage('walls', 'walls')
+
 
     //creacion de capas del mapa
 
@@ -167,6 +170,7 @@ class Level1Scene extends Phaser.Scene {
 
     groundLayer.setCollisionByExclusion([-1])
 
+
     // Camara y seguimiento del jugador
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
 
@@ -175,6 +179,7 @@ class Level1Scene extends Phaser.Scene {
     this.cameras.main.setViewport(0, 0, this.scale.width, this.scale.height)
 
     this.proyectiles = this.physics.add.group()
+
 
     // ANIMACIONES DEL JUGADOR
 
@@ -433,6 +438,9 @@ class Level1Scene extends Phaser.Scene {
       player.recibirDaño(20)
       proyectil.destroy()
     })
+
+
+
   }
 
   mostrarExplosion(x, y) {
