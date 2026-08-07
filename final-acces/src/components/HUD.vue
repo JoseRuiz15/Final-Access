@@ -3,6 +3,7 @@
 //aqui empieza el tiempo
 
 import { ref, computed, onMounted, onUnmounted } from "vue";
+import { useGameStore } from "@/stores/game";
 
 const tiempo = ref(285); // 5 minutos = 300 segundos
 
@@ -30,7 +31,19 @@ onUnmounted(() => {
   clearInterval(intervalo);
 });
 // aqui termina
-const vidas = 5
+//vida 
+
+const gameStore = useGameStore();
+
+const vidas = computed(() => gameStore.vidas);
+
+//llaves
+
+const llaves = computed(() => gameStore.llaves);
+
+//enemigos
+
+const enemigos = computed(() => gameStore.enemigos);
 </script>
 <template>
   <div class="absolute top-5 left-0 w-full flex justify-center items-center gap-12 pointer-events-none">
@@ -81,7 +94,7 @@ const vidas = 5
         LLAVES
       </p>
       <p class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold ml-[190px] mt-[10px] text-white text-shadow-[0_0_40px_#00D9FF]">
-        0/1
+        {{ llaves }}/1
       </p>
     </div>
 
@@ -103,7 +116,7 @@ const vidas = 5
         ENEMIGOS
       </p>
      <p class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold  mt-[50px] ml-[80px] text-white text-shadow-[0_0_40px_#00D9FF]">
-        0/3
+        {{ enemigos }}/3
       </p>
     
     </div>

@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import Projectile from "./projectile";
+import { useGameStore } from "@/stores/game.js";
 
 class Enemy extends Phaser.Physics.Arcade.Sprite {
 
@@ -19,6 +20,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.puedeDisparar = true;
         this.recibiendoDaño = false;
         this.muerto = false;
+        this.gameStore = useGameStore();
 
         this.limiteIzquierdo = 670;
         this.limiteDerecho = 1100;
@@ -160,6 +162,8 @@ recibirDaño(daño) {
 
         this.scene.mostrarExplosion(this.x, this.y);
         this.destroy();
+
+        this.gameStore.enemigos++;
 
     } else {
 

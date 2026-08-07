@@ -279,7 +279,9 @@ class Level1Scene extends Phaser.Scene {
       repeat: 0,
     })
 
-    this.player = new Player(this, 230, 600, 'player')
+    this.player = new Player(this, 230, 600, 'player');
+
+    this.registry.set("vidas", 5);
 
     this.player.on('animationcomplete-playerDie', () => {
       this.player.body.enable = false

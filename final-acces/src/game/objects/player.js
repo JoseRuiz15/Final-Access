@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import AttackHitbox from "./attackHitbox.js";
+import { useGameStore } from "@/stores/game.js";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
 
@@ -12,6 +13,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.setDisplaySize(48, 48);
         this.vida = 100;
+        this.gameStore = useGameStore();
+        this.vidas = 5;
         this.velocidad = 160;
         this.daño = 20;
 
@@ -185,6 +188,8 @@ recogerLlave(llave) {
         correcta: llave.correcta
     });
 
+    this.gameStore.llaves = this.llaves.length;
+
     console.log("Inventario:", this.llaves);
 
     llave.destroy();
@@ -199,6 +204,8 @@ recibirDaño(daño) {
     if (this.vida <= 0) {
 
         this.vida = 0;
+        this.vidas--;
+        this.gameStore.vidas = this.vidas;
         this.muerto = true;
 
         this.setVelocity(0,0);
