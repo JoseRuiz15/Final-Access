@@ -14,7 +14,7 @@ class Level1Scene extends Phaser.Scene {
   preload() {
     console.log(this.textures.get('playerJump').frameTotal)
 
-    
+
     // FONDO PARALLAX
     this.load.image('parallax', '/img/parallax_background_layer_1.png')
     this.load.image('parallax2', '/img/parallax_background_layer_2.png')
@@ -137,12 +137,13 @@ class Level1Scene extends Phaser.Scene {
     this.bg3 = this.add.tileSprite(fondoX, fondoY, fondoAncho, fondoAlto, 'parallax3').setOrigin(0)
     this.bg4 = this.add.tileSprite(fondoX, fondoY, fondoAncho, fondoAlto, 'parallax4').setOrigin(0)
     this.bg5 = this.add.tileSprite(fondoX, fondoY, fondoAncho, fondoAlto, 'parallax5').setOrigin(0)
-    this.bg5.setScale(1.2);
 
-    this.bg5.y = fondoY + 150
-    this.bg4.y = fondoY + 140
-    this.bg3.y = fondoY + 80
-    this.bg2.y = fondoY + 70
+
+    this.bg5.y = fondoY + 100
+    this.bg4.y = fondoY + 110
+    //this.bg3.y = fondoY + 80
+    //this.bg2.y = fondoY + 70
+
 
     // Mantenerlas fijas en la cámara
     this.bg1.setScrollFactor(0)
