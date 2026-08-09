@@ -14,6 +14,7 @@ class Level1Scene extends Phaser.Scene {
   preload() {
     console.log(this.textures.get('playerJump').frameTotal)
 
+    
     // FONDO PARALLAX
     this.load.image('parallax', '/img/parallax_background_layer_1.png')
     this.load.image('parallax2', '/img/parallax_background_layer_2.png')
