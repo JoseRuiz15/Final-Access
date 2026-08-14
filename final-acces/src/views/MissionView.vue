@@ -1,8 +1,12 @@
 <script setup>
 import { ref, onMounted} from 'vue'
 import { useRouter } from 'vue-router'
+import musicLevel1 from '@/assets/music/musicLevel1.mp3'
 
 const router = useRouter()
+const musica = new Audio(musicLevel1)
+musica.loop = true
+musica.volume = 0.1
 
 
     const textoCompleto = "Para pasar el nivel necesitas esta Llave de plata del grupo comun la cual podras encontrar en cajas que tendras que destruir."
@@ -20,16 +24,17 @@ const router = useRouter()
             }
         }, 40)
 
-    } 
-    
+    }
+
     onMounted(() => {
         escribirTexto()
     })
 
     function irAlJuego() {
+        musica.play()
         router.push('/game')
     }
-   
+
 </script>
 
 

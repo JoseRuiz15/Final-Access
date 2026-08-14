@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { onMounted } from 'vue'
+//import { onMounted } from 'vue'
 const mostrarConfirmacion = ref(false)
 const router = useRouter()
 
@@ -43,9 +43,9 @@ const personajes = [
   }
 ]
 
-onMounted(() => {
-  initFlowbite()
-})
+//onMounted(() => {
+  //initFlowbite()
+//})
 
 </script>
 
@@ -67,7 +67,7 @@ onMounted(() => {
           <div class="w-[100px] h-[100px] border-3 border-[#444665] rounded-lg overflow-hidden">
             <img src="/img/perfil.png" alt="imagen de perfil" class="w-full h-full object-cover" />
           </div>
-          <div class="flex flex-col ml-10"> 
+          <div class="flex flex-col ml-10">
             <p class="text-white text-[30px] font-pixel">DIN_03</p>
             <p class="text-[#FB00FF] text-[14px] font-pixel mt-1">Nivel 1</p>
           </div>

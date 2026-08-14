@@ -1,9 +1,9 @@
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
 import Phaser from 'phaser'
-import Level1Scene from '@/game/scenes/Level1Scene.js'
 import Hud from "@/components/HUD.vue";
-
+import Level1Scene from '@/game/scenes/Level1Scene.js'
+import Level2Scene from '@/game/scenes/Level2Scene.js'
 let game
 
 onMounted(() => {
@@ -35,7 +35,7 @@ onMounted(() => {
             }
         },
 
-        scene: Level1Scene
+        scene: Level2Scene
     }
 
     game = new Phaser.Game(config)
