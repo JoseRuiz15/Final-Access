@@ -1,5 +1,7 @@
 import Phaser from 'phaser'
 import Player from '../objects/player'
+import Enemy from '../objects/enemy'
+import Box from '../objects/box'
 
 class Level2Scene extends Phaser.Scene {
     constructor() {
@@ -27,6 +29,14 @@ class Level2Scene extends Phaser.Scene {
       this.load.spritesheet('playerWalk', '/img/playerWalk.png', {
           frameWidth: 32,
           frameHeight: 32
+      })
+      this.load.spritesheet('playerJump', '/img/playerJump.png',{
+          frameWidth: 32,
+          frameHeight: 32
+      })
+      this.load.spritesheet('playerAttack.png','/img/playerAttack.png', {
+        frameWidth: 32,
+        frameHeight: 32
       })
 
 
@@ -93,6 +103,38 @@ class Level2Scene extends Phaser.Scene {
 
     //CREAR PLAYER
     this.player = new Player(this, 230, 600, 'player')
+
+    //Animaciones Jugador
+    this.anims.create({
+      key: 'caminar',
+      frames: this.anims.generateFrameNumbers ('playerWalk',{
+        start: 0,
+        end: 7,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    })
+
+    this.anims.create({
+      key: 'saltar',
+      frames: this.anims.generateFrameNumbers('playerJump',{
+        start: 0,
+        end: 6,
+      }),
+      frameRate: 3,
+      repeat: 0,
+    })
+
+    this.anims.create({
+      key: 'atacar',
+      frames: this.anims.generateFrameNumbers('playerAttack', {
+        start: 0,
+        end: 12,
+      }),
+      frameRate: 18,
+      repeat: 0,
+    })
+
     //Colision del player con el piso
     this.physics.add.collider(this.player, groundLayer)
     //Movimiento de camara para el jugador
