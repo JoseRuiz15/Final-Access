@@ -65,6 +65,9 @@ class Level2Scene extends Phaser.Scene {
     this.bg4.setScrollFactor(0)
     this.bg5.setScrollFactor(0)
 
+    //this.bg5.y = fondoY + 100
+
+
 
   // MAPA
     const map = this.make.tilemap({ key: 'level2' })
