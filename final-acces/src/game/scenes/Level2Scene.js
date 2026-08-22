@@ -65,7 +65,8 @@ class Level2Scene extends Phaser.Scene {
     this.bg4.setScrollFactor(0)
     this.bg5.setScrollFactor(0)
 
-    //this.bg5.y = fondoY + 100
+    this.bg2.y = fondoY - 80
+    this.bg4.y = fondoY + 50
 
 
 
