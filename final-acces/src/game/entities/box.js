@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import Key from "../objects/key.js";
+import Key from "./key.js";
 
 class Box extends Phaser.Physics.Arcade.Sprite {
 

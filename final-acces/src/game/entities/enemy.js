@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import Projectile from "./projectile";
+import Projectile from "../factories/projectile";
 import { useGameStore } from "@/stores/game.js";
 
 class Enemy extends Phaser.Physics.Arcade.Sprite {

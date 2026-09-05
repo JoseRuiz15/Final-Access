@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
-import Player from '../objects/player'
-import Enemy from '../objects/enemy'
-import Box from '../objects/box'
+import Player from '../entities/player'
+import Enemy from '../entities/enemy'
+import Box from '../entities/box'
 
 class Level2Scene extends Phaser.Scene {
     constructor() {
@@ -34,8 +34,8 @@ class Level2Scene extends Phaser.Scene {
           frameWidth: 32,
           frameHeight: 32
       })
-      this.load.spritesheet('playerAttack.png','/img/playerAttack.png', {
-        frameWidth: 32,
+      this.load.spritesheet('playerAttack','/img/playerAttack.png', {
+        frameWidth: 48,
         frameHeight: 32
       })
 

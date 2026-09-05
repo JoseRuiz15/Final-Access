@@ -1,8 +1,8 @@
 import Phaser from 'phaser'
-import Player from '../objects/player.js'
-import Enemy from '../objects/enemy.js'
-import Box from '../objects/box.js'
-import Key from '../objects/key.js'
+import Player from '../entities/player.js'
+import Enemy from '../entities/enemy.js'
+import Box from '../entities/box.js'
+import Key from '../entities/key.js'
 
 class Level1Scene extends Phaser.Scene {
   constructor() {
