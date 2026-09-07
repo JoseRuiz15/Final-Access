@@ -34,8 +34,8 @@ class Level2Scene extends Phaser.Scene {
           frameWidth: 32,
           frameHeight: 32
       })
-      this.load.spritesheet('playerAttack.png','/img/playerAttack.png', {
-        frameWidth: 32,
+      this.load.spritesheet('playerAttack','/img/playerAttack.png', {
+        frameWidth: 48,
         frameHeight: 32
       })
 
@@ -144,6 +144,15 @@ class Level2Scene extends Phaser.Scene {
     //Movimiento de camara para el jugador
     this.cameras.main.startFollow(this.player)
 
+    this.player.on('animationcomplete-atacar', () => {
+      console.log('Terminó ataque')
+
+      this.player.ataque = false
+
+      if (!this.player.muerto) {
+        this.player.setTexture('player')
+      }
+    })
     //Final del create
     }
 
