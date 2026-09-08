@@ -35,7 +35,7 @@ onMounted(() => {
             }
         },
 
-        scene: Level1Scene
+        scene: Level2Scene
     }
 
     game = new Phaser.Game(config)

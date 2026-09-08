@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import Projectile from "./projectile";
+import Projectile from "../factories/projectile";
 import { useGameStore } from "@/stores/game.js";
 
 class Enemy extends Phaser.Physics.Arcade.Sprite {
@@ -189,19 +189,30 @@ recibirDaño(daño) {
 
           this.play("enemyAttack");
 
-          const direccion =
-              this.scene.player.x < this.x ? -1 : 1;
+            //calcula donde esta el jugador
+          const direccionAtaque = this.scene.player.x < this.x ? -1 : 1;
+
+          //HACER QUE EL ENEMIGO VOLTEE A MIRAR AL JUGADOR
+        this.direccion = direccionAtaque; // Actualizamos su estado interno
+        this.setFlipX(this.direccion === 1); // Volteamos la imagen del enemigo
+          //  Define cuántos píxeles quieres mover la bala
+          // Cambia el 30 y el -10 hasta que quede donde te guste visualmente
+          const distanciaX = 18; // 30 píxeles hacia adelante
+          const alturaY = 3;   // -10 píxeles hacia arriba (los negativos suben en Phaser)
+
+          //  Multiplicamos la distanciaX por la dirección para que si el enemigo 
+          // mira a la izquierda (-1), la bala salga por la izquierda, y viceversa.
+          const origenX = this.x + (distanciaX * direccionAtaque);
+          const origenY = this.y + alturaY;
 
           const bala = new Projectile(
-
               this.scene,
-              this.x,
-              this.y,
+              origenX, // <--- Usamos la nueva coordenada X
+              origenY, // <--- Usamos la nueva coordenada Y
               "proyectile"
-
           );
 
-          bala.disparar(direccion);
+          bala.disparar(direccionAtaque);
 
           this.scene.physics.add.overlap(
 
