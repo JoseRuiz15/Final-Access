@@ -35,7 +35,7 @@ onMounted(() => {
             }
         },
 
-        scene: Level2Scene
+        scene: Level1Scene
     }
 
     game = new Phaser.Game(config)
@@ -71,8 +71,7 @@ onBeforeUnmount(() => {
       "
     ></div>
 
-    <!-- HUD -->
-    <Hud />
+
 
   </div>
 

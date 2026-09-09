@@ -12,7 +12,7 @@ function irCodeVerification() {
   <section id="record-screen" class="relative">
     <!--fondo registro-->
     <img
-      src="/img/sesion.png"
+      src="/img/lobby/sesion.png"
       alt="pantalla de login"
       class="absolute inset-0 w-full h-full object-cover"
     />

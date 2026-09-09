@@ -22,22 +22,22 @@ const personajeSeleccionado = ref(0)
 const personajes = [
   {
     nombre: 'Cosa 1',
-    imagen: '/img/cosa1.png',
-    perfil: '/img/Cosa1_perfil.png',
+    imagen: '/img/characters/cosa1.png',
+    perfil: '/img/profile/Cosa1_perfil.png',
     habilidad: 'Puños de energia',
     descripcion: 'Su habilidad consiste en el ataque cuerpo a cuerpo, por lo que tiene que estar cerca del enemigo para inflingir daño.'
   },
   {
     nombre: 'Cosa 2',
-    imagen: '/img/cosa2.png',
-    perfil: '/img/Cosa2_perfil.png',
+    imagen: '/img/characters/cosa2.png',
+    perfil: '/img/profile/Cosa2_perfil.png',
     habilidad: 'Sable de luz',
     descripcion: 'Su habilidad consiste en atacar con una espada de energia, es necesario estar cerca de los enemigos.'
   },
   {
     nombre: 'Cosa 3',
-    imagen: '/img/cosa3.png',
-    perfil: '/img/Cosa3_perfil.png',
+    imagen: '/img/characters/cosa3.png',
+    perfil: '/img/profile/Cosa3_perfil.png',
     habilidad: 'Golpe espectral',
     descripcion: 'Un personaje ofensivo que causa mucho daño en poco tiempo, ideal para entrar fuerte en batalla.'
   }
@@ -52,7 +52,7 @@ const personajes = [
 <template>
 <section id="lobby-screen">
   <img
-      src="/img/lobby2.png"
+      src="/img/lobby/lobby2.png"
       alt="imagen del la tienda"
       class="absolute inset-0 w-full h-full object-cover -z-10"
     />
@@ -65,7 +65,7 @@ const personajes = [
           class="bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
         >
           <div class="w-[100px] h-[100px] border-3 border-[#444665] rounded-lg overflow-hidden">
-            <img src="/img/perfil.png" alt="imagen de perfil" class="w-full h-full object-cover" />
+            <img src="/img/profile/perfil.png" alt="imagen de perfil" class="w-full h-full object-cover" />
           </div>
           <div class="flex flex-col ml-10">
             <p class="text-white text-[30px] font-pixel">DIN_03</p>
@@ -99,20 +99,20 @@ const personajes = [
         <!-- Acciones derecha -->
         <div class="ml-auto flex items-center gap-8">
           <div class="flex items-center gap-2">
-            <img src="/img/moneda.png" alt="puntos" class="h-[30px]" />
+            <img src="/img/iconos/moneda.png" alt="puntos" class="h-[30px]" />
             <h1 class="font-pixel text-[20px] text-[#FB00FF]">12.000</h1>
           </div>
 
           <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
-            <img src="/img/ajustes.png" alt="ajustes" class="w-full h-full object-cover" />
+            <img src="/img/iconos/ajustes.png" alt="ajustes" class="w-full h-full object-cover" />
           </button>
 
           <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
-            <img src="/img/mensajes.png" alt="mensajes" class="w-full h-full object-cover" />
+            <img src="/img/iconos/mensajes.png" alt="mensajes" class="w-full h-full object-cover" />
           </button>
 
           <button @click="mostrarConfirmacion = true" class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
-            <img src="/img/salida.png" alt="cierre de sesión" class="w-full h-full object-cover" />
+            <img src="/img/iconos/salida.png" alt="cierre de sesión" class="w-full h-full object-cover" />
           </button>
         </div>
       </header>

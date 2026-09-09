@@ -49,7 +49,7 @@ const enemigos = computed(() => gameStore.enemigos);
   <div class="absolute top-5 left-0 w-full flex justify-center items-center gap-12 pointer-events-none">
 
     <div class="relative">
-      <img src="/img/hudVidas.png" class="w-64">
+      <img src="/img/hud/hudVidas.png" class="w-64">
       <!-- Aquí irá la vida -->
        <p class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold ml-[-150px] mt-[-50px] text-[#00D9FF] text-shadow-[0_0_40px_#00D9FF]">
         VIDAS
@@ -61,7 +61,7 @@ const enemigos = computed(() => gameStore.enemigos);
         <img
           v-for="vida in vidas"
           :key="vida"
-          src="/img/Heart.png"
+          src="/img/level-icons/Heart.png"
           class="w-6 h-6"
         >
 
@@ -71,9 +71,9 @@ const enemigos = computed(() => gameStore.enemigos);
     </div>
 
     <div class="relative">
-      <img src="/img/hudObjetivo.png" class="w-72">
+      <img src="/img/hud/hudObjetivo.png" class="w-72">
 
-      <img src="/img/Key10-GOLD.png" class=" absolute w-[18.64px] h-[31.75px] mt-[-70px] ml-[190px] rotate-40">
+      <img src="/img/keys/Key10-GOLD.png" class=" absolute w-[18.64px] h-[31.75px] mt-[-70px] ml-[190px] rotate-40">
       <!-- Aquí irá la misión -->
        <p class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold ml-[-150px] mt-[-50px] text-[#00D9FF] text-shadow-[0_0_40px_#00D9FF]">
         OBJETIVO
@@ -99,9 +99,9 @@ const enemigos = computed(() => gameStore.enemigos);
     </div>
 
     <div class="relative">
-      <img src="/img/hudTiempo.png" class="w-64">
+      <img src="/img/hud/hudTiempo.png" class="w-64">
 
-      <img src="/img/calavera.png" class=" absolute w-[30px] h-[13] mt-[-50px] ml-[120px]">
+      <img src="/img/level-icons/calavera.png" class=" absolute w-[30px] h-[13] mt-[-50px] ml-[120px]">
       <!-- Aquí irá el tiempo -->
        <p class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold  mt-[-80px] text-[#00D9FF] text-shadow-[0_0_40px_#00D9FF]">
         TIEMPO

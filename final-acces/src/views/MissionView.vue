@@ -40,18 +40,18 @@ musica.volume = 0.1
 
 <template>
     <section>
-        <img src = "/img/loadingscene.png" alt="mission" class="absolute inset-0 w-full h-full">
-        <img src = "/img/tutorialPersonaje.png" alt="tutorial" class="absolute top-[460px] left-[650px] w-[500px]">
+        <img src = "/img/present/loadingscene.png" alt="mission" class="absolute inset-0 w-full h-full">
+        <img src = "/img/present/tutorialPersonaje.png" alt="tutorial" class="absolute top-[460px] left-[650px] w-[500px]">
 
         <h1 class="absolute top-[200px] left-[750px] text-[50px] text-white font-pixel text-[30px]">NIVEL 1</h1>
         <div>
-            <img src = "/img/textbox.png" alt="tutorial" class="absolute top-[280px] left-[750px]">
+            <img src = "/img/textbox/textbox.png" alt="tutorial" class="absolute top-[280px] left-[750px]">
 
             <div>
                 <p class="absolute top-[300px] left-[820px] w-[599px] text-black font-pixel text-[15px]">
                     {{ textoMostrado }}
                 </p>
-                <img src = "/img/Key1-SILVER.png" alt="llave" class="absolute top-[300px] left-[1430px] w-[30px]">
+                <img src = "/img/keys/Key1-SILVER.png" alt="llave" class="absolute top-[300px] left-[1430px] w-[30px]">
             </div>
         </div>
 

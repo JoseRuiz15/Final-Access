@@ -32,7 +32,7 @@ onMounted(() => {
   <section id="lobby-screen" class="relative min-h-screen overflow-hidden">
     <!--fondo del lobby-->
     <img
-      src="/img/lobby2.png"
+      src="/img/lobby/lobby2.png"
       alt="imagen del lobby"
       class="absolute inset-0 w-full h-full object-cover -z-10"
     />
@@ -46,7 +46,7 @@ onMounted(() => {
         <!-- Usuario -->
         <div class="bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center">
           <div class="w-[100px] h-[100px] border-3 border-[#444665] rounded-lg overflow-hidden">
-            <img src="/img/perfil.png" alt="imagen de perfil" class="w-full h-full object-cover" />
+            <img src="/img/profile/perfil.png" alt="imagen de perfil" class="w-full h-full object-cover" />
           </div>
           <div class="flex flex-col ml-10"> 
             <p class="text-white text-[30px] font-pixel">DIN_03</p>
@@ -78,20 +78,20 @@ onMounted(() => {
         <!-- Acciones derecha -->
         <div class="ml-auto flex items-center gap-8">
           <div class="flex items-center gap-2">
-            <img src="/img/moneda.png" alt="puntos" class="h-[30px]" />
+            <img src="/img/iconos/moneda.png" alt="puntos" class="h-[30px]" />
             <h1 class="font-pixel text-[20px] text-[#FB00FF]">12.000</h1>
           </div>
 
           <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
-            <img src="/img/ajustes.png" alt="ajustes" class="w-full h-full object-cover" />
+            <img src="/img/iconos/ajustes.png" alt="ajustes" class="w-full h-full object-cover" />
           </button>
 
           <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
-            <img src="/img/mensajes.png" alt="mensajes" class="w-full h-full object-cover" />
+            <img src="/img/iconos/mensajes.png" alt="mensajes" class="w-full h-full object-cover" />
           </button>
 
           <button @click="mostrarConfirmacion = true" class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
-            <img src="/img/salida.png"
+            <img src="/img/iconos/salida.png"
                 alt="cierre de sesión"
                 class="w-full h-full object-cover"/>
           </button>
@@ -104,7 +104,7 @@ onMounted(() => {
         <section class="flex flex-col gap-10">
           <button class="h-20 w-80 border-4 border-[#00FFEA] bg-[#000004] rounded-lg flex items-center transition-all duration-300 hover:shadow-[0_0_20px_#00FFEA] hover:-translate-y-2">
             <div class="h-15 w-15 ml-[10px] rounded-lg">
-              <img src="/img/clasificatoria.png" alt="imagen" />
+              <img src="/img/iconos/clasificatoria.png" alt="imagen" />
             </div>
 
             <h1 class="text-[#9898BD] font-pixel text-[15px] ml-[10px]">CLASIFICATORIA</h1>
@@ -112,7 +112,7 @@ onMounted(() => {
 
           <button class="h-20 w-80 border-4 border-[#00FFEA] bg-[#000004] rounded-lg flex items-center transition-all duration-300 hover:shadow-[0_0_20px_#00FFEA] hover:-translate-y-2">
             <div class="h-15 w-15 ml-[10px] rounded-lg">
-              <img src="/img/amigos.png" alt="imagen" />
+              <img src="/img/iconos/amigos.png" alt="imagen" />
             </div>
 
             <div class="ml-[10px]">
@@ -185,7 +185,7 @@ onMounted(() => {
               <!-- Item 1 -->
               <div class="hidden duration-400 ease-in-out" data-carousel-item="active">
                 <img
-                  src="/img/tienda1.png"
+                  src="/img/store/tienda1.png"
                   class="absolute inset-0 block w-full h-full object-cover cursor-pointer"
                   alt="tienda 1"
                   @click="irStore"
@@ -195,7 +195,7 @@ onMounted(() => {
               <!-- Item 2 -->
               <div class="hidden duration-400 ease-in-out" data-carousel-item>
                 <img
-                  src="/img/tienda2.png"
+                  src="/img/store/tienda2.png"
                   class="absolute inset-0 block w-full h-full object-cover cursor-pointer"
                   alt="tienda 2"
                   @click="irStore"
@@ -205,7 +205,7 @@ onMounted(() => {
               <!-- Item 3 -->
               <div class="hidden duration-400 ease-in-out" data-carousel-item>
                 <img
-                  src="/img/tienda3.png"
+                  src="/img/store/tienda3.png"
                   class="absolute inset-0 block w-full h-full object-cover cursor-pointer"
                   alt="tienda 3"
                   @click="irStore"

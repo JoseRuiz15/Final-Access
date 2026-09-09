@@ -41,74 +41,74 @@ function obtenerDescripcion() {
         </button>
         <div class="relative w-[1920px] h-[1080px]">
             <!--fondo del modo de juego-->
-            <img src="/img/mapa.png" alt="imagen del fondo" class="w-full h-full">
+            <img src="/img/map/mapa.png" alt="imagen del fondo" class="w-full h-full">
             <!--Iconos de niveles-->
 
             <!-- Nivel 1 -->
             <button @click="seleccionarNivel(1)">
-                <img src="/img/icono_level_1.png" alt="nivel 1" 
+                <img src="/img/level-icons/icono_level_1.png" alt="nivel 1" 
                 class="absolute top-[30%] left-[18%] w-30 h-30 
                 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]">
             </button>
 
             <!-- Nivel 2 -->
             <button @click="seleccionarNivel(2)">
-                <img src="/img/icono_level_2.png" alt="nivel 2" 
+                <img src="/img/level-icons/icono_level_2.png" alt="nivel 2" 
                 class="absolute top-[37%] left-[24%] w-30 h-30 
                 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]">
             </button>
 
             <!-- Nivel 3 -->
             <button @click="seleccionarNivel(3)">
-                <img src="/img/icono_level_3.png" alt="nivel 3" 
+                <img src="/img/level-icons/icono_level_3.png" alt="nivel 3" 
                 class="absolute top-[45%] left-[19%] w-30 h-30 
                 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]">
             </button>  
 
             <!-- Nivel 4 -->
             <button @click="seleccionarNivel(4)">
-                <img src="/img/icono_level_4.png" alt="nivel 4" 
+                <img src="/img/level-icons/icono_level_4.png" alt="nivel 4" 
                 class="absolute top-[59%] left-[26%] w-30 h-30 
                 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]">
             </button>
             
             <!-- Nivel 5 -->
             <button @click="seleccionarNivel(5)">
-                <img src="/img/icono_level_5.png" alt="nivel 5" 
+                <img src="/img/level-icons/icono_level_5.png" alt="nivel 5" 
                 class="absolute top-[42%] left-[48%] w-30 h-30 
                 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]">
             </button>
             <!-- Nivel 6 BLOQUEADO -->
             <button>
-                <img src="/img/nivel_bloqueado.png" alt="nivel 6" 
+                <img src="/img/level-icons/nivel_bloqueado.png" alt="nivel 6" 
                 class="absolute top-[48%] left-[58%] w-30 h-30 
                 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]">
             </button>
 
             <!-- Nivel 7 BLOQUEADO -->
             <button>
-                <img src="/img/nivel_bloqueado.png" alt="nivel 7" 
+                <img src="/img/level-icons/nivel_bloqueado.png" alt="nivel 7" 
                 class="absolute top-[42%] left-[66%] w-30 h-30 
                 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]">
             </button>
 
             <!-- Nivel 8 BLOQUEADO -->
             <button>
-                <img src="/img/nivel_bloqueado.png" alt="nivel 8" 
+                <img src="/img/level-icons/nivel_bloqueado.png" alt="nivel 8" 
                 class="absolute top-[33%] left-[74%] w-30 h-30 
                 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]">
             </button>
 
             <!-- Nivel 9 BLOQUEADO -->
             <button>
-                <img src="/img/nivel_bloqueado.png" alt="nivel 9" 
+                <img src="/img/level-icons/nivel_bloqueado.png" alt="nivel 9" 
                 class="absolute top-[45%] left-[78%] w-30 h-30 
                 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]">
             </button>
 
             <!-- Nivel 10 BLOQUEADO -->
             <button>
-                <img src="/img/nivel_bloqueado.png" alt="nivel 10" 
+                <img src="/img/level-icons/nivel_bloqueado.png" alt="nivel 10" 
                 class="absolute top-[75%] left-[80%] w-30 h-30 
                 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]">
             </button>
@@ -135,7 +135,7 @@ function obtenerDescripcion() {
             <!-- Imagen -->
             <div class="w-[300px] h-[250px] border-2 border-[#585B7A] rounded-lg overflow-hidden">
                 <img
-                    :src="`/img/MAPA_${nivelSeleccionado}.png`"
+                    :src="`/img/referencia-mapas/MAPA_${nivelSeleccionado}.png`"
                     class="w-full h-full object-cover"
                 >
             </div>

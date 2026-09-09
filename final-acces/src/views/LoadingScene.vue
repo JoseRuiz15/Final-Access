@@ -7,28 +7,28 @@ const router = useRouter()
 
     const dialogos = [
     {
-        personaje: "/img/pose1.png",
-        cuadro: "/img/textbox.png",
+        personaje: "/img/present/pose1.png",
+        cuadro: "/img/textbox/textbox.png",
         texto: "Que tal cadete, bienvenido, es hora de empezar tu mision."
     },
     {
-        personaje: "/img/pose2.png",
-        cuadro: "/img/textbox.png",
+        personaje: "/img/present/pose2.png",
+        cuadro: "/img/textbox/textbox.png",
         texto: "Para avanzar de nivel debes destruir cajas y econtrar llaves escondidas."
     },
     {
-        personaje: "/img/pose3.png",
-        cuadro: "/img/textbox.png",
+        personaje: "/img/present/pose3.png",
+        cuadro: "/img/textbox/textbox.png",
         texto: "Si escoges llaves incorrectas pierdes tiempo, escoge bien y escapa antes de que el contador llegue a 0."
     },
     {
-        personaje: "/img/pose4.png",
-        cuadro: "/img/textbox.png",
+        personaje: "/img/present/pose4.png",
+        cuadro: "/img/textbox/textbox.png",
         texto: "Ten cuidado con los enemigos, pierdes tiempo y una vida cada que te disparan."
     },
     {
-        personaje: "/img/pose5.png",
-        cuadro: "/img/textbox.png",
+        personaje: "/img/present/pose5.png",
+        cuadro: "/img/textbox/textbox.png",
         texto: "Buena suerte, escoge bien y completa todas las misiones"
     }
 
@@ -89,7 +89,7 @@ function irExplicacionNivel(){
 
 <template> 
     <section @click="siguienteDialogo">
-        <img src = "/img/loadingscene.png" alt="loading" class="absolute inset-0 w-full h-full">
+        <img src = "/img/present/loadingscene.png" alt="loading" class="absolute inset-0 w-full h-full">
         <img :src="dialogos[dialogoActual].personaje" alt="loading" class="absolute top-[393px] left-[650px]">
 
         <div class="absolute top-[200px] left-[850px]">

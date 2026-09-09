@@ -16,7 +16,7 @@ function irLobby() {
 <template>
     <section id="login-screen" class="relative">
             <!--fondo login-->
-            <img src="/img/sesion.png" alt="pantalla de login"
+            <img src="/img/lobby/sesion.png" alt="pantalla de login"
             class="absolute inset-0 w-full h-full object-cover" />
             <!--cuadro-->
             <div class="relative z-10 flex items-center justify-center min-h-screen">

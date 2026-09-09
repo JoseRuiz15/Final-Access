@@ -10,7 +10,7 @@ function irLobby() {
 <template>
     <section id="code-screen" class="relative">
             <!--fondo codigo-->
-            <img src="/img/sesion.png" alt="pantalla de login" 
+            <img src="/img/lobby/sesion.png" alt="pantalla de login" 
             class="absolute inset-0 w-full h-full object-cover" />
             <!--cuadro de verificacion de codigo-->
              <div class="relative z-10 flex items-center justify-center min-h-screen">

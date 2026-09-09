@@ -32,7 +32,7 @@ onMounted(() => {
   <section>
     <!--fondo del tienda-->
     <img
-      src="/img/lobby2.png"
+      src="/img/lobby/lobby2.png"
       alt="imagen del la tienda"
       class="absolute inset-0 w-full h-full object-cover -z-10"
     />
@@ -46,7 +46,7 @@ onMounted(() => {
           class="bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
         >
           <div class="w-[100px] h-[100px] border-3 border-[#444665] rounded-lg overflow-hidden">
-            <img src="/img/perfil.png" alt="imagen de perfil" class="w-full h-full object-cover" />
+            <img src="/img/profile/perfil.png" alt="imagen de perfil" class="w-full h-full object-cover" />
           </div>
             <div class="flex flex-col ml-10"> 
               <p class="text-white text-[30px] font-pixel">DIN_03</p>
@@ -80,20 +80,20 @@ onMounted(() => {
         <!-- Acciones derecha -->
         <div class="ml-auto flex items-center gap-8">
           <div class="flex items-center gap-2">
-            <img src="/img/moneda.png" alt="puntos" class="h-[30px]" />
+            <img src="/img/iconos/moneda.png" alt="puntos" class="h-[30px]" />
             <h1 class="font-pixel text-[20px] text-[#FB00FF]">12.000</h1>
           </div>
 
           <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
-            <img src="/img/ajustes.png" alt="ajustes" class="w-full h-full object-cover" />
+            <img src="/img/iconos/ajustes.png" alt="ajustes" class="w-full h-full object-cover" />
           </button>
 
           <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
-            <img src="/img/mensajes.png" alt="mensajes" class="w-full h-full object-cover" />
+            <img src="/img/iconos/mensajes.png" alt="mensajes" class="w-full h-full object-cover" />
           </button>
 
           <button @click="mostrarConfirmacion = true" class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
-            <img src="/img/salida.png" alt="cierre de sesión" class="w-full h-full object-cover" />
+            <img src="/img/iconos/salida.png" alt="cierre de sesión" class="w-full h-full object-cover" />
           </button>
         </div>
       </header>
@@ -155,7 +155,7 @@ onMounted(() => {
                 <img v-if="personajeSeleccionado" :src="`/img/${personajeSeleccionado}.png`" alt="Personaje"  class="w-full h-full object-contain"/>
           </div>
            <button v-if="personajeSeleccionado" class="w-[220px] h-12 mt-4 bg-[#2E1E3E] rounded-xl border-2 border-fuchsia-500 flex items-center justify-center justify-self-center gap-3 transition-all duration-300 hover:border-fuchsia-400 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2">
-                <img src="/img/moneda.png" class="w-6 h-6">
+                <img src="/img/iconos/moneda.png" class="w-6 h-6">
                 <span class="font-pixel text-white">
                     12.000
                 </span>

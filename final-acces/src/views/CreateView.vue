@@ -16,7 +16,7 @@ function irCreate() {
 <template>
     <div class="relative min-h-screen">
     <!--imagen de fondo-->
-    <img src="/img/partida.png" alt="FONDO" class="h-full w-full absolute inset-0 objet-cover -z-10">
+    <img src="/img/multy-player/partida.png" alt="FONDO" class="h-full w-full absolute inset-0 objet-cover -z-10">
     <!--volver-->
     <button class="absolute top-15 left-10 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9] transition-all duration-300" @click="irMultiplayer"><- VOLVER</button>
     <!--cuadro para crear partida-->
