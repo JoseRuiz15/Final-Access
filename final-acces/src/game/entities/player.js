@@ -39,7 +39,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             atacar: Phaser.Input.Keyboard.KeyCodes.L
 
         });
-        this.body.setSize(18,30);
+        this.body.setSize(17,30);
 
         this.body.setOffset(6, 1);
     }
