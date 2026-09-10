@@ -15,32 +15,28 @@ export default class Level2Scene extends Phaser.Scene {
     preload() {
 
       //Fondo del juego PARALLAX
-      this.load.image('parallax2', '../img/maps/layer2-mapa2.png')
-      this.load.image('parallax3', '../img/maps/layer3-mapa2.png')
-      this.load.image('parallax4', '../img/maps/layer4-mapa2.png')
-      this.load.image('parallax5', '../img/maps/layer5-mapa2.png')
-        this.load.image('parallax2', '/img/layer2.png')
-        this.load.image('parallax3', '/img/layer3.png')
-        this.load.image('parallax4', '/img/layer4.png')
-        this.load.image('parallax5', '/img/layer5.png')
+      this.load.image('parallax2', '/img/maps/layer2-mapa2.png')
+      this.load.image('parallax3', '/img/maps/layer3-mapa2.png')
+      this.load.image('parallax4', '/img/maps/layer4-mapa2.png')
+      this.load.image('parallax5', '/img/maps/layer5-mapa2.png')
 
         this.load.tilemapTiledJSON('level2', '/maps/Mapa_level_2.json')
         this.load.image('ground', '/tiles/ground.png')
         this.load.image('groundBack', '/tiles/groundBack.png')
         this.load.image('pinchos', '/tiles/pinchos.png')
 
-        this.load.image('player', '/img/defaultCharacter.png')
-        this.load.spritesheet('playerWalk', '/img/playerWalk.png', { frameWidth: 32, frameHeight: 32 })
-        this.load.spritesheet('playerJump', '/img/playerJump.png', { frameWidth: 32, frameHeight: 32 })
-        this.load.spritesheet('playerAttack', '/img/playerAttack.png', { frameWidth: 48, frameHeight: 32 })
-        this.load.spritesheet('playerDamage', '/img/playerDamage.png', { frameWidth: 32, frameHeight: 32 })
-        this.load.spritesheet('playerDead', '/img/playerDead.png', { frameWidth: 64, frameHeight: 32 })
+        this.load.image('player', '/img/character/defaultCharacter.png')
+        this.load.spritesheet('playerWalk', '/img/animatics-player/playerWalk.png', { frameWidth: 32, frameHeight: 32 })
+        this.load.spritesheet('playerJump', '/img/animatics-player/playerJump.png', { frameWidth: 32, frameHeight: 32 })
+        this.load.spritesheet('playerAttack', '/img/animatics-player/playerAttack.png', { frameWidth: 48, frameHeight: 32 })
+        this.load.spritesheet('playerDamage', '/img/animatics-player/playerDamage.png', { frameWidth: 32, frameHeight: 32 })
+        this.load.spritesheet('playerDead', '/img/animatics-player/playerDead.png', { frameWidth: 64, frameHeight: 32 })
 
-        this.load.spritesheet('enemyWalk', '/img/enemyWalk.png', { frameWidth: 48, frameHeight: 32 })
-        this.load.spritesheet('enemy2Attack', '/img/enemyAttack.png', { frameWidth: 48, frameHeight: 32 })
-        this.load.spritesheet('explosion', '/img/explosion.png', { frameWidth: 48, frameHeight: 32 })
-        this.load.spritesheet('enemyDamage', '/img/enemyDamage.png', { frameWidth: 48, frameHeight: 32 })
-        this.load.spritesheet('proyectile', '/img/enemy2attackeffect.png', { frameWidth: 48, frameHeight: 32 })
+        this.load.spritesheet('enemyWalk', '/img/animatics-enemy/enemyWalk.png', { frameWidth: 48, frameHeight: 32 })
+        this.load.spritesheet('enemy2Attack', '/img/animatics-enemy/enemyAttack.png', { frameWidth: 48, frameHeight: 32 })
+        this.load.spritesheet('explosion', '/img/animatics-enemy/explosion.png', { frameWidth: 48, frameHeight: 32 })
+        this.load.spritesheet('enemyDamage', '/img/animatics-enemy/enemyDamage.png', { frameWidth: 48, frameHeight: 32 })
+        this.load.spritesheet('proyectile', '/img/animatics-enemy/enemy2attackeffect.png', { frameWidth: 48, frameHeight: 32 })
     }
 
     create() {

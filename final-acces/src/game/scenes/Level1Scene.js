@@ -17,11 +17,11 @@ export default class Level1Scene extends Phaser.Scene {
     console.log(this.textures.get('playerJump').frameTotal)
 
     // FONDO PARALLAX
-    this.load.image('parallax', '../img/maps/layer1-map1.png')
-    this.load.image('parallax2', '../img/maps/layer2-map1.png')
-    this.load.image('parallax3', '../img/maps/layer3-map1.png')
-    this.load.image('parallax4', '../img/maps/layer4-map1.png')
-    this.load.image('parallax5', '../img/maps/layer5-map1.png')
+    this.load.image('parallax', '/img/maps/layer1-map1.png')
+    this.load.image('parallax2', '/img/maps/layer2-map1.png')
+    this.load.image('parallax3', '/img/maps/layer3-map1.png')
+    this.load.image('parallax4', '/img/maps/layer4-map1.png')
+    this.load.image('parallax5', '/img/maps/layer5-map1.png')
 
     // MAPA Y TILESETS
     this.load.tilemapTiledJSON('level1', '/maps/Mapa_level_1.json')
@@ -31,39 +31,39 @@ export default class Level1Scene extends Phaser.Scene {
     this.load.image('walls', '/tiles/walls.png')
 
     // TUTORIAL
-    this.load.image('imgSaltar', '/img/imgSaltar.png')
-    this.load.image('imgDerecha', '/img/imgDerecha.png')
-    this.load.image('imgIzquierda', '/img/imgIzquierda.png')
-    this.load.image('imgAtacar', '/img/imgAtacar.png')
-    this.load.image('imgInsertarLlave', '/img/imgInsertarLlave.png')
+    this.load.image('imgSaltar', '/img/instruction/imgSaltar.png')
+    this.load.image('imgDerecha', '/img/instruction/imgDerecha.png')
+    this.load.image('imgIzquierda', '/img/instruction/imgIzquierda.png')
+    this.load.image('imgAtacar', '/img/instruction/imgAtacar.png')
+    this.load.image('imgInsertarLlave', '/img/instruction/imgInsertarLlave.png')
 
     // CAJAS
-    this.load.spritesheet('crateBreak', '/img/crateBreak.png', { frameWidth: 32, frameHeight: 32 })
+    this.load.spritesheet('crateBreak', '/img/box/crateBreak.png', { frameWidth: 32, frameHeight: 32 })
 
     // LLAVES
     this.load.image('key1', '/img/keys/Key1-SILVER.png')
-    this.load.image('imgRecogerLlave', '/img/imgRecogerLlave.png')
-    this.load.spritesheet('key2', '/img/keys/Key2-SILVER.png', { frameWidth: 10, frameHeight: 28 })
-    this.load.spritesheet('key6', '/img/keys/Key6-SILVER.png', { frameWidth: 16, frameHeight: 35 })
+    this.load.image('imgRecogerLlave', '/img/instruction/imgRecogerLlave.png')
+    this.load.spritesheet('key2', '/img/keys-animation/Key2-SILVER.png', { frameWidth: 10, frameHeight: 28 })
+    this.load.spritesheet('key6', '/img/keys-animation/Key6-SILVER.png', { frameWidth: 16, frameHeight: 35 })
 
     // PUERTA
-    this.load.image("greenDoor", "/img/greenDoor.png")
-    this.load.image("redDoor", "/img/redDoor.png")
+    this.load.image("greenDoor", "/img/door/greenDoor.png")
+    this.load.image("redDoor", "/img/door/redDoor.png")
 
     // JUGADOR
-    this.load.image('player', '/img/defaultCharacter.png')
-    this.load.spritesheet('playerWalk', '/img/playerWalk.png', { frameWidth: 32, frameHeight: 32 })
-    this.load.spritesheet('playerJump', '/img/playerJump.png', { frameWidth: 32, frameHeight: 32 })
-    this.load.spritesheet('playerAttack', '/img/playerAttack.png', { frameWidth: 48, frameHeight: 32 })
-    this.load.spritesheet('playerDamage', '/img/playerDamage.png', { frameWidth: 32, frameHeight: 32 })
-    this.load.spritesheet('playerDead', '/img/playerDead.png', { frameWidth: 64, frameHeight: 32 })
+    this.load.image('player', '/img/character/defaultCharacter.png')
+    this.load.spritesheet('playerWalk', '/img/animatics-player/playerWalk.png', { frameWidth: 32, frameHeight: 32 })
+    this.load.spritesheet('playerJump', '/img/animatics-player/playerJump.png', { frameWidth: 32, frameHeight: 32 })
+    this.load.spritesheet('playerAttack', '/img/animatics-player/playerAttack.png', { frameWidth: 48, frameHeight: 32 })
+    this.load.spritesheet('playerDamage', '/img/animatics-player/playerDamage.png', { frameWidth: 32, frameHeight: 32 })
+    this.load.spritesheet('playerDead', '/img/animatics-player/playerDead.png', { frameWidth: 64, frameHeight: 32 })
 
     // ENEMIGO
-    this.load.spritesheet('enemyWalk', '/img/enemyWalk.png', { frameWidth: 48, frameHeight: 32 })
-    this.load.spritesheet('enemy2Attack', '/img/enemyAttack.png', { frameWidth: 48, frameHeight: 32 })
-    this.load.spritesheet('explosion', '/img/explosion.png', { frameWidth: 48, frameHeight: 32 })
-    this.load.spritesheet('enemyDamage', '/img/enemyDamage.png', { frameWidth: 48, frameHeight: 32 })
-    this.load.spritesheet('proyectile', '/img/enemy2attackeffect.png', { frameWidth: 48, frameHeight: 32 })
+    this.load.spritesheet('enemyWalk', '/img/animatics-enemy/enemyWalk.png', { frameWidth: 48, frameHeight: 32 })
+    this.load.spritesheet('enemy2Attack', '/img/animatics-enemy/enemyAttack.png', { frameWidth: 48, frameHeight: 32 })
+    this.load.spritesheet('explosion', '/img/animatics-enemy/explosion.png', { frameWidth: 48, frameHeight: 32 })
+    this.load.spritesheet('enemyDamage', '/img/animatics-enemy/enemyDamage.png', { frameWidth: 48, frameHeight: 32 })
+    this.load.spritesheet('proyectile', '/img/animatics-enemy/enemy2attackeffect.png', { frameWidth: 48, frameHeight: 32 })
   }
 
   create() {
