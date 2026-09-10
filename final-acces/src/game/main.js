@@ -15,4 +15,4 @@ const config = {
     scene: Level1Scene
 };
 
-const game = new Phaser.Game(config);
+const _game = new Phaser.Game(config);
