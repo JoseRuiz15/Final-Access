@@ -30,6 +30,10 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this);
 
         this.setCollideWorldBounds(true);
+
+        this.body.setSize(40,26);
+
+        this.body.setOffset(5, 5);
     }
 
     mover() {
@@ -197,6 +201,11 @@ recibirDaño(daño) {
         this.setFlipX(this.direccion === 1); // Volteamos la imagen del enemigo
           //  Define cuántos píxeles quieres mover la bala
           // Cambia el 30 y el -10 hasta que quede donde te guste visualmente
+          this.scene.time.delayedCall(300, () => {
+            if (this.muerto || !this.scene)
+            return;
+            
+
           const distanciaX = 18; // 30 píxeles hacia adelante
           const alturaY = 3;   // -10 píxeles hacia arriba (los negativos suben en Phaser)
 
@@ -216,7 +225,7 @@ recibirDaño(daño) {
 
           this.scene.physics.add.overlap(
 
-              bala,
+                        bala,
 
               this.scene.player,
 
@@ -229,6 +238,7 @@ recibirDaño(daño) {
               }
 
           );
+        });
 
           this.scene.time.delayedCall(800, () => {
 

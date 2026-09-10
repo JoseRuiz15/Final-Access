@@ -482,6 +482,7 @@ class Level1Scene extends Phaser.Scene {
 
 
 
+    
   }
 
   mostrarExplosion(x, y) {

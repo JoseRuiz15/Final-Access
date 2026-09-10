@@ -13,6 +13,10 @@ class Projectile extends Phaser.Physics.Arcade.Sprite {
         this.body.setAllowGravity(false);
 
         this.velocidad =350;
+
+        this.body.setSize(8,6);
+
+        this.body.setOffset(20, 20);
     }
 
     disparar(direccion) {
