@@ -17,11 +17,11 @@ class Level1Scene extends Phaser.Scene {
 
 
     // FONDO PARALLAX
-    this.load.image('parallax', '../img/maps/parallax_background_layer_1.png')
-    this.load.image('parallax2', '../img/maps/parallax_background_layer_2.png')
-    this.load.image('parallax3', '../img/maps/parallax_background_layer_3.png')
-    this.load.image('parallax4', '../img/maps/parallax_background_layer_4.png')
-    this.load.image('parallax5', '../img/maps/parallax_background_layer_5.png')
+    this.load.image('parallax', '../img/maps/layer1-map1.png')
+    this.load.image('parallax2', '../img/maps/layer2-map1.png')
+    this.load.image('parallax3', '../img/maps/layer3-map1.png')
+    this.load.image('parallax4', '../img/maps/layer4-map1.png')
+    this.load.image('parallax5', '../img/maps/layer5-map1.png')
 
     // MAPA Y TILESETS
     this.load.tilemapTiledJSON('level1', '/maps/Mapa_level_1.json')
@@ -98,7 +98,7 @@ class Level1Scene extends Phaser.Scene {
       frameHeight: 32,
     })
 
-    this.load.spritesheet('enemy2Attack', '../img/animatics-enemy/enemy2Attack.png', {
+    this.load.spritesheet('enemyAttack', '../img/animatics-enemy/enemyAttack.png', {
       frameWidth: 48,
       frameHeight: 32,
     })
@@ -331,7 +331,7 @@ class Level1Scene extends Phaser.Scene {
 
     this.anims.create({
       key: 'enemyAttack',
-      frames: this.anims.generateFrameNumbers('enemy2Attack', {
+      frames: this.anims.generateFrameNumbers('enemyAttack', {
         start: 0,
         end: 4,
       }),
