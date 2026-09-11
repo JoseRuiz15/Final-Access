@@ -1,7 +1,9 @@
+import { useGameStore } from "@/stores/game.js";
+
 /**
  * Repository para gestionar el estado del juego.
- * Principio SRP: unica responsabilidad es manejar estado persistido.
- * Principio DIP: las escenas y entidades dependen de esta abstraccion.
+ * SRP: unica responsabilidad es manejar estado persistido.
+ * DIP: las escenas y entidades dependen de esta abstraccion.
  */
 export default class GameRepository {
 
@@ -9,6 +11,7 @@ export default class GameRepository {
         this._vidas = 5;
         this._llaves = 0;
         this._enemigos = 0;
+        this._store = useGameStore();
     }
 
     get vidas() {
@@ -17,6 +20,7 @@ export default class GameRepository {
 
     set vidas(value) {
         this._vidas = value;
+        this._store.vidas = value;
     }
 
     get llaves() {
@@ -25,6 +29,7 @@ export default class GameRepository {
 
     set llaves(value) {
         this._llaves = value;
+        this._store.llaves = value;
     }
 
     get enemigos() {
@@ -33,11 +38,20 @@ export default class GameRepository {
 
     set enemigos(value) {
         this._enemigos = value;
+        this._store.enemigos = value;
+    }
+
+    incrementarEnemigos() {
+        this._enemigos++;
+        this._store.enemigos = this._enemigos;
     }
 
     reset() {
         this._vidas = 5;
         this._llaves = 0;
         this._enemigos = 0;
+        this._store.vidas = this._vidas;
+        this._store.llaves = this._llaves;
+        this._store.enemigos = this._enemigos;
     }
 }

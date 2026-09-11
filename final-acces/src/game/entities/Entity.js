@@ -2,8 +2,7 @@ import Phaser from "phaser";
 
 /**
  * Clase base abstracta para entidades del juego.
- * Player y Enemy la extienden cuando necesitan herencia,
- * o implementan IEntity directamente usando Phaser.Physics.Arcade.Sprite.
+ * Player y Enemy la extienden para reutilizar código común.
  *
  * Principio OCP: Para nuevos tipos de entidades, crear subclases de Entity
  * sin modificar código existente.
@@ -12,32 +11,28 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
 
     constructor(scene, x, y, texture) {
         super(scene, x, y, texture);
-
         this.scene = scene;
-        this._x = x;
-        this._y = y;
-        this._health = 100;
     }
 
     /**
      * @returns {{x: number, y: number}}
      */
     getPosition() {
-        return { x: this._x, y: this._y };
+        return { x: this.x, y: this.y };
     }
 
     /**
      * @returns {number}
      */
     getHealth() {
-        return this._health;
+        return this.vida;
     }
 
     /**
      * @returns {boolean}
      */
     isAlive() {
-        return this._health > 0;
+        return this.vida > 0;
     }
 
     /**
@@ -45,11 +40,11 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
      * @returns {boolean} true si murio
      */
     takeDamage(amount) {
-        this._health -= amount;
-        if (this._health < 0) {
-            this._health = 0;
+        this.vida -= amount;
+        if (this.vida < 0) {
+            this.vida = 0;
         }
-        return this._health <= 0;
+        return this.vida <= 0;
     }
 
     /**
@@ -69,22 +64,5 @@ export default class Entity extends Phaser.Physics.Arcade.Sprite {
      */
     getType() {
         return "entity";
-    }
-
-    /**
-     * @param {number} x
-     * @param {number} y
-     */
-    setPosition(x, y) {
-        this._x = x;
-        this._y = y;
-    }
-
-    resetPosition() {
-        this._health = 100;
-    }
-
-    getDamage() {
-        return 10;
     }
 }

@@ -1,283 +1,180 @@
-import Phaser from "phaser";
-import AttackHitbox from "./attackHitbox.js";
-import { useGameStore } from "@/stores/game.js";
+import Entity from "./Entity.js";
+import EntityFactory from "../factories/EntityFactory.js";
 /** @implements {IEntity} */
 
-export default class Player extends Phaser.Physics.Arcade.Sprite {
+export default class Player extends Entity {
 
-    constructor(scene, x, y, texture) {
-
+    constructor(scene, x, y, texture, gameRepository) {
         super(scene, x, y, texture);
 
         this.spawnX = x;
         this.spawnY = y;
+        this.gameRepository = gameRepository;
+        this._enemies = null;
+        this._boxes = null;
 
         this.setDisplaySize(48, 48);
         this.texture = texture;
 
-        //Atributos del jugador
-        this.vida = 100;
-        this.maxVida = 100;
-        this.vidas = 5;
-        this.velocidad = 160;
-        this.daño = 20;
-        this.gameStore = useGameStore();
+        this._vida = 100;
+        this._maxVida = 100;
+        this._vidas = 5;
+        this._velocidad = 160;
+        this._dano = 20;
+        this._ataque = false;
+        this._muerto = false;
+        this._recibiendoDano = false;
+        this._llaves = [];
 
-        this.ataque = false;
-        this.muerto = false;
-        this.recibiendoDaño = false;
-        this.llaves = [];
-
-        //Teclas de control
-        this.teclas = {
-          izquierda: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-          derecha: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-          saltar: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
-          atacar: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L),
-          interactuar: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G)
-        }
-
-        //Agregar a Pasher y habilitar física
         scene.add.existing(this);
         scene.physics.add.existing(this);
         this.body.setCollideWorldBounds(false);
     }
-    /**
-     * @returns {{x: number, y: number}} @implements IEntity:getPosition()
-     */
 
-    getPosition(){
-        return {x:this.x, y:this.y};
-    }
-    /**
-     * @returns {number} @implements IEntity:getHealth()
-     */
-    getHealth(){
-        return this.vida;
-    }
-    /**
-     * @returns {boolean} @implements IEntity:isAlive()
-     */
-    isAlive(){
-        return this.vida > 0;
-    }
-    /**
-     * @param {number} amount @implements IEntity:takeDamage()
-     * @returns {boolean} true si murió
-     */
-    takeDamage(amount){
-      this.vida -= amount;
-      if (this.vida <= 0) this.vida = 0;
+    get vida() { return this._vida; }
+    set vida(v) { this._vida = v; }
 
-      if (this.vida <=0){
-        this.vida = 0;
-        this.muerto = true;
-        this.setVelocity(0,0);
-        this.play("playerDie");
-        this.scene.onPlayerDeath?.();
-        return true;
-      }
-      return false;
-    }
+    get maxVida() { return this._maxVida; }
+
+    get vidas() { return this._vidas; }
+    set vidas(v) { this._vidas = v; }
+
+    get velocidad() { return this._velocidad; }
+
+    get dano() { return this._dano; }
+
+    get ataque() { return this._ataque; }
+    set ataque(v) { this._ataque = v; }
+
+    get muerto() { return this._muerto; }
+    set muerto(v) { this._muerto = v; }
+
+    get recibiendoDano() { return this._recibiendoDano; }
+    set recibiendoDano(v) { this._recibiendoDano = v; }
+
+    get llaves() { return this._llaves; }
+
+    set enemies(e) { this._enemies = e; }
+    set boxes(b) { this._boxes = b; }
+
     /**
-     * @param {number} _delta @implements IEntity:update()
+     * @param {number} amount
+     * @returns {boolean} true si murio
      */
-    update(_delta) {
-      if (this.recibiendoDaño){
-        return;
-      }
-      if (this.muerto){
-        return;
-      }
-      if (Phaser.Input.Keyboard.JustDown(this.teclas.atacar)){
-        this.atacar();
-      }
-      if(this.ataque){
-        return;
-      }
-      if (this.teclas.izquierda.isDown) {
-          this.setVelocityX(-this.velocidad);
-          this.setFlipX(true);
-          if (this.body.blocked.down) {
-              this.play("caminar", true);
-          }
-        } else if (this.teclas.derecha.isDown) {
-          this.setVelocityX(this.velocidad);
-          this.setFlipX(false);
-          if (this.body.blocked.down) {
-              const anim = this.scene.anims.get("caminar");
-              if (!anim) {
-                  console.error("No existe la animación caminar");
-              } else {
-                  this.play("caminar", true);
-              }
-          }
-      } else {
-          this.setVelocityX(0);
-          if (this.body.blocked.down && !this.ataque && !this.muerto) {
-              this.setTexture("player");
-          }
+    takeDamage(amount) {
+        this._vida -= amount;
+        if (this._vida <= 0) this._vida = 0;
+
+        if (this._vida <= 0) {
+            this._vida = 0;
+            this._muerto = true;
+            this.setVelocity(0, 0);
+            this.play("playerDie");
+            this.scene.onPlayerDeath?.();
+            return true;
         }
-        if (this.teclas.saltar.isDown && this.body.blocked.down) {
-            this.setVelocityY(-500);
-            this.play("saltar", true);
-        }
-        if (!this.body.blocked.down && !this.ataque) {
-            this.play("saltar", true);
-        }
-    }
-/**
- * @returns {Phaser.Textures.Texture} @implements IEntity:getTexture()
- */
-getTexture() {
-    return this.texture;
-}
-
-atacar() {
-
-    if (this.ataque || this.recibiendoDaño || this.muerto) {
-        return;
+        return false;
     }
 
-    this.setVelocityX(0);
-    this.ataque = true;
-    this.play("atacar");
+    update(_delta) {}
 
-    const offsetX = this.flipX ? -30 : 30;
+    atacar() {
+        if (this._ataque || this._recibiendoDano || this._muerto) return;
 
-    const hitbox = new AttackHitbox(
-        this.scene,
-        this.x + offsetX,
-        this.y,
-        40,
-        30,
-        this.daño,
-        this
-    );
+        this.setVelocityX(0);
+        this._ataque = true;
+        this.play("atacar");
 
-    this.scene.physics.add.overlap(
-        hitbox,
-        this.scene.enemies,
-        (hitbox, enemigo) => {
+        const offsetX = this.flipX ? -30 : 30;
+        const hitbox = EntityFactory.createAttackHitbox(
+            this.scene, this.x + offsetX, this.y, this._dano, this
+        );
 
-          const muerto = enemigo.takeDamage(hitbox.damage);
-
-          if (muerto) {
-              this.scene.onEnemyDied?.();
-          }
-            hitbox.destroy();
-        }
-
-    );
-
-      this.scene.physics.add.overlap(
-      hitbox,
-      this.scene.boxes,
-      (hitbox, caja) => {
-          caja.romper();
-      }
-
-  );
-}
-
-recogerLlave(llave) {
-
-    this.llaves.push({
-        texture:llave.texture.key,
-        grupo: llave.grupo,
-        color: llave.color,
-        efecto: llave.efecto,
-        correcta: llave.correcta
-    });
-
-    this.gameStore.llaves = this.llaves.length;
-    console.log("Inventario:", this.llaves);
-    llave.destroy();
-}
-
-recibirDaño(daño) {
-
-    if (this.muerto || this.recibiendoDaño) return;
-    this.ataque = false;
-    this.vida -= daño;
-
-    if (this.vida <= 0) {
-        this.vida = 0;
-        this.vidas--;
-        this.gameStore.vidas = this.vidas;
-        this.muerto = true;
-        this.setVelocity(0,0);
-        this.play("playerDie");
-    } else {
-        this.recibiendoDaño = true;
-        this.setVelocity(0,0);
-        this.play("playerDamage");
-    }
-}
-
-  respawn() {
-    this.vida = 100;
-    this.setPosition(this.spawnX, this.spawnY);
-    this.setVelocity(0, 0);
-    this.setActive(true);
-    this.setVisible(true);
-    this.body.enable = true;
-    this.setTexture("player");
-    this.muerto = false;
-    this.recibiendoDaño = false;
-    this.ataque = false;
-    }
-    /**
-     * @returns {string} @implements IEntity:getType()
-     */
-    getType(){
-        return "player";
-    }
-
-    /**
-     * Metodo de movimiento principal. Lo llama Level1Scene en su update().
-     * Contiene la logica de entrada, animaciones y fisica del jugador.
-     */
-    mover() {
-        if (this.recibiendoDaño) return;
-        if (this.muerto) return;
-
-        if (Phaser.Input.Keyboard.JustDown(this.teclas.atacar)) {
-            this.atacar();
-        }
-
-        if (this.ataque) return;
-
-        if (this.teclas.izquierda.isDown) {
-            this.setVelocityX(-this.velocidad);
-            this.setFlipX(true);
-            if (this.body.blocked.down) {
-                this.play("caminar", true);
+        this.scene.physics.add.overlap(
+            hitbox, this._enemies,
+            (hitbox, enemigo) => {
+                const muerto = enemigo.takeDamage(hitbox.damage);
+                if (muerto) { this.scene.onEnemyDied?.(); }
+                hitbox.destroy();
             }
-        } else if (this.teclas.derecha.isDown) {
-            this.setVelocityX(this.velocidad);
-            this.setFlipX(false);
-            if (this.body.blocked.down) {
-                const anim = this.scene.anims.get("caminar");
-                if (!anim) {
-                    console.error("No existe la animación caminar");
-                } else {
-                    this.play("caminar", true);
-                }
-            }
+        );
+
+        this.scene.physics.add.overlap(
+            hitbox, this._boxes,
+            (hitbox, caja) => { caja.romper(); }
+        );
+    }
+
+    recogerLlave(llave) {
+        this._llaves.push({
+            texture: llave.texture.key,
+            grupo: llave.grupo,
+            color: llave.color,
+            efecto: llave.efecto,
+            correcta: llave.correcta
+        });
+
+        this.gameRepository.llaves = this._llaves.length;
+        console.log("Inventario:", this._llaves);
+        llave.destroy();
+    }
+
+    recibirDano(dano) {
+        if (this._muerto || this._recibiendoDano) return;
+        this._ataque = false;
+        this._vida -= dano;
+
+        if (this._vida <= 0) {
+            this._vida = 0;
+            this._vidas--;
+            this.gameRepository.vidas = this._vidas;
+            this._muerto = true;
+            this.setVelocity(0, 0);
+            this.play("playerDie");
         } else {
-            this.setVelocityX(0);
-            if (this.body.blocked.down && !this.ataque && !this.muerto) {
-                this.setTexture("player");
-            }
+            this._recibiendoDano = true;
+            this.setVelocity(0, 0);
+            this.play("playerDamage");
         }
+    }
 
-        if (this.teclas.saltar.isDown && this.body.blocked.down) {
+    respawn() {
+        this._vida = 100;
+        this.setPosition(this.spawnX, this.spawnY);
+        this.setVelocity(0, 0);
+        this.setActive(true);
+        this.setVisible(true);
+        this.body.enable = true;
+        this.setTexture("player");
+        this._muerto = false;
+        this._recibiendoDano = false;
+        this._ataque = false;
+    }
+
+    getType() { return "player"; }
+
+    moverIzquierda() {
+        this.setVelocityX(-this._velocidad);
+        this.setFlipX(true);
+        if (this.body.blocked.down) { this.play("caminar", true); }
+    }
+
+    moverDerecha() {
+        this.setVelocityX(this._velocidad);
+        this.setFlipX(false);
+        if (this.body.blocked.down) { this.play("caminar", true); }
+    }
+
+    detenerMovimiento() {
+        this.setVelocityX(0);
+        if (this.body.blocked.down && !this._ataque && !this._muerto) {
+            this.setTexture("player");
+        }
+    }
+
+    saltar() {
+        if (this.body.blocked.down) {
             this.setVelocityY(-500);
-            this.play("saltar", true);
-        }
-
-        if (!this.body.blocked.down && !this.ataque) {
             this.play("saltar", true);
         }
     }
