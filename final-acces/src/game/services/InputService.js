@@ -10,7 +10,7 @@ export default class InputService {
     constructor(scene) {
         this.scene = scene;
 
-        this.keys = scene.input.keyboard.addKeys({
+        this._keys = scene.input.keyboard.addKeys({
             W: Phaser.Input.Keyboard.KeyCodes.W,
             A: Phaser.Input.Keyboard.KeyCodes.A,
             S: Phaser.Input.Keyboard.KeyCodes.S,
@@ -22,26 +22,26 @@ export default class InputService {
     }
 
     isMovingLeft() {
-        return this.keys.A.isDown;
+        return this._keys.A.isDown;
     }
 
     isMovingRight() {
-        return this.keys.D.isDown;
+        return this._keys.D.isDown;
     }
 
     isJumping() {
-        return this.keys.SPACE.isDown || this.keys.W.isDown;
+        return this._keys.SPACE.isDown || this._keys.W.isDown;
     }
 
     isAttacking() {
-        return Phaser.Input.Keyboard.JustDown(this.keys.L);
+        return Phaser.Input.Keyboard.JustDown(this._keys.L);
     }
 
     isInteracting() {
-        return Phaser.Input.Keyboard.JustDown(this.keys.G);
+        return Phaser.Input.Keyboard.JustDown(this._keys.G);
     }
 
     getKey(keyCode) {
-        return this.keys[keyCode];
+        return this._keys[keyCode];
     }
 }

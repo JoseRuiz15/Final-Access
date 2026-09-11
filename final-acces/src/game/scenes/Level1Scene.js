@@ -3,13 +3,15 @@ import EntityFactory from '../factories/EntityFactory.js'
 import PhysicsService from '../services/PhysicsService.js'
 import InputService from '../services/InputService.js'
 import GameRepository from '../repositories/GameRepository.js'
+import PlayerController from '../controllers/PlayerController.js'
 import Key from '../entities/key.js'
 
+/** @implements {ISceneContract} */
 export default class Level1Scene extends Phaser.Scene {
 
   constructor() {
     super('Level1Scene')
-    this.recibiendoDaño = false
+    this.recibiendoDano = false
     this.llaveCercana = null
   }
 
@@ -140,15 +142,13 @@ export default class Level1Scene extends Phaser.Scene {
     this.proyectiles = this.physicsService.createGroup()
 
     // === CREACION DE ENTIDADES VIA FACTORY (OCP + DIP) ===
-    this.player = EntityFactory.createPlayer(this, 230, 600, 'player')
+    this.player = EntityFactory.createPlayer(this, 230, 600, 'player', this.gameRepository)
+    this.playerController = new PlayerController(this.player, this.inputService)
 
     this.registry.set("vidas", 5)
 
     this.player.on('animationcomplete-playerDie', () => {
-      this.player.body.enable = false
-      this.time.delayedCall(100, () => {
-        this.player.respawn()
-      })
+      this.onPlayerDeath()
     })
 
     this.cameras.main.startFollow(this.player)
@@ -165,7 +165,7 @@ export default class Level1Scene extends Phaser.Scene {
       if (!this.player.muerto && this.player.body.blocked.down) {
         this.player.setTexture('player')
       }
-      this.player.recibiendoDaño = false
+      this.player.recibiendoDano = false
       this.player.setTexture('player')
     })
 
@@ -187,15 +187,19 @@ export default class Level1Scene extends Phaser.Scene {
     // === ENEMIGOS VIA FACTORY (OCP) ===
     this.enemies = this.add.group()
 
-    const enemy1 = EntityFactory.createEnemy(this, 700, 650, 'enemyWalk', { vida: 20, limiteIzquierdo: 670, limiteDerecho: 1100 })
-    const enemy2 = EntityFactory.createEnemy(this, 1100, 550, 'enemyWalk', { vida: 20, limiteIzquierdo: 670, limiteDerecho: 1100 })
-    const enemy3 = EntityFactory.createEnemy(this, 1500, 650, 'enemyWalk', { vida: 20, limiteIzquierdo: 1600, limiteDerecho: 2100 })
+    const enemy1 = EntityFactory.createEnemy(this, 700, 650, 'enemyWalk', { vida: 20, limiteIzquierdo: 670, limiteDerecho: 1100 }, this.gameRepository)
+    const enemy2 = EntityFactory.createEnemy(this, 1100, 550, 'enemyWalk', { vida: 20, limiteIzquierdo: 670, limiteDerecho: 1100 }, this.gameRepository)
+    const enemy3 = EntityFactory.createEnemy(this, 1500, 650, 'enemyWalk', { vida: 20, limiteIzquierdo: 1600, limiteDerecho: 2100 }, this.gameRepository)
+
+    enemy1.target = this.player
+    enemy2.target = this.player
+    enemy3.target = this.player
 
     this.enemies.addMultiple([enemy1, enemy2, enemy3])
 
     this.enemies.getChildren().forEach((enemy) => {
       enemy.on('animationcomplete-enemyDamage', () => {
-        enemy.recibiendoDaño = false
+        enemy.recibiendoDano = false
         if (!enemy.muerto) {
           enemy.play('enemyWalk')
         }
@@ -210,10 +214,12 @@ export default class Level1Scene extends Phaser.Scene {
     this.box5 = EntityFactory.createBox(this, 920, 660)
     this.boxes = [this.box1, this.box2, this.box3, this.box4, this.box5]
 
+    // === INYECCION DE REFERENCIAS (DIP) ===
+    this.player.enemies = this.enemies
+    this.player.boxes = this.boxes
+
     // === LLAVES ===
     this.keys = this.physics.add.group({ classType: Key })
-
-    this.teclaG = this.inputService.keys.G
 
     this.imgRecogerLlave = this.add.image(0, 0, 'imgRecogerLlave')
     this.imgRecogerLlave.setScale(0.25)
@@ -244,7 +250,7 @@ export default class Level1Scene extends Phaser.Scene {
     this.physicsService.addCollider(this.keys, groundLayer)
 
     this.physicsService.addOverlap(this.player, this.proyectiles, (player, proyectil) => {
-      player.recibirDaño(20)
+      player.recibirDano(20)
       proyectil.destroy()
     })
   }
@@ -255,16 +261,26 @@ export default class Level1Scene extends Phaser.Scene {
     explosion.once('animationcomplete-explosion', () => explosion.destroy())
   }
 
+  onPlayerDeath() {
+    this.player.body.enable = false
+    this.time.delayedCall(100, () => {
+      this.player.respawn()
+    })
+  }
+
+  onEnemyDied() {
+    console.log('Enemigo derrotado')
+  }
+
   update() {
-    const presionoG = Phaser.Input.Keyboard.JustDown(this.teclaG)
+    const presionoG = this.inputService.isInteracting()
 
     if (this.player.active && this.player.y > 900) {
-      this.player.recibirDaño(9999)
+      this.player.recibirDano(9999)
     }
-    console.log(this.player.y)
 
     if (this.player && this.player.active) {
-      this.player.mover()
+      this.playerController.handleInput()
     }
 
     this.enemies.getChildren().forEach((enemy) => {

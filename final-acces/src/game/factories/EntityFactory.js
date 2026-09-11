@@ -2,38 +2,41 @@ import Player from "../entities/player.js";
 import Enemy from "../entities/enemy.js";
 import Box from "../entities/box.js";
 import Key from "../entities/key.js";
+import AttackHitbox from "../entities/attackHitbox.js";
+import Projectile from "./projectile.js";
 
 /**
  * Factory central para crear entidades del juego.
- * Principio OCP: para agregar nuevos tipos, se agrega un metodo nuevo
+ * OCP: para agregar nuevos tipos, se agrega un metodo nuevo
  * sin modificar codigo existente.
- * Principio SRP: unica responsabilidad es crear entidades.
+ * SRP: unica responsabilidad es crear entidades.
+ * DIP: entidades no crean otras entidades directamente.
  */
 export default class EntityFactory {
 
     /**
-     * Crea un jugador.
-     * @param {Phaser.Scene} scene - Escena Phaser
-     * @param {number} x - Posicion X
-     * @param {number} y - Posicion Y
-     * @param {string} texture - Key de textura
+     * @param {Phaser.Scene} scene
+     * @param {number} x
+     * @param {number} y
+     * @param {string} texture
+     * @param {GameRepository} gameRepository
      * @returns {Player}
      */
-    static createPlayer(scene, x, y, texture) {
-        return new Player(scene, x, y, texture);
+    static createPlayer(scene, x, y, texture, gameRepository) {
+        return new Player(scene, x, y, texture, gameRepository);
     }
 
     /**
-     * Crea un enemigo generico.
-     * @param {Phaser.Scene} scene - Escena Phaser
-     * @param {number} x - Posicion X
-     * @param {number} y - Posicion Y
-     * @param {string} texture - Key de textura
-     * @param {object} config - Configuracion opcional
+     * @param {Phaser.Scene} scene
+     * @param {number} x
+     * @param {number} y
+     * @param {string} texture
+     * @param {object} config
+     * @param {GameRepository} gameRepository
      * @returns {Enemy}
      */
-    static createEnemy(scene, x, y, texture, config = {}) {
-        const enemy = new Enemy(scene, x, y, texture);
+    static createEnemy(scene, x, y, texture, config = {}, gameRepository = null) {
+        const enemy = new Enemy(scene, x, y, texture, gameRepository);
         if (config.vida) enemy.vida = config.vida;
         if (config.velocidad) enemy.velocidad = config.velocidad;
         if (config.limiteIzquierdo) enemy.limiteIzquierdo = config.limiteIzquierdo;
@@ -42,11 +45,10 @@ export default class EntityFactory {
     }
 
     /**
-     * Crea una caja.
-     * @param {Phaser.Scene} scene - Escena Phaser
-     * @param {number} x - Posicion X
-     * @param {number} y - Posicion Y
-     * @param {object|null} keyData - Datos de llave opcional
+     * @param {Phaser.Scene} scene
+     * @param {number} x
+     * @param {number} y
+     * @param {object|null} keyData
      * @returns {Box}
      */
     static createBox(scene, x, y, keyData = null) {
@@ -54,12 +56,11 @@ export default class EntityFactory {
     }
 
     /**
-     * Crea una llave.
-     * @param {Phaser.Scene} scene - Escena Phaser
-     * @param {number} x - Posicion X
-     * @param {number} y - Posicion Y
-     * @param {string} texture - Key de textura
-     * @param {object} datos - Datos de la llave
+     * @param {Phaser.Scene} scene
+     * @param {number} x
+     * @param {number} y
+     * @param {string} texture
+     * @param {object} datos
      * @returns {Key}
      */
     static createKey(scene, x, y, texture, datos) {
@@ -67,8 +68,30 @@ export default class EntityFactory {
     }
 
     /**
+     * @param {Phaser.Scene} scene
+     * @param {number} x
+     * @param {number} y
+     * @param {number} damage
+     * @param {object} owner
+     * @returns {AttackHitbox}
+     */
+    static createAttackHitbox(scene, x, y, damage, owner) {
+        return new AttackHitbox(scene, x, y, 40, 30, damage, owner);
+    }
+
+    /**
+     * @param {Phaser.Scene} scene
+     * @param {number} x
+     * @param {number} y
+     * @param {string} texture
+     * @returns {Projectile}
+     */
+    static createProjectile(scene, x, y, texture) {
+        return new Projectile(scene, x, y, texture);
+    }
+
+    /**
      * Enemigo tipo patrullero (rapido, poca vida).
-     * Principio OCP: nuevo tipo sin tocar codigo existente.
      */
     static createPatrolEnemy(scene, x, y, texture) {
         return EntityFactory.createEnemy(scene, x, y, texture, {

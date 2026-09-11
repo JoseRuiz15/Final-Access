@@ -3,12 +3,14 @@ import EntityFactory from '../factories/EntityFactory.js'
 import PhysicsService from '../services/PhysicsService.js'
 import InputService from '../services/InputService.js'
 import GameRepository from '../repositories/GameRepository.js'
+import PlayerController from '../controllers/PlayerController.js'
 
+/** @implements {ISceneContract} */
 export default class Level2Scene extends Phaser.Scene {
 
     constructor() {
         super('Level2Scene')
-        this.recibiendoDaño = false
+        this.recibiendoDano = false
         this.llaveCercana = null
     }
 
@@ -84,14 +86,12 @@ export default class Level2Scene extends Phaser.Scene {
         this.physicsService.setBounds(map.widthInPixels, map.heightInPixels)
 
         // === PLAYER VIA FACTORY (OCP) ===
-        this.player = EntityFactory.createPlayer(this, 230, 600, 'player')
+        this.player = EntityFactory.createPlayer(this, 230, 600, 'player', this.gameRepository)
+        this.playerController = new PlayerController(this.player, this.inputService)
         this.registry.set("vidas", 5)
 
         this.player.on('animationcomplete-playerDie', () => {
-            this.player.body.enable = false
-            this.time.delayedCall(100, () => {
-                this.player.respawn()
-            })
+            this.onPlayerDeath()
         })
         this.cameras.main.startFollow(this.player)
 
@@ -107,7 +107,7 @@ export default class Level2Scene extends Phaser.Scene {
             if (!this.player.muerto && this.player.body.blocked.down) {
                 this.player.setTexture('player')
             }
-            this.player.recibiendoDaño = false
+            this.player.recibiendoDano = false
             this.player.setTexture('player')
         })
 
@@ -134,7 +134,7 @@ export default class Level2Scene extends Phaser.Scene {
 
         this.enemies.getChildren().forEach((enemy) => {
             enemy.on('animationcomplete-enemyDamage', () => {
-                enemy.recibiendoDaño = false
+                enemy.recibiendoDano = false
                 if (!enemy.muerto) {
                     enemy.play('enemyWalk')
                 }
@@ -151,7 +151,7 @@ export default class Level2Scene extends Phaser.Scene {
         })
 
         this.physicsService.addOverlap(this.player, this.proyectiles, (player, proyectil) => {
-            player.recibirDaño(20)
+            player.recibirDano(20)
             proyectil.destroy()
         })
     }
@@ -162,9 +162,20 @@ export default class Level2Scene extends Phaser.Scene {
         explosion.once('animationcomplete-explosion', () => explosion.destroy())
     }
 
+    onPlayerDeath() {
+        this.player.body.enable = false
+        this.time.delayedCall(100, () => {
+            this.player.respawn()
+        })
+    }
+
+    onEnemyDied() {
+        console.log('Enemigo derrotado')
+    }
+
     update() {
         if (this.player.active && this.player.y > 900) {
-            this.player.recibirDaño(9999)
+            this.player.recibirDano(9999)
         }
 
         this.enemies.getChildren().forEach((enemy) => {
@@ -179,6 +190,6 @@ export default class Level2Scene extends Phaser.Scene {
         this.bg4.tilePositionX += (camX * 0.4 - this.bg4.tilePositionX) * 0.08
         this.bg5.tilePositionX += (camX * 0.6 - this.bg5.tilePositionX) * 0.08
 
-        this.player.mover()
+        this.playerController.handleInput()
     }
 }
