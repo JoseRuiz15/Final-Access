@@ -2,7 +2,7 @@ import Phaser from "phaser";
 
 /**
  * Encapsula toda la entrada de teclado.
- * Principio SRP: unica responsabilidad es gestionar entradas.
+ * Principio SRP: unica responsabilidad es gestionar o declarar las entradas.
  * Principio DIP: los controllers dependen de esta abstraccion.
  */
 export default class InputService {
