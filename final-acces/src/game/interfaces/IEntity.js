@@ -9,3 +9,4 @@ export default class IEntity {
   getType() {throw new Error('Method "getType()" must be implemented.');}
 
 }
+
