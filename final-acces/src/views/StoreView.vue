@@ -2,6 +2,7 @@
 import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
 import { ref } from 'vue'
+import { initFlowbite } from 'flowbite'
 
 const mostrarConfirmacion = ref(false)
 const personajeSeleccionado = ref(null)
@@ -105,7 +106,7 @@ onMounted(() => {
           <!-- grid de 3 -->
           <div class="grid grid-cols-4 gap-8 ">
 
-        <button @click="seleccionarPersonaje('samurai')"class="w-32 h-32 bg-[#161C37] rounded-xl border-2 border-[#45495C] flex flex-col items-center justify-center transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[inset_0_0_20px_#FB00FF] hover:-translate-y-2">
+        <button @click="seleccionarPersonaje('samurai')" class="w-32 h-32 bg-[#161C37] rounded-xl border-2 border-[#45495C] flex flex-col items-center justify-center transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[inset_0_0_20px_#FB00FF] hover:-translate-y-2">
             <span class="font-pixel text-white text-[10px]">SAMURAI</span>
             <span class="font-pixel text-[#973BE8] text-[10px]">Epica</span>
         </button>
