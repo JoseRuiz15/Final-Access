@@ -45,6 +45,11 @@ export default class Level1Scene extends Phaser.Scene {
 
     this.proyectiles = this.physicsService.createGroup()
 
+        const doors = mapResult.objectLayers['DoorObjet']
+    const doorSprite = this.add.image(
+      doors.objects[0].x + 32, doors.objects[0].y + 32, 'redDoor'
+    )
+
     const { player, controller } = this._createPlayer()
     this.player = player
     this.playerController = controller
@@ -57,10 +62,6 @@ export default class Level1Scene extends Phaser.Scene {
     this.player.enemies = this.enemies
     this.player.boxes = this.boxes
 
-    const doors = mapResult.objectLayers['DoorObjet']
-    const doorSprite = this.add.image(
-      doors.objects[0].x + 32, doors.objects[0].y + 32, 'redDoor'
-    )
 
     CollisionSetup.setup(this.physicsService, {
       player: this.player,
