@@ -1,93 +1,58 @@
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
 import Phaser from 'phaser'
-import Hud from "@/components/HUD.vue";
-import Level1Scene from '@/game/scenes/Level1Scene.js'
+import Hud from '@/components/HUD.vue'
+import SceneFactory from '@/game/factories/SceneFactory.js'
 let game
 
 onMounted(() => {
+  const scene = SceneFactory.createLevel1Scene()
 
-    const config = {
-        type: Phaser.AUTO,
+  const config = {
+    type: Phaser.AUTO,
 
-        width: 1280,
-        height: 720,
+    width: 1280,
+    height: 720,
 
-        parent: 'game-container',
+    parent: 'game-container',
 
-        pixelArt: true,
+    pixelArt: true,
 
-       render: {
-           antialias: false
-       },
+    render: {
+      antialias: false,
+    },
 
-        scale: {
-            mode: Phaser.Scale.ENVELOP,
-            autoCenter: Phaser.Scale.CENTER_BOTH
-        },
+    scale: {
+      mode: Phaser.Scale.ENVELOP,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+    },
 
-        physics: {
-            default: 'arcade',
-            arcade: {
-                gravity: { y: 800 },
-                debug: false
-            }
-        },
+    physics: {
+      default: 'arcade',
+      arcade: {
+        gravity: { y: 800 },
+        debug: false,
+      },
+    },
 
-        scene: Level1Scene
-    }
+    scene: scene,
+  }
 
-    game = new Phaser.Game(config)
-
+  game = new Phaser.Game(config)
 })
 
 onBeforeUnmount(() => {
-
-    if (game) {
-        game.destroy(true)
-    }
-
+  if (game) {
+    game.destroy(true)
+  }
 })
 </script>
 
 <template>
-
-  <div
-    class="relative"
-    style="
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-    "
-  >
-
+  <div class="relative" style="width: 100vw; height: 100vh; overflow: hidden">
     <!-- Phaser -->
-    <div
-      id="game-container"
-      style="
-        width: 100%;
-        height: 100%;
-      "
-    ></div>
+    <div id="game-container" style="width: 100%; height: 100%"></div>
 
     <Hud />
   </div>
-
 </template>
-
-
-
-<!--
-<template>
-  <div
-    id="game-container"
-    style="
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-    "
-  ></div>
-</template>
--->
-
-

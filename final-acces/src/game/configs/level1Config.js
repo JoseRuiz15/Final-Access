@@ -67,7 +67,17 @@ export const LEVEL1_CONFIG = {
   ],
 
   boxes: [
-    { x: 780, y: 435, keyData: { texture: 'key2', grupo: 'keys', color: 'silver', efecto: 'ninguno', correcta: true } },
+    {
+      x: 780,
+      y: 435,
+      keyData: {
+        texture: 'key2',
+        grupo: 'keys',
+        color: 'silver',
+        efecto: 'ninguno',
+        correcta: true,
+      },
+    },
     { x: 812, y: 435 },
     { x: 844, y: 435 },
     { x: 812, y: 403 },
@@ -75,4 +85,14 @@ export const LEVEL1_CONFIG = {
   ],
 
   player: { x: 230, y: 600 },
+
+  collisionRules: [
+    'PlayerGroundRule',
+    'EnemyGroundRule',
+    'BoxGroundRule',
+    'BoxBoxRule',
+    'PlayerBoxRule',
+    'KeyGroundRule',
+    'ProjectilePlayerRule',
+  ],
 }

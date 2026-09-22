@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import Phaser from 'phaser'
 
 /**
  * Clase base abstracta para entidades del juego.
@@ -8,61 +8,60 @@ import Phaser from "phaser";
  * sin modificar código existente.
  */
 export default class Entity extends Phaser.Physics.Arcade.Sprite {
+  constructor(scene, x, y, texture) {
+    super(scene, x, y, texture)
+    this.scene = scene
+  }
 
-    constructor(scene, x, y, texture) {
-        super(scene, x, y, texture);
-        this.scene = scene;
+  /**
+   * @returns {{x: number, y: number}}
+   */
+  getPosition() {
+    return { x: this.x, y: this.y }
+  }
+
+  /**
+   * @returns {number}
+   */
+  getHealth() {
+    return this.vida
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  isAlive() {
+    return this.vida > 0
+  }
+
+  /**
+   * @param {number} amount
+   * @returns {boolean} true si murio
+   */
+  takeDamage(amount) {
+    this.vida -= amount
+    if (this.vida < 0) {
+      this.vida = 0
     }
+    return this.vida <= 0
+  }
 
-    /**
-     * @returns {{x: number, y: number}}
-     */
-    getPosition() {
-        return { x: this.x, y: this.y };
-    }
+  /**
+   * @param {number} _delta
+   */
+  update(_delta) {}
 
-    /**
-     * @returns {number}
-     */
-    getHealth() {
-        return this.vida;
-    }
+  /**
+   * @returns {Phaser.Textures.Texture}
+   */
+  getTexture() {
+    return this.texture
+  }
 
-    /**
-     * @returns {boolean}
-     */
-    isAlive() {
-        return this.vida > 0;
-    }
-
-    /**
-     * @param {number} amount
-     * @returns {boolean} true si murio
-     */
-    takeDamage(amount) {
-        this.vida -= amount;
-        if (this.vida < 0) {
-            this.vida = 0;
-        }
-        return this.vida <= 0;
-    }
-
-    /**
-     * @param {number} _delta
-     */
-    update(_delta) {}
-
-    /**
-     * @returns {Phaser.Textures.Texture}
-     */
-    getTexture() {
-        return this.texture;
-    }
-
-    /**
-     * @returns {string}
-     */
-    getType() {
-        return "entity";
-    }
+  /**
+   * @returns {string}
+   */
+  getType() {
+    return 'entity'
+  }
 }

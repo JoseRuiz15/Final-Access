@@ -1,5 +1,4 @@
 export default class ParallaxBuilder {
-
   static create(scene, layers, scale = 0.8) {
     const fondoAncho = scene.scale.width / scale
     const fondoAlto = scene.scale.height / scale
@@ -7,7 +6,9 @@ export default class ParallaxBuilder {
     const fondoY = (scene.scale.height - fondoAlto) / 2
 
     const elements = layers.map(({ key, speed, depth = 0, offsetY = 0 }) => {
-      const bg = scene.add.tileSprite(fondoX, fondoY + offsetY, fondoAncho, fondoAlto, key).setOrigin(0)
+      const bg = scene.add
+        .tileSprite(fondoX, fondoY + offsetY, fondoAncho, fondoAlto, key)
+        .setOrigin(0)
       bg.setScrollFactor(0)
       bg.setDepth(depth)
       return { bg, speed }

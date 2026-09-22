@@ -1,5 +1,4 @@
 export default class TutorialUI {
-
   static create(scene, tutorialImages) {
     const elements = {}
 
@@ -14,7 +13,7 @@ export default class TutorialUI {
   }
 
   static hideAll(elements) {
-    Object.values(elements).forEach(el => el.setVisible(false))
+    Object.values(elements).forEach((el) => el.setVisible(false))
   }
 
   static show(elements, key) {
