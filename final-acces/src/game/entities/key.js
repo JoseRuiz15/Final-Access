@@ -1,28 +1,33 @@
-import Phaser from "phaser";
+import Entity from './Entity.js'
 
-class Key extends Phaser.Physics.Arcade.Sprite {
+class Key extends Entity {
+  constructor(scene, x, y, texture, datos) {
+    super(scene, x, y, texture)
 
-    constructor(scene, x, y, texture, datos) {
+    this.grupo = datos.grupo
+    this.color = datos.color
+    this.efecto = datos.efecto
+    this.correcta = datos.correcta
 
-        super(scene, x, y, texture);
+    scene.add.existing(this)
+    scene.physics.add.existing(this)
 
-        this.grupo = datos.grupo;
-        this.color = datos.color;
-        this.efecto = datos.efecto;
-        this.correcta = datos.correcta;
+    this.setCollideWorldBounds(true)
+    this.setBounce(0.2)
 
-        scene.add.existing(this);
-        scene.physics.add.existing(this);
-
-        this.setCollideWorldBounds(true);
-        this.setBounce(0.2);
-        //this.setScale(1.3);
-
-        if (texture === "key2") {
-            this.play("key2Spin");
-        }
+    if (texture === 'key2') {
+      this.play('key2Spin')
     }
+  }
 
+  pickUp(player) {
+    player.recogerLlave(this)
+    this.destroy()
+  }
+
+  getType() {
+    return 'key'
+  }
 }
 
-export default Key;
+export default Key

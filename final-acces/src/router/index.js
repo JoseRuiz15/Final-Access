@@ -21,74 +21,74 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
     },
     {
       path: '/login',
       name: 'login',
-      component: LoginView
+      component: LoginView,
     },
     {
       path: '/register',
       name: 'register',
-      component: RegisterView
+      component: RegisterView,
     },
     {
       path: '/gamemode',
       name: 'gamemode',
-      component: GameModeView
+      component: GameModeView,
     },
     {
       path: '/codeverification',
       name: 'codeverification',
-      component: CodeVerificationView
+      component: CodeVerificationView,
     },
     {
       path: '/lobby',
       name: 'lobby',
-      component: LobbyView
+      component: LobbyView,
     },
     {
       path: '/characters',
       name: 'characters',
-      component: CharactersView
+      component: CharactersView,
     },
     {
       path: '/levels',
       name: 'levels',
-      component: LevelsView
+      component: LevelsView,
     },
     {
       path: '/multiplayer',
       name: 'multiplayer',
-      component: MultiplayerView
+      component: MultiplayerView,
     },
     {
-    path: '/store',
-    name: 'store',
-    component: StoreView
+      path: '/store',
+      name: 'store',
+      component: StoreView,
     },
     {
-    path: '/create',
-    name: 'create',
-    component: CreateView
+      path: '/create',
+      name: 'create',
+      component: CreateView,
     },
     {
-    path: '/loading',
-    name: 'loading',
-    component: LoadingScene
+      path: '/loading',
+      name: 'loading',
+      component: LoadingScene,
     },
     {
       path: '/mission',
       name: 'mission',
-      component: MissionView
+      component: MissionView,
     },
     {
       path: '/game',
       name: 'game',
-      component: GameView
-    }
-  ]
+      component: GameView,
+    },
+  ],
 })
 
 export default router

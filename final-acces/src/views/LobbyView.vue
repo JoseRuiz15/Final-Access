@@ -44,11 +44,17 @@ onMounted(() => {
         class="w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
       >
         <!-- Usuario -->
-        <div class="bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center">
+        <div
+          class="bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
+        >
           <div class="w-[100px] h-[100px] border-3 border-[#444665] rounded-lg overflow-hidden">
-            <img src="/img/profile/perfil.png" alt="imagen de perfil" class="w-full h-full object-cover" />
+            <img
+              src="/img/profile/perfil.png"
+              alt="imagen de perfil"
+              class="w-full h-full object-cover"
+            />
           </div>
-          <div class="flex flex-col ml-10"> 
+          <div class="flex flex-col ml-10">
             <p class="text-white text-[30px] font-pixel">DIN_03</p>
             <p class="text-[#FB00FF] text-[14px] font-pixel mt-1">Nivel 1</p>
           </div>
@@ -56,7 +62,11 @@ onMounted(() => {
 
         <!-- Menú central -->
         <nav class="flex items-center gap-20 ml-16">
-          <h1 class="text-[#FB00FF] hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2] font-pixel">INICIO</h1>
+          <h1
+            class="text-[#FB00FF] hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2] font-pixel"
+          >
+            INICIO
+          </h1>
 
           <button @click="irCharacters">
             <h1
@@ -82,18 +92,27 @@ onMounted(() => {
             <h1 class="font-pixel text-[20px] text-[#FB00FF]">12.000</h1>
           </div>
 
-          <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
+          <button
+            class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]"
+          >
             <img src="/img/iconos/ajustes.png" alt="ajustes" class="w-full h-full object-cover" />
           </button>
 
-          <button class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
+          <button
+            class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]"
+          >
             <img src="/img/iconos/mensajes.png" alt="mensajes" class="w-full h-full object-cover" />
           </button>
 
-          <button @click="mostrarConfirmacion = true" class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]">
-            <img src="/img/iconos/salida.png"
-                alt="cierre de sesión"
-                class="w-full h-full object-cover"/>
+          <button
+            @click="mostrarConfirmacion = true"
+            class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]"
+          >
+            <img
+              src="/img/iconos/salida.png"
+              alt="cierre de sesión"
+              class="w-full h-full object-cover"
+            />
           </button>
         </div>
       </header>
@@ -102,7 +121,9 @@ onMounted(() => {
       <main class="flex justify-between px-10 pt-20 flex-1">
         <!-- Lado izquierdo -->
         <section class="flex flex-col gap-10">
-          <button class="h-20 w-80 border-4 border-[#00FFEA] bg-[#000004] rounded-lg flex items-center transition-all duration-300 hover:shadow-[0_0_20px_#00FFEA] hover:-translate-y-2">
+          <button
+            class="h-20 w-80 border-4 border-[#00FFEA] bg-[#000004] rounded-lg flex items-center transition-all duration-300 hover:shadow-[0_0_20px_#00FFEA] hover:-translate-y-2"
+          >
             <div class="h-15 w-15 ml-[10px] rounded-lg">
               <img src="/img/iconos/clasificatoria.png" alt="imagen" />
             </div>
@@ -110,7 +131,9 @@ onMounted(() => {
             <h1 class="text-[#9898BD] font-pixel text-[15px] ml-[10px]">CLASIFICATORIA</h1>
           </button>
 
-          <button class="h-20 w-80 border-4 border-[#00FFEA] bg-[#000004] rounded-lg flex items-center transition-all duration-300 hover:shadow-[0_0_20px_#00FFEA] hover:-translate-y-2">
+          <button
+            class="h-20 w-80 border-4 border-[#00FFEA] bg-[#000004] rounded-lg flex items-center transition-all duration-300 hover:shadow-[0_0_20px_#00FFEA] hover:-translate-y-2"
+          >
             <div class="h-15 w-15 ml-[10px] rounded-lg">
               <img src="/img/iconos/amigos.png" alt="imagen" />
             </div>
@@ -309,26 +332,30 @@ onMounted(() => {
     </div>
   </section>
 
-  <div v-if="mostrarConfirmacion" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+  <div
+    v-if="mostrarConfirmacion"
+    class="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+  >
+    <div class="w-[700px] h-[400px] bg-black border-4 border-[#8B7A91] rounded-lg">
+      <h1 class="font-pixel text-[#FB00FF] text-3xl text-center mt-8">
+        ¿ESTÁS SEGURO DE QUE QUIERES SALIR?
+      </h1>
 
-  <div class="w-[700px] h-[400px] bg-black border-4 border-[#8B7A91] rounded-lg">
-    <h1 class="font-pixel text-[#FB00FF] text-3xl text-center mt-8">
-      ¿ESTÁS SEGURO DE QUE QUIERES SALIR?
-    </h1>
+      <div class="flex flex-col items-center gap-8 mt-16">
+        <button
+          @click="irLoggin"
+          class="font-pixel text-white w-[250px] h-[60px] bg-[#2A1A4B] rounded-xl border-2 border-fuchsia-500 transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
+        >
+          SI
+        </button>
 
-    <div class="flex flex-col items-center gap-8 mt-16">
-
-      <button @click="irLoggin" class="font-pixel text-white w-[250px] h-[60px] bg-[#2A1A4B] rounded-xl border-2 border-fuchsia-500 transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2">
-        SI
-      </button>
-
-      <button
-        @click="mostrarConfirmacion = false"
-        class="font-pixel text-white w-[250px] h-[60px] bg-[#2A1A4B] rounded-xl border-2 border-fuchsia-500 transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
-      >
-        NO
-      </button>
+        <button
+          @click="mostrarConfirmacion = false"
+          class="font-pixel text-white w-[250px] h-[60px] bg-[#2A1A4B] rounded-xl border-2 border-fuchsia-500 transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
+        >
+          NO
+        </button>
+      </div>
     </div>
   </div>
-</div>
 </template>

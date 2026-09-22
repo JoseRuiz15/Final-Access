@@ -1,30 +1,29 @@
-import Phaser from "phaser";
+import Phaser from 'phaser'
 
-class AttackHitbox extends Phaser.GameObjects.Zone {
+class AttackHitbox extends Phaser.Physics.Arcade.Sprite {
+  constructor(scene, x, y, width, height, damage, owner) {
+    super(scene, x, y, 'player')
 
-    constructor(scene, x, y, width, height, damage, owner) {
+    scene.add.existing(this)
+    scene.physics.add.existing(this)
 
-        super(scene, x, y, width, height);
+    this.setDisplaySize(width, height)
+    this.setVisible(false)
+    this.setAlpha(0)
 
-        this.damage = damage;
-        this.owner = owner;
+    this.body.setAllowGravity(false)
+    this.body.setImmovable(true)
+    this.body.setSize(width, height)
 
-        scene.add.existing(this);
-        scene.physics.add.existing(this);
+    this.damage = damage
+    this.owner = owner
 
-        this.body.setAllowGravity(false);
-        this.body.setImmovable(true);
-
-        scene.time.delayedCall(150, () => {
-
-            if (this.active) {
-                this.destroy();
-            }
-
-        });
-
-    }
-
+    scene.time.delayedCall(300, () => {
+      if (this.active) {
+        this.destroy()
+      }
+    })
+  }
 }
 
-export default AttackHitbox;
+export default AttackHitbox

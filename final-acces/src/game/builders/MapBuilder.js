@@ -1,5 +1,4 @@
 export default class MapBuilder {
-
   static create(scene, config, physicsService) {
     const { mapKey, tilesets, layers, objectLayers = [] } = config
 

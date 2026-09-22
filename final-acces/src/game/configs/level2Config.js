@@ -46,4 +46,14 @@ export const LEVEL2_CONFIG = {
   boxes: [],
 
   player: { x: 230, y: 600 },
+
+  collisionRules: [
+    'PlayerGroundRule',
+    'EnemyGroundRule',
+    'BoxGroundRule',
+    'BoxBoxRule',
+    'PlayerBoxRule',
+    'KeyGroundRule',
+    'ProjectilePlayerRule',
+  ],
 }

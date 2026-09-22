@@ -1,181 +1,136 @@
-import Entity from "./Entity.js";
-import EntityFactory from "../factories/EntityFactory.js";
+import Entity from './Entity.js'
+import MovementComponent from '../components/movement/MovementComponent.js'
+import MeleeAttackComponent from '../components/combat/MeleeAttackComponent.js'
+import InventoryComponent from '../components/inventory/InventoryComponent.js'
+import PlayerHealthComponent from '../components/health/PlayerHealthComponent.js'
+import PlayerAnimationComponent from '../components/animation/PlayerAnimationComponent.js'
+
 /** @implements {IEntity} */
-
 export default class Player extends Entity {
+  constructor(scene, x, y, texture, gameRepository) {
+    super(scene, x, y, texture)
 
-    constructor(scene, x, y, texture, gameRepository) {
-        super(scene, x, y, texture);
+    this.spawnX = x
+    this.spawnY = y
+    this.gameRepository = gameRepository
+    this._enemies = null
+    this._boxes = null
 
-        this.spawnX = x;
-        this.spawnY = y;
-        this.gameRepository = gameRepository;
-        this._enemies = null;
-        this._boxes = null;
+    this.setDisplaySize(48, 48)
+    this.texture = texture
 
-        this.setDisplaySize(48, 48);
-        this.texture = texture;
+    scene.add.existing(this)
+    scene.physics.add.existing(this)
+    this.body.setCollideWorldBounds(false)
 
-        this._vida = 100;
-        this._maxVida = 100;
-        this._vidas = 5;
-        this._velocidad = 160;
-        this._dano = 20;
-        this._ataque = false;
-        this._muerto = false;
-        this._recibiendoDano = false;
-        this._llaves = [];
+    this.movement = new MovementComponent(this)
+    this.attack = new MeleeAttackComponent(this)
+    this.inventory = new InventoryComponent(this, gameRepository)
+    this.health = new PlayerHealthComponent(this, gameRepository)
+    this.animation = new PlayerAnimationComponent(this)
+  }
 
-        scene.add.existing(this);
-        scene.physics.add.existing(this);
-        this.body.setCollideWorldBounds(false);
-    }
+  get vida() {
+    return this.health.vida
+  }
+  set vida(v) {
+    this.health.vida = v
+  }
 
-    get vida() { return this._vida; }
-    set vida(v) { this._vida = v; }
+  get maxVida() {
+    return this.health.maxVida
+  }
 
-    get maxVida() { return this._maxVida; }
+  get vidas() {
+    return this.health.vidas
+  }
+  set vidas(v) {
+    this.health.vidas = v
+  }
 
-    get vidas() { return this._vidas; }
-    set vidas(v) { this._vidas = v; }
+  get velocidad() {
+    return this.movement.velocidad
+  }
 
-    get velocidad() { return this._velocidad; }
+  get dano() {
+    return this.attack.dano
+  }
 
-    get dano() { return this._dano; }
+  get ataque() {
+    return this.health.muerto ? false : this._ataque
+  }
+  set ataque(v) {
+    this._ataque = v
+  }
+  _ataque = false
 
-    get ataque() { return this._ataque; }
-    set ataque(v) { this._ataque = v; }
+  get muerto() {
+    return this.health.muerto
+  }
+  set muerto(v) {
+    this.health.muerto = v
+  }
 
-    get muerto() { return this._muerto; }
-    set muerto(v) { this._muerto = v; }
+  get recibiendoDano() {
+    return this.health.recibiendoDano
+  }
+  set recibiendoDano(v) {
+    this.health.recibiendoDano = v
+  }
 
-    get recibiendoDano() { return this._recibiendoDano; }
-    set recibiendoDano(v) { this._recibiendoDano = v; }
+  get llaves() {
+    return this.inventory.llaves
+  }
 
-    get llaves() { return this._llaves; }
+  set enemies(e) {
+    this._enemies = e
+  }
+  set boxes(b) {
+    this._boxes = b
+  }
 
-    set enemies(e) { this._enemies = e; }
-    set boxes(b) { this._boxes = b; }
+  takeDamage(amount) {
+    return this.health.takeDamage(amount)
+  }
 
-    /**
-     * @param {number} amount
-     * @returns {boolean} true si murio
-     */
-    takeDamage(amount) {
-        this._vida -= amount;
-        if (this._vida <= 0) this._vida = 0;
+  update(delta) {
+    this.movement.update(delta)
+    this.animation.update(delta)
+  }
 
-        if (this._vida <= 0) {
-            this._vida = 0;
-            this._muerto = true;
-            this.setVelocity(0, 0);
-            this.play("playerDie");
-            this.scene.onPlayerDeath?.();
-            return true;
-        }
-        return false;
-    }
+  atacar() {
+    this.attack.execute()
+  }
 
-    update(_delta) {}
+  recogerLlave(llave) {
+    this.inventory.pickUp(llave)
+  }
 
-    atacar() {
-        if (this._ataque || this._recibiendoDano || this._muerto) return;
+  recibirDano(dano) {
+    this.health.recibirDano(dano)
+  }
 
-        this.setVelocityX(0);
-        this._ataque = true;
-        this.play("atacar");
+  respawn() {
+    this.health.respawn()
+  }
 
-        const offsetX = this.flipX ? -30 : 30;
-        const hitbox = EntityFactory.createAttackHitbox(
-            this.scene, this.x + offsetX, this.y, this._dano, this
-        );
+  getType() {
+    return 'player'
+  }
 
-        this.scene.physics.add.overlap(
-            hitbox, this._enemies,
-            (hitbox, enemigo) => {
-                const muerto = enemigo.takeDamage(hitbox.damage);
-                if (muerto) { this.scene.onEnemyDied?.(); }
-                hitbox.destroy();
-            }
-        );
+  moverIzquierda() {
+    this.movement.moveLeft()
+  }
 
-        this.scene.physics.add.overlap(
-            hitbox, this._boxes,
-            (hitbox, caja) => { caja.romper(); }
-        );
-    }
+  moverDerecha() {
+    this.movement.moveRight()
+  }
 
-    recogerLlave(llave) {
-        this._llaves.push({
-            texture: llave.texture.key,
-            grupo: llave.grupo,
-            color: llave.color,
-            efecto: llave.efecto,
-            correcta: llave.correcta
-        });
+  detenerMovimiento() {
+    this.movement.stop()
+  }
 
-        this.gameRepository.llaves = this._llaves.length;
-        console.log("Inventario:", this._llaves);
-        llave.destroy();
-    }
-
-    recibirDano(dano) {
-        if (this._muerto || this._recibiendoDano) return;
-        this._ataque = false;
-        this._vida -= dano;
-
-        if (this._vida <= 0) {
-            this._vida = 0;
-            this._vidas--;
-            this.gameRepository.vidas = this._vidas;
-            this._muerto = true;
-            this.setVelocity(0, 0);
-            this.play("playerDie");
-        } else {
-            this._recibiendoDano = true;
-            this.setVelocity(0, 0);
-            this.play("playerDamage");
-        }
-    }
-
-    respawn() {
-        this._vida = 100;
-        this.setPosition(this.spawnX, this.spawnY);
-        this.setVelocity(0, 0);
-        this.setActive(true);
-        this.setVisible(true);
-        this.body.enable = true;
-        this.setTexture("player");
-        this._muerto = false;
-        this._recibiendoDano = false;
-        this._ataque = false;
-    }
-
-    getType() { return "player"; }
-
-    moverIzquierda() {
-        this.setVelocityX(-this._velocidad);
-        this.setFlipX(true);
-        if (this.body.blocked.down) { this.play("caminar", true); }
-    }
-
-    moverDerecha() {
-        this.setVelocityX(this._velocidad);
-        this.setFlipX(false);
-        if (this.body.blocked.down) { this.play("caminar", true); }
-    }
-
-    detenerMovimiento() {
-        this.setVelocityX(0);
-        if (this.body.blocked.down && !this._ataque && !this._muerto) {
-            this.setTexture("player");
-        }
-    }
-
-    saltar() {
-        if (this.body.blocked.down) {
-            this.setVelocityY(-500);
-            this.play("saltar", true);
-        }
-    }
+  saltar() {
+    this.movement.jump()
+  }
 }

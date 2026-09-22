@@ -5,7 +5,6 @@
  * pero usando la configuración centralizada de frameRate y repeat.
  */
 export default class Animaciones {
-
   /**
    * Definiciones de animación para el jugador.
    * @returns {object} - frameRate y repeat centralizados
@@ -16,8 +15,8 @@ export default class Animaciones {
       saltar: { frameRate: 3, repeat: 0 },
       atacar: { frameRate: 18, repeat: 0 },
       playerDie: { frameRate: 12, repeat: 0 },
-      playerDamage: { frameRate: 12, repeat: 0 }
-    };
+      playerDamage: { frameRate: 12, repeat: 0 },
+    }
   }
 
   /**
@@ -28,7 +27,7 @@ export default class Animaciones {
     return {
       enemyWalk: { frameRate: 10, repeat: -1 },
       enemyAttack: { frameRate: 10, repeat: -1 },
-      enemyDamage: { frameRate: 12, repeat: 0 }
-    };
+      enemyDamage: { frameRate: 12, repeat: 0 },
+    }
   }
 }
