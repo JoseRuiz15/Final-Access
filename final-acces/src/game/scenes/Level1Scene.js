@@ -60,7 +60,7 @@ export default class Level1Scene extends Phaser.Scene {
     const doors = mapResult.objectLayers['DoorObjet']
     const doorSprite = this.add.image(
       doors.objects[0].x + 32, doors.objects[0].y + 32, 'redDoor'
-    )
+    ).setDepth(10)
 
     CollisionSetup.setup(this.physicsService, {
       player: this.player,

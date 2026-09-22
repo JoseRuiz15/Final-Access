@@ -50,7 +50,7 @@ export default class InteractionManager {
     // Verificar puerta cercana
     if (!doors) return
     doors.objects.forEach((puerta) => {
-      const distancia = Phaser.Math.Distance.Between(player.x, player.y, puerta.x, puerta.y)
+      const distancia = Phaser.Math.Distance.Between(player.x, player.y, puerta.x + 32, puerta.y + 32)
       if (distancia < 80) {
         const llaveNecesaria = puerta.properties.find(p => p.name === "llave_necesaria")?.value
         const tieneLlave = player.llaves.some(llave => llave.texture === llaveNecesaria)
