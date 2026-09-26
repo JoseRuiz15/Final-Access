@@ -82,12 +82,20 @@ export default class Player extends Entity {
     return this.inventory.llaves
   }
 
-  set enemies(e) {
-    this._enemies = e
-  }
-  set boxes(b) {
-    this._boxes = b
-  }
+ get enemies() {
+  return this._enemies
+}
+set enemies(e) {
+  this._enemies = e
+}
+
+get boxes() {
+  return this._boxes
+}
+set boxes(b) {
+  this._boxes = b
+}
+
 
   takeDamage(amount) {
     return this.health.takeDamage(amount)

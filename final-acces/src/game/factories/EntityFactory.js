@@ -35,11 +35,17 @@ export default class EntityFactory {
    * @returns {Enemy}
    */
   static createEnemy(scene, x, y, texture, config = {}, gameRepository = null) {
-    const enemy = new Enemy(scene, x, y, texture, gameRepository)
-    if (config.vida) enemy.vida = config.vida
-    if (config.velocidad) enemy.velocidad = config.velocidad
-    if (config.limiteIzquierdo) enemy.limiteIzquierdo = config.limiteIzquierdo
-    if (config.limiteDerecho) enemy.limiteDerecho = config.limiteDerecho
+    const enemy = new Enemy(scene, x, y, texture, config, gameRepository)
+    if (config.vida != null) enemy.vida = config.vida
+    if (config.velocidad != null) enemy.velocidad = config.velocidad
+    if (config.limiteIzquierdo != null) {
+    enemy.limiteIzquierdo = config.limiteIzquierdo
+    if (enemy.ai) enemy.ai.limiteIzquierdo = config.limiteIzquierdo
+  }
+    if (config.limiteDerecho != null) {
+      enemy.limiteDerecho = config.limiteDerecho
+      if (enemy.ai) enemy.ai.limiteDerecho = config.limiteDerecho
+    }
     return enemy
   }
 
