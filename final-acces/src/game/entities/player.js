@@ -23,6 +23,10 @@ export default class Player extends Entity {
     scene.physics.add.existing(this)
     this.body.setCollideWorldBounds(false)
 
+    // ★ Caja de colisión — ajústala a tu gusto
+    this.body.setSize(22, 30)    // ancho, alto del hitbox
+    this.body.setOffset(5, 1)    // desplazamiento X, Y respecto al sprite
+
     this.movement = new MovementComponent(this)
     this.attack = new MeleeAttackComponent(this)
     this.inventory = new InventoryComponent(this, gameRepository)

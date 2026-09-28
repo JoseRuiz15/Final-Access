@@ -16,7 +16,7 @@ export default class PlayerAnimationComponent {
       this.player.setTexture('player')
     })
 
-    this.player.on('animationcomplete-playerDie', () => {
+    this.player.on('animationcomplete-playerDead', () => {
       this.player.scene.onPlayerDeath?.()
     })
   }

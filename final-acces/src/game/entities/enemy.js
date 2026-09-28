@@ -14,6 +14,9 @@ export default class Enemy extends Entity {
 
     scene.add.existing(this)
     scene.physics.add.existing(this)
+    // ★ Caja de colisión — ajústala a tu gusto
+    this.body.setSize(40, 31)    // ancho, alto del hitbox
+    this.body.setOffset(5, 1)    // desplazamiento X, Y respecto al sprite
 
     this.setScale(1.5)
     this.setCollideWorldBounds(true)

@@ -7,6 +7,9 @@ export default class PatrolAI {
     this.limiteIzquierdo = config.limiteIzquierdo || 670
     this.limiteDerecho = config.limiteDerecho || 1100
     this.direccion = 1
+
+    this.rangoDeteccion = config.rangoDeteccion ?? 250
+    this.rangoAtaque = config.rangoAtaque ?? 100
   }
 
   update() {
@@ -27,6 +30,21 @@ export default class PatrolAI {
       this.enemy.target.x,
       this.enemy.target.y,
     )
+    // Si el jugador está lejos → solo patrulla
+    if (distancia > this.rangoDeteccion) {
+      this.patrol()
+      return
+    }
+
+    // Si está cerca → ataca
+    if (distancia < this.rangoAtaque) {
+      this.enemy.setVelocityX(0)
+      if (!this.enemy.anims.isPlaying || this.enemy.anims.currentAnim.key !== 'enemyAttack') {
+        this.enemy.play('enemyAttack', true)
+      }
+      this.enemy.atacar()
+      return
+    }
 
     if (distancia < 100) {
       this.enemy.setVelocityX(0)
