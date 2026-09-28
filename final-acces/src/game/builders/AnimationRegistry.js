@@ -21,7 +21,7 @@ export default class AnimationRegistry {
       repeat: 0,
     })
     scene.anims.create({
-      key: 'playerDie',
+      key: 'playerDead',
       frames: scene.anims.generateFrameNumbers('playerDead', { start: 0, end: 5 }),
       frameRate: 12,
       repeat: 0,

@@ -165,7 +165,7 @@ export default class BaseScene extends Phaser.Scene {
     }
 
     // Game over por caída
-    if (this.player?.active && this.player.y > 900) {
+    if (this.player?.active && !this.player.muerto && this.player.y > 900) {
       this.player.recibirDano(9999)
     }
 
