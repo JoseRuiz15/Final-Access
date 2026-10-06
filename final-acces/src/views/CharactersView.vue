@@ -1,19 +1,10 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import { useGameStore } from '@/stores/game'
 //import { onMounted } from 'vue'
 const mostrarConfirmacion = ref(false)
 const router = useRouter()
-
-function irLoggin() {
-  router.push('/login')
-}
-function irLobby() {
-  router.push('/lobby')
-}
-
-function irStore() {
-  router.push('/store')
-}
+const gameStore = useGameStore()
 
 import { ref } from 'vue'
 
@@ -21,6 +12,7 @@ const personajeSeleccionado = ref(0)
 
 const personajes = [
   {
+    id: 'cosa1',
     nombre: 'Cosa 1',
     imagen: '/img/characters/cosa1.png',
     perfil: '/img/profile/Cosa1_perfil.png',
@@ -29,6 +21,7 @@ const personajes = [
       'Su habilidad consiste en el ataque cuerpo a cuerpo, por lo que tiene que estar cerca del enemigo para inflingir daño.',
   },
   {
+    id: 'cosa2',
     nombre: 'Cosa 2',
     imagen: '/img/characters/cosa2.png',
     perfil: '/img/profile/Cosa2_perfil.png',
@@ -37,6 +30,7 @@ const personajes = [
       'Su habilidad consiste en atacar con una espada de energia, es necesario estar cerca de los enemigos.',
   },
   {
+    id: 'cosa3',
     nombre: 'Cosa 3',
     imagen: '/img/characters/cosa3.png',
     perfil: '/img/profile/Cosa3_perfil.png',
@@ -45,6 +39,20 @@ const personajes = [
       'Un personaje ofensivo que causa mucho daño en poco tiempo, ideal para entrar fuerte en batalla.',
   },
 ]
+
+function selectCharacter(id) {
+  gameStore.selectedCharacterId = id
+}
+
+function equipar() {
+  const p = personajes[personajeSeleccionado.value]
+  selectCharacter(p.id)
+  // opcional: feedback visual
+}
+
+function irLobby() { router.push('/lobby') }
+function irStore() { router.push('/store') }
+function irLoggin() { router.push('/login') }
 
 //onMounted(() => {
 //initFlowbite()
@@ -187,6 +195,7 @@ const personajes = [
                 </h2>
 
                 <button
+                  @click="equipar"
                   class="bg-[#2A1A4B] h-12 w-40 text-white font-pixel rounded-lg border-4 border-[#B17BE3] transition-all duration-300 hover:shadow-[0_0_30px_#FF00D9] hover:bg-[#FF00D9] hover:border-[#FF00D9]"
                 >
                   EQUIPAR

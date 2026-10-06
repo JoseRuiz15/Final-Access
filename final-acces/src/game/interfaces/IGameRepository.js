@@ -1,4 +1,11 @@
 export default class IGameRepository {
+  get selectedCharacterId() {
+    throw new Error('Getter "selectedCharacterId" must be implemented.')
+  }
+  set selectedCharacterId(_v) {
+    throw new Error('Setter "selectedCharacterId" must be implemented.')
+  }
+
   get vidas() {
     throw new Error('Getter "vidas" must be implemented.')
   }

@@ -31,6 +31,14 @@ export default class PiniaGameRepository extends IGameRepository {
     this._store.enemigos = value
   }
 
+  get selectedCharacterId() {
+    return this._store.selectedCharacterId
+  }
+
+  set selectedCharacterId(value) {
+    this._store.selectedCharacterId = value
+  }
+
   incrementarEnemigos() {
     this._store.enemigos++
   }

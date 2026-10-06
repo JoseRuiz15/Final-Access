@@ -8,7 +8,7 @@ export default class PatrolAI {
     this.limiteDerecho = config.limiteDerecho || 1100
     this.direccion = 1
 
-    this.rangoDeteccion = config.rangoDeteccion ?? 250
+    this.rangoDeteccion = config.rangoDeteccion ?? 150
     this.rangoAtaque = config.rangoAtaque ?? 100
   }
 

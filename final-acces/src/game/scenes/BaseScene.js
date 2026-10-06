@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import ParallaxBuilder from '../builders/ParallaxBuilder.js'
+import {getCharacter} from '../configs/characters.js'
 
 export default class BaseScene extends Phaser.Scene {
   constructor(key, config, dependencies = {}) {
@@ -34,8 +35,11 @@ export default class BaseScene extends Phaser.Scene {
   }
 
   preload() {
+
+    const id = this.gameRepository?.selectedCharacterId ?? 'cosa1'
+    const character = getCharacter(id)
     if (this.assetLoader && this.config.assets) {
-      this.assetLoader.load(this, this.config.assets)
+      this.assetLoader.load(this, this.config.assets, character)
     }
   }
 
@@ -58,10 +62,8 @@ export default class BaseScene extends Phaser.Scene {
       )
     }
 
-    // === ANIMACIONES ===
-    if (this.animationRegistry) {
-      this.animationRegistry.registerAll(this)
-    }
+    const character = getCharacter(this.gameRepository?.selectedCharacterId ?? 'cosa1')
+    this.animationRegistry?.registerAll(this, character)
 
     // === PARALLAX ===
     if (this.parallaxBuilder && this.config.parallax) {

@@ -15,6 +15,22 @@ export default class AssetLoader {
         { frameWidth: 32, frameHeight: 32 },
       ],
       ['playerDead', '/img/animatics-player/playerDead.png', { frameWidth: 64, frameHeight: 32 }],
+/* 
+      ['character2Walk', '/img/animatics-player/character2Walk', { frameWidth: 32, frameHeight: 32 }],
+      ['character2Jump', '/img/animatics-player/character2Jump', { frameWidth: 32, frameHeight: 32 }],
+      ['character2JumpAttack', '/img/animatics-player/character2JumpAttack', { frameWidth: 32, frameHeight: 32 }],
+      ['character2Attack1', '/img/animatics-player/character2Attack1', { frameWidth: 48, frameHeight: 32 }],
+      ['character2Damage', '/img/animatics-player/character2Damage', { frameWidth: 32, frameHeight: 32 }],
+      ['character2Dead', '/img/animatics-player/character2Dead', { frameWidth: 64, frameHeight: 32 }],
+
+      ['character3Walk', '/img/animatics-player/character3Walk', { frameWidth: 32, frameHeight: 32 }],
+      ['character3Jump', '/img/animatics-player/character3Jump', { frameWidth: 32, frameHeight: 32 }],
+      ['character3JumpAttack', '/img/animatics-player/character3JumpAttack', { frameWidth: 32, frameHeight: 32 }],
+      ['character3Attack', '/img/animatics-player/character3RunAttack', { frameWidth: 32, frameHeight: 32 }],
+      ['character3Damage', '/img/animatics-player/character3Damage', { frameWidth: 32, frameHeight: 32 }],
+      ['character3Dead', '/img/animatics-player/character3Dead', { frameWidth: 64, frameHeight: 32 }],
+
+ */
       ['enemyWalk', '/img/animatics-enemy/enemyWalk.png', { frameWidth: 48, frameHeight: 32 }],
       ['enemy2Attack', '/img/animatics-enemy/enemyAttack.png', { frameWidth: 48, frameHeight: 32 }],
       ['explosion', '/img/animatics-enemy/explosion.png', { frameWidth: 48, frameHeight: 32 }],
@@ -27,9 +43,15 @@ export default class AssetLoader {
     ],
   }
 
-  static load(scene, config) {
+  static load(scene, config, characterConfig = null) {
     AssetLoader._loadList(scene, AssetLoader.COMMON_ASSETS)
     AssetLoader._loadList(scene, config)
+    if (characterConfig) {
+      AssetLoader._loadList(scene, {
+        images: characterConfig.images || [],
+        spritesheets: characterConfig.spritesheets || [],
+      })
+    }
   }
 
   static _loadList(scene, { images = [], spritesheets = [], tilemaps = [] }) {

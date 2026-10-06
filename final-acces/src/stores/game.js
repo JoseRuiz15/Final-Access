@@ -5,5 +5,6 @@ export const useGameStore = defineStore('game', {
     vidas: 5,
     llaves: 0,
     enemigos: 0,
+    selectedCharacterId: 'cosa1',
   }),
 })
