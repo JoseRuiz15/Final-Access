@@ -43,6 +43,18 @@ const llaves = computed(() => gameStore.llaves)
 //enemigos
 
 const enemigos = computed(() => gameStore.enemigos)
+
+function restartLevel() {
+  // Reiniciar store Pinia
+  const gameStore = useGameStore()
+  gameStore.vidas = 5
+  gameStore.llaves = 0
+  gameStore.enemigos = 0
+  
+  // Reiniciar escena actual (depende de cómo se gestione el enrutamiento)
+  showDeathScreen = false
+}
+
 </script>
 <template>
   <div
@@ -138,7 +150,21 @@ const enemigos = computed(() => gameStore.enemigos)
         {{ enemigos }}/3
       </p>
     </div>
+
+    <!-- Pantalla de muerte -->
+     <div class="flex">
+    <div v-show="vidas <= 0" class="absolute ml-[350px] inset-0 flex  bg-black/60 z-50 pointer-events-auto w-[900px] h-[500px] flex justify-center items-center">
+      <div class="font-pixel text-white text-4xl flex items-center justify-center">GAME OVER</div>
+      <button 
+        @click="restartLevel" 
+        class="font-pixel px-6 py-3 mt-8 bg-[#00D9FF] text-black rounded flex mt-[200px]"
+      >
+      Reintentar Nivel
+      </button>
+    </div>
+    </div>
   </div>
+
 </template>
 
 <script setup></script>

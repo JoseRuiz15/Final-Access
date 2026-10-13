@@ -200,10 +200,22 @@ export default class BaseScene extends Phaser.Scene {
     explosion.once('animationcomplete-explosion', () => explosion.destroy())
   }
 
-  onPlayerDeath() {
+ /*onPlayerDeath() {
     this.player.body.enable = false
     this.time.delayedCall(100, () => this.player.respawn())
-  }
+  }*/
+
+    onPlayerDeath() {
+  this.player.body.enable = false
+  this.time.delayedCall(100, () => {
+    if (this.gameRepository.vidas <= 0) {
+      this.emit('player-out-of-lives')
+    } else {
+      this.player.respawn()
+    }
+  })
+}
+
 
   onEnemyDied() {
     console.log('Enemigo derrotado')

@@ -4,6 +4,7 @@ import Phaser from 'phaser'
 import Hud from '@/components/HUD.vue'
 import SceneFactory from '@/game/factories/SceneFactory.js'
 let game
+let showDeathScreen = false
 
 onMounted(() => {
   const scene = SceneFactory.createLevel1Scene()
@@ -37,6 +38,18 @@ onMounted(() => {
 
     scene: scene,
   }
+
+  game = new Phaser.Game(config)
+})
+
+onBeforeUnmount(() => {
+  if (game) {
+    game.destroy(true)
+  }
+  // Escuchar evento de vidas agotadas
+  game.events.on('player-out-of-lives', () => {
+    showDeathScreen = true
+  })
 
   game = new Phaser.Game(config)
 })
