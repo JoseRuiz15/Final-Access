@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Arquitectura de Software — Final Acces",
+    "subtitle": "Vue 3 + Phaser 4.2 + Pinia | Plataforma 2D",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "vue-layer", "label": "Capa Vue", "focus": ["vue-app", "views", "hud"], "note": "UI, navegación y HUD reactivo." },
+      { "id": "bridge", "label": "Puente de Datos", "focus": ["pinia", "repository"], "note": "Pinia sincroniza Vue ↔ Phaser." },
+      { "id": "game-layer", "label": "Capa del Juego", "focus": ["scenes", "factory", "entities", "services"], "note": "Lógica del juego con SOLID." }
+    ]
+  },
+  "components": [
+    { "id": "vue-app", "type": "frontend", "label": "App.vue", "sublabel": "Vue 3 + Router", "pos": [60, 50], "size": [150, 50] },
+    { "id": "views", "type": "frontend", "label": "Views", "sublabel": "14 vistas SPA", "pos": [60, 140], "size": [150, 50] },
+    { "id": "game-view", "type": "frontend", "label": "GameView.vue", "sublabel": "Bootstrap Phaser", "pos": [280, 50], "size": [160, 50] },
+    { "id": "hud", "type": "frontend", "label": "HUD.vue", "sublabel": "Overlay reactivo", "pos": [280, 140], "size": [160, 50] },
+    { "id": "pinia", "type": "database", "label": "Pinia Store", "sublabel": "useGameStore()", "pos": [520, 90], "size": [150, 60] },
+    { "id": "repository", "type": "backend", "label": "GameRepository", "sublabel": "DIP bridge", "pos": [520, 200], "size": [150, 50] },
+    { "id": "scenes", "type": "backend", "label": "Scenes", "sublabel": "Level1, Level2", "pos": [750, 50], "size": [150, 50] },
+    { "id": "factory", "type": "backend", "label": "EntityFactory", "sublabel": "Static Factory", "pos": [750, 140], "size": [150, 50] },
+    { "id": "entities", "type": "backend", "label": "Entities", "sublabel": "Player, Enemy...", "pos": [750, 230], "size": [150, 50] },
+    { "id": "services", "type": "backend", "label": "Services", "sublabel": "Physics, Input", "pos": [970, 50], "size": [140, 50] },
+    { "id": "controller", "type": "backend", "label": "Controller", "sublabel": "PlayerController", "pos": [970, 150], "size": [140, 50] },
+    { "id": "interfaces", "type": "security", "label": "Interfaces", "sublabel": "Contratos SOLID", "pos": [970, 250], "size": [140, 50] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Vue 3 Presentación", "wraps": ["vue-app", "views", "game-view", "hud"], "pad": 12 },
+    { "kind": "region", "label": "Phaser 4.2 Juego", "wraps": ["scenes", "factory", "entities", "services", "controller", "repository"], "pad": 12 }
+  ],
+  "connections": [
+    { "id": "c1", "from": "vue-app", "to": "views", "label": "rutas", "labelAt": [135, 114] },
+    { "id": "c2", "from": "views", "to": "game-view", "label": "/game", "variant": "emphasis", "labelAt": [230, 75] },
+    { "id": "c3", "from": "game-view", "to": "scenes", "label": "Phaser.Game()", "variant": "emphasis", "labelAt": [655, 45] },
+    { "id": "c4", "from": "game-view", "to": "hud", "label": "<Hud />", "variant": "dashed", "labelAt": [360, 114] },
+    { "id": "c5", "from": "hud", "to": "pinia", "label": "computed", "variant": "emphasis", "labelAt": [450, 114] },
+    { "id": "c6", "from": "repository", "to": "pinia", "label": "sync", "variant": "emphasis", "labelAt": [595, 174] },
+    { "id": "c7", "from": "scenes", "to": "factory", "label": "create", "fromSide": "bottom", "toSide": "top", "labelAt": [825, 114] },
+    { "id": "c8", "from": "factory", "to": "entities", "label": "new", "fromSide": "bottom", "toSide": "top", "labelAt": [825, 204] },
+    { "id": "c9", "from": "scenes", "to": "services", "label": "uso", "labelAt": [910, 45] },
+    { "id": "c10", "from": "scenes", "to": "controller", "label": "input", "labelAt": [910, 136] },
+    { "id": "c11", "from": "controller", "to": "services", "label": "lee", "labelAt": [1040, 124] },
+    { "id": "c12", "from": "controller", "to": "entities", "label": "acciones", "labelAt": [910, 204] },
+    { "id": "c13", "from": "entities", "to": "repository", "label": "state", "labelAt": [640, 264] }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Vue 3", "items": ["14 vistas SPA", "HUD reactiva via Pinia", "Tailwind + Flowbite"] },
+    { "dot": "emerald", "title": "Phaser 4.2", "items": ["EntityFactory (OCP)", "PhysicsService (DIP)", "PlayerController (SRP)"] },
+    { "dot": "violet", "title": "Pinia Bridge", "items": ["vidas, llaves, enemigos", "GameRepository sync", "HUD lee reactivamente"] },
+    { "dot": "amber", "title": "SOLID", "items": ["DIP: abstractions", "OCP: factory pattern", "ISP: small interfaces"] }
+  ]
+}
