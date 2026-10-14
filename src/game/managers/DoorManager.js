@@ -78,3 +78,4 @@ export default class DoorManager {
     return this.doors
   }
 }
+//prueba de commit
