@@ -11,7 +11,7 @@ export const LEVEL2_CONFIG = {
       ['pinchos', '/tiles/pinchos.png'],
       ['redDoor', '/img/door/redDoor.png'],
       ['greenDoor', '/img/door/greenDoor.png'],
-      ['box', '/img/box/crateBreak.png'],
+      ['box', '/tiles/box.png'],
       ['imgRecogerLlave', '/img/instruction/imgRecogerLlave.png'],
 
     ],
