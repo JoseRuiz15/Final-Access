@@ -24,7 +24,7 @@ function createDependencies() {
     mapBuilder: MapBuilder,
     tutorialUI: TutorialUI,
     collisionSetup: CollisionSetup,
-    doorManager: new DoorManager(),
+    doorManager: new DoorManager({ doorLayerName: 'DoorObject' }),
     keyManager: new KeyManager(),
     explosionManager: new ExplosionManager(),
   }

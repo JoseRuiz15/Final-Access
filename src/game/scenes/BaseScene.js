@@ -125,6 +125,7 @@ export default class BaseScene extends Phaser.Scene {
           keys: this.keyManager?.getKeysGroup(),
           groundLayer: this.mapResult.layers['Ground'],
           proyectiles: this.proyectiles,
+          spikesObjects: this.mapResult.objectLayers['PinchosDanger'],
         },
         this.config,
       )

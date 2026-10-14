@@ -9,8 +9,16 @@ export const LEVEL2_CONFIG = {
       ['ground', '/tiles/ground.png'],
       ['groundBack', '/tiles/groundBack.png'],
       ['pinchos', '/tiles/pinchos.png'],
+      ['redDoor', '/img/door/redDoor.png'],
+      ['greenDoor', '/img/door/greenDoor.png'],
+      ['box', '/img/box/crateBreak.png'],
+      ['imgRecogerLlave', '/img/instruction/imgRecogerLlave.png'],
+
     ],
-    spritesheets: [],
+    spritesheets: [
+      ['key10', '/img/keys-animation/Key10-GOLD.png', { frameWidth: 16, frameHeight: 35 }],
+      ['crateBreak', '/img/box/crateBreak.png', { frameWidth: 32, frameHeight: 32 }],
+    ],
   },
 
   parallax: [
@@ -55,5 +63,6 @@ export const LEVEL2_CONFIG = {
     'PlayerBoxRule',
     'KeyGroundRule',
     'ProjectilePlayerRule',
+    'PlayerSpikesRule',
   ],
 }

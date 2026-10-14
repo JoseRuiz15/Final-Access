@@ -6,7 +6,7 @@ import SceneFactory from '@/game/factories/SceneFactory.js'
 let game
 
 onMounted(() => {
-  const scene = SceneFactory.createLevel1Scene()
+  const scene = SceneFactory.createLevel2Scene()
 
   const config = {
     type: Phaser.AUTO,

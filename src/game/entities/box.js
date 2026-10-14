@@ -3,7 +3,7 @@ import EntityFactory from '../factories/EntityFactory.js'
 
 class Box extends Entity {
   constructor(scene, x, y, keyData = null) {
-    super(scene, x, y, 'crateBreak')
+    super(scene, x, y, 'box')
     scene.add.existing(this)
     scene.physics.add.existing(this)
 
@@ -36,13 +36,13 @@ class Box extends Entity {
 
     this.setImmovable(true)
     this.body.setAllowGravity(false)
-    this.setFrame(0)
     this.keyData = keyData
   }
 
   break() {
     if (!this.active) return
     this.body.enable = false
+    this.setTexture('crateBreak')
     this.play('boxBreak')
   }
 
