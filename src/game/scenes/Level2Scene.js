@@ -55,14 +55,11 @@ export default class Level2Scene extends BaseScene {
 
   _createBoxes() {
     this.boxes = this.add.group()
-        const box = EntityFactory.createBox(this, 800, 400, {
-        texture: 'key10',
-        grupo: 'keys',
-        color: 'gold',
-        efecto: 'ninguno',
-        correcta: true,
-      })
+
+    this.config.boxes.forEach(({ x, y, keyData }) => {
+      const box = EntityFactory.createBox(this, x, y, keyData)
       this.boxes.add(box)
+    })
   }
 
   _getKeyClass() {

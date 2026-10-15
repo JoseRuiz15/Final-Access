@@ -38,8 +38,8 @@ export default class KeyManager {
     this.imgRecogerLlave.setScale(0.25)
     this.imgRecogerLlave.setDepth(1000)
     this.imgRecogerLlave.setVisible(false)
-
-    return this.keysGroup
+    
+    
   }
 
   _getKeyClass() {

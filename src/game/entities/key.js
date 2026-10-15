@@ -15,9 +15,13 @@ class Key extends Entity {
     this.setCollideWorldBounds(true)
     this.setBounce(0.2)
 
+    this.setScale(1.3)
+
     if (texture === 'key2') {
       this.play('key2Spin')
-    }
+    } else if (texture === 'key10') { 
+  this.play('key10Spin')
+}
   }
 
   pickUp(player) {

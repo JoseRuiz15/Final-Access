@@ -16,7 +16,7 @@ export const LEVEL2_CONFIG = {
 
     ],
     spritesheets: [
-      ['key10', '/img/keys-animation/Key10-GOLD.png', { frameWidth: 16, frameHeight: 35 }],
+      ['key10', '/img/keys-animation/key10.png', { frameWidth: 10, frameHeight: 27 }],
       ['crateBreak', '/img/box/crateBreak.png', { frameWidth: 32, frameHeight: 32 }],
     ],
   },
@@ -51,7 +51,19 @@ export const LEVEL2_CONFIG = {
     { x: 2000, y: 650, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 1900, limiteDerecho: 2100 },
   ],
 
-  boxes: [],
+  boxes: [
+    {
+      x: 800,
+      y: 400,
+      keyData: {
+        texture: 'key10',
+        grupo: 'keys',
+        color: 'silver',
+        efecto: 'ninguno',
+        correcta: true,
+      },
+    },
+  ],
 
   player: { x: 230, y: 600 },
 

@@ -93,6 +93,12 @@ export default class AnimationRegistry {
       repeat: -1,
     })
     scene.anims.create({
+      key: 'key10Spin',
+      frames: scene.anims.generateFrameNumbers('key10', { start: 0, end: 24 }),
+      frameRate: 12,
+      repeat: -1,
+    })
+    scene.anims.create({
       key: 'proyectile',
       frames: scene.anims.generateFrameNumbers('proyectile', { start: 0, end: 5 }),
       frameRate: 10,
