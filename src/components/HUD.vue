@@ -43,10 +43,17 @@ const llaves = computed(() => gameStore.llaves)
 //enemigos
 
 const enemigos = computed(() => gameStore.enemigos)
+
+const emit = defineEmits(['retry-level'])
+
+function restartLevel() {
+  // GameView tiene acceso a la escena Phaser y ejecutará el reinicio.
+  emit('retry-level')
+}
 </script>
 <template>
   <div
-    class="absolute top-5 left-0 w-full flex justify-center items-center gap-12 pointer-events-none"
+    class="absolute top-5 left-0 w-full flex justify-center items-center gap-12"
   >
     <div class="relative">
       <img src="/img/hud/hudVidas.png" class="w-64" />
@@ -138,6 +145,60 @@ const enemigos = computed(() => gameStore.enemigos)
         {{ enemigos }}/3
       </p>
     </div>
+    <!-- Pantalla de Game Over -->
+<div
+  v-if="vidas <= 0"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-[#050711]/90"
+>
+  <div
+    class="flex flex-col items-center justify-center
+           w-[90%] max-w-[650px] min-h-[350px]
+           bg-[#0B1020] border-2 border-[#00D9FF]
+           rounded-lg px-8 py-10"
+  >
+    <p class="font-pixel text-[#FF365E] text-4xl mb-4">
+      GAME OVER
+    </p>
+
+    <p class="font-pixel text-gray-300 text-sm mb-10">
+      HAS FALLADO LA MISIÓN
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-5">
+      <button
+        @click="volverLobby"
+          class="font-pixel text-xs px-6 py-4 w-full sm:w-auto
+           bg-[#14182D] text-[#00D9FF]
+           border border-[#00D9FF] rounded
+
+           transition-all duration-200 ease-in-out
+           hover:scale-105
+           hover:bg-[#00D9FF] hover:text-black
+           hover:shadow-[0_0_15px_#00D9FF]
+
+           active:scale-95"
+      >
+           VOLVER AL LOBBY
+      </button>
+
+      <button
+        @click="restartLevel"
+          class="font-pixel text-xs px-6 py-4 w-full sm:w-auto
+           bg-[#00D9FF] text-black
+           border border-[#00D9FF] rounded
+
+           transition-all duration-200 ease-in-out
+           hover:scale-105
+           hover:bg-white
+           hover:shadow-[0_0_15px_#00D9FF]
+
+           active:scale-95"
+        >
+            REINTENTAR NIVEL
+        </button>
+    </div>
+  </div>
+</div>
   </div>
 </template>
 

@@ -43,8 +43,13 @@ export default class BaseScene extends Phaser.Scene {
     }
   }
 
-  create() {
+  create(data = {}) {
+    this._deathHandled = false // Limpia la protección al iniciar o reintentar el nivel.
+    
     console.log(`${this.scene.key} iniciado`)
+    const vidasIniciales = data.vidas ?? this.gameRepository.vidas ?? 5
+    this.gameRepository.vidas = vidasIniciales
+
     this.cameras.main.setZoom(this.config.zoom || 0.8)
 
     // === INICIALIZAR SERVICIOS LAZY (reciben scene aquí) ===
@@ -201,10 +206,29 @@ export default class BaseScene extends Phaser.Scene {
     explosion.once('animationcomplete-explosion', () => explosion.destroy())
   }
 
-  onPlayerDeath() {
+  /*onPlayerDeath() {
     this.player.body.enable = false
     this.time.delayedCall(100, () => this.player.respawn())
+  }*/
+
+  onPlayerDeath() {
+  // Evita programar una segunda reaparición por el mismo fallecimiento.
+  if (!this.player || this._deathHandled) return
+  this._deathHandled = true
+
+  if (this.gameRepository.vidas <= 0) {
+    this.events.emit('game-over')
+    return
   }
+
+  this.time.delayedCall(300, () => {
+    if (!this.player?.active) return
+
+    // Recupera al jugador; conserva cajas, llave, enemigos e inventario.
+    this.player.respawn()
+    this._deathHandled = false
+  })
+}
 
   onEnemyDied() {
     console.log('Enemigo derrotado')

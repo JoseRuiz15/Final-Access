@@ -4,9 +4,13 @@ export default class PlayerHealthComponent {
     this.gameRepository = gameRepository
     this.vida = 100
     this.maxVida = 100
-    this.vidas = 5
+    this.maxVidas = 5
+
     this.muerto = false
     this.recibiendoDano = false
+
+    this.vidas = this.gameRepository.vidas ?? this.maxVidas
+    this.gameRepository.vidas = this.vidas
   }
 
   takeDamage(amount) {
@@ -18,7 +22,7 @@ export default class PlayerHealthComponent {
       this.muerto = true
       this.player.setVelocity(0, 0)
       this.player.play('playerDead')
-      this.player.scene.onPlayerDeath?.()
+      //this.player.scene.onPlayerDeath?.()
       return true
     }
 
@@ -30,17 +34,26 @@ export default class PlayerHealthComponent {
 
   recibirDano(dano) {
     if (this.muerto || this.recibiendoDano) return
+
     this.player.ataque = false
     this.vida -= dano
 
     if (this.vida <= 0) {
       this.vida = 0
-      this.vidas--
+      this.vidas = Math.max(0, this.vidas - 1)
+      //this.vidas--
+      
       this.gameRepository.vidas = this.vidas
+
+
       this.muerto = true
       this.player.setVelocity(0, 0)
       this.player.play('playerDead')
+
+      //this.player.scene.onPlayerDeath?.()
+      return
     } else {
+
       this.recibiendoDano = true
       this.player.setVelocity(0, 0)
       this.player.play('playerDamage')
@@ -48,7 +61,7 @@ export default class PlayerHealthComponent {
   }
 
   respawn() {
-    this.vida = 100
+    this.vida = this.maxVida
     this.player.setPosition(this.player.spawnX, this.player.spawnY)
     this.player.setVelocity(0, 0)
     this.player.setActive(true)

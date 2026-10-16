@@ -14,19 +14,26 @@ export default class InputService {
   }
 
   init(scene) {
-    if (this._initialized) return
-    this.scene = scene
-    this._keys = scene.input.keyboard.addKeys({
-      W: Phaser.Input.Keyboard.KeyCodes.W,
-      A: Phaser.Input.Keyboard.KeyCodes.A,
-      S: Phaser.Input.Keyboard.KeyCodes.S,
-      D: Phaser.Input.Keyboard.KeyCodes.D,
-      SPACE: Phaser.Input.Keyboard.KeyCodes.SPACE,
-      L: Phaser.Input.Keyboard.KeyCodes.L,
-      G: Phaser.Input.Keyboard.KeyCodes.G,
-    })
-    this._initialized = true
-  }
+  this.scene = scene
+
+  const keyboard = scene.input.keyboard
+
+  // Descarta las referencias a teclas del ciclo anterior de la escena.
+  keyboard.removeAllKeys(true)
+
+  // Registra teclas nuevas para la escena reiniciada.
+  this._keys = keyboard.addKeys({
+    W: Phaser.Input.Keyboard.KeyCodes.W,
+    A: Phaser.Input.Keyboard.KeyCodes.A,
+    S: Phaser.Input.Keyboard.KeyCodes.S,
+    D: Phaser.Input.Keyboard.KeyCodes.D,
+    SPACE: Phaser.Input.Keyboard.KeyCodes.SPACE,
+    L: Phaser.Input.Keyboard.KeyCodes.L,
+    G: Phaser.Input.Keyboard.KeyCodes.G,
+  })
+
+  this._initialized = true
+}
 
   _ensureInit() {
     if (!this._initialized || !this.scene) {

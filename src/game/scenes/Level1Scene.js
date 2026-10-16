@@ -14,10 +14,9 @@ export default class Level1Scene extends BaseScene {
     this.player = EntityFactory.createPlayer(this, x, y, 'player', this.gameRepository)
     this.playerController = new PlayerController(this.player, this.inputService)
 
-    this.registry.set('vidas', 5)
     this.cameras.main.startFollow(this.player)
 
-    this.player.on('animationcomplete-playerDie', () => this.onPlayerDeath())
+    //this.player.on('animationcomplete-playerDie', () => this.onPlayerDeath())
 
     this.player.on('animationcomplete-atacar', () => {
       this.player.ataque = false
