@@ -30,7 +30,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <section>
+  <section class="store-screen relative min-h-screen">
     <!--fondo del tienda-->
     <img
       src="/img/lobby/lobby2.png"
@@ -41,11 +41,11 @@ onMounted(() => {
     <div class="relative flex flex-col items-center justify-center">
       <!-- Barra superior -->
       <header
-        class="w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
+        class="app-header w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
       >
         <!-- Usuario -->
         <div
-          class="bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
+          class="header-profile bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
         >
           <div class="w-[100px] h-[100px] border-3 border-[#444665] rounded-lg overflow-hidden">
             <img
@@ -61,7 +61,7 @@ onMounted(() => {
         </div>
 
         <!-- Menú central -->
-        <nav class="flex items-center gap-20 ml-16">
+        <nav class="header-nav flex items-center gap-20 ml-16">
           <button @click="irLobby">
             <h1
               class="text-[#876988] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]"
@@ -88,7 +88,7 @@ onMounted(() => {
         </nav>
 
         <!-- Acciones derecha -->
-        <div class="ml-auto flex items-center gap-8">
+        <div class="header-actions ml-auto flex items-center gap-8">
           <div class="flex items-center gap-2">
             <img src="/img/iconos/moneda.png" alt="puntos" class="h-[30px]" />
             <h1 class="font-pixel text-[20px] text-[#FB00FF]">12.000</h1>
@@ -120,9 +120,9 @@ onMounted(() => {
       </header>
 
       <!-- Paneles -->
-      <div class="flex justify-center gap-10 mt-30">
+      <div class="store-content flex justify-center gap-10 mt-30">
         <!-- Panel izquierdo -->
-        <div class="w-[650px] h-[470px] bg-black/70 rounded-lg border-2 border-gray-500 p-8">
+        <div class="store-inventory w-[650px] h-[470px] bg-black/70 rounded-lg border-2 border-gray-500 p-8">
           <!-- grid de 3 -->
           <div class="grid grid-cols-4 gap-8">
             <button
@@ -196,8 +196,8 @@ onMounted(() => {
         </div>
 
         <!-- Panel derecho -->
-        <div class="grid grid-rows-[470px_auto] gap-4">
-          <div class="w-[300px] h-[470px] bg-black/70 rounded-lg border-2 border-gray-500">
+        <div class="store-preview grid grid-rows-[470px_auto] gap-4">
+          <div class="store-preview-image w-[300px] h-[470px] bg-black/70 rounded-lg border-2 border-gray-500">
             <img
               v-if="personajeSeleccionado"
               :src="`/img/${personajeSeleccionado}.png`"
@@ -220,7 +220,7 @@ onMounted(() => {
     v-if="mostrarConfirmacion"
     class="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
   >
-    <div class="w-[700px] h-[400px] bg-black border-4 border-[#8B7A91] rounded-lg">
+    <div class="confirm-dialog w-[700px] h-[400px] bg-black border-4 border-[#8B7A91] rounded-lg">
       <h1 class="font-pixel text-[#FB00FF] text-3xl text-center mt-8">
         ¿ESTÁS SEGURO DE QUE QUIERES SALIR?
       </h1>

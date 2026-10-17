@@ -27,7 +27,12 @@ export default class Player extends Entity {
     // ★ Caja de colisión — ajústala a tu gusto
     this.body.setSize(22, 30)    // ancho, alto del hitbox
     this.body.setOffset(5, 1)    // desplazamiento X, Y respecto al sprite
+    this.body.debugShowBody = false
+    this.body.debugBodyColor = 0x00ff00
+    this._idleOriginX = this.originX
     this._idleOriginY = this.originY
+    this._idleFrameWidth = this.frame.realWidth
+    this._idleBodyOffsetX = this.body.offset.x
     this._idleBodyOffsetY = this.body.offset.y
     this.on('animationstart', () => this.alignJumpSpriteWithHitbox())
 
@@ -117,17 +122,45 @@ set boxes(b) {
   alignJumpSpriteWithHitbox() {
     if (!this.body || !this.frame) return
 
-    // El cuadro de salto de Cosa 2 mide 48 px de alto y tiene los pies abajo.
-    // Ajustamos el origen para alinear sus pies sin reducir el sprite ni agrandar
-    // la caja física; el hitbox conserva el tamaño 22x30 configurado arriba.
-    const isCosa2Jump = this.texture.key === 'character2Jump'
-    const originY = isCosa2Jump ? 0.677 : this._idleOriginY
-    const offsetY = isCosa2Jump ? 17.5 : this._idleBodyOffsetY
+    const isCosa2 = this.idleTexture === 'cosa2'
+    const isCosa2NormalAttack = isCosa2 && this.texture.key === 'character2Attack1'
+    const isCosa2JumpAttack = isCosa2 && this.texture.key === 'character2JumpAttack'
+    const isCosa2Attack = isCosa2NormalAttack || isCosa2JumpAttack
+    const isCosa1Attack = this.idleTexture === 'player' && this.texture.key === 'playerAttack'
+    const isAttackAnimation = isCosa2Attack || isCosa1Attack
+    // El ajuste de origen y offset alinea la hitbox con los pies en los cuadros
+    // altos de salto de Cosa 2 y Cosa 3.
+    const isCosa2Jump = isCosa2 && this.texture.key === 'character2Jump'
+    const isCosa3Jump = this.idleTexture === 'cosa3' && this.texture.key === 'character3Jump'
+    const isCosa3JumpAttack =
+      this.idleTexture === 'cosa3' && this.texture.key === 'character3JumpAttack'
+    const isTallJumpAnimation = isCosa2Jump || isCosa3Jump || isCosa3JumpAttack
+    // Ambas láminas dibujan al personaje cerca de x=16; al voltear la imagen se refleja el pivote.
+    const attackPivotX = isCosa2JumpAttack || isCosa1Attack ? 16 / 48 : 16 / 64
+    const originX = isAttackAnimation
+      ? this.flipX
+        ? 1 - attackPivotX
+        : attackPivotX
+      : this._idleOriginX
+    // Compensa el cambio de origen para que la caja física no se desplace al atacar hacia la izquierda.
+    const offsetX = isAttackAnimation
+      ? this._idleBodyOffsetX + this.frame.realWidth * originX - this._idleFrameWidth * this._idleOriginX
+      : this._idleBodyOffsetX
+    // El ataque aéreo conserva la misma caja física del salto y alinea los pies de sus cuadros de 48 px.
+    const originY = isTallJumpAnimation ? 0.698 : isCosa2JumpAttack ? 0.636 : this._idleOriginY
+    const offsetY = isTallJumpAnimation ? 17.5 : isCosa2JumpAttack ? 14.5 : this._idleBodyOffsetY
 
-    if (this.originY === originY && this.body.offset.y === offsetY) return
+    if (
+      this.originX === originX &&
+      this.originY === originY &&
+      this.body.offset.x === offsetX &&
+      this.body.offset.y === offsetY
+    ) {
+      return
+    }
 
-    this.setOrigin(this.originX, originY)
-    this.body.setOffset(this.body.offset.x, offsetY)
+    this.setOrigin(originX, originY)
+    this.body.setOffset(offsetX, offsetY)
     this.body.updateFromGameObject()
   }
 
@@ -135,8 +168,27 @@ set boxes(b) {
     this.attack.execute()
   }
 
+  manejarEntradaAtaqueCosa3(pressed, down, released) {
+    this.attack.manejarEntradaCosa3(pressed, down, released)
+  }
+
+  cancelarCargaAtaque() {
+    this.attack.cancelarCargaCosa3()
+  }
+
   recogerLlave(llave) {
     this.inventory.pickUp(llave)
+  }
+
+  soltarLlave() {
+    if (!this.active || this.muerto || !this.body) return false
+
+    const direccion = this.flipX ? -1 : 1
+    const x = this.body.center.x + direccion * 30
+    const y = this.body.bottom - 12
+
+    // La llave cae desde el frente del jugador sin recibir impulso horizontal.
+    return this.inventory.devolverUltimaLlaveAlMapa(x, y, 0, 0)
   }
 
   recibirDano(dano) {

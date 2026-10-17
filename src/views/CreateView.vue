@@ -10,12 +10,12 @@ function irMultiplayer() {
 }
 </script>
 <template>
-  <div class="relative min-h-screen">
+  <div class="create-game-screen relative min-h-screen">
     <!--imagen de fondo-->
     <img
       src="/img/multy-player/partida.png"
       alt="FONDO"
-      class="h-full w-full absolute inset-0 objet-cover -z-10"
+      class="h-full w-full absolute inset-0 object-cover -z-10"
     />
     <!--volver-->
     <button
@@ -26,7 +26,7 @@ function irMultiplayer() {
     </button>
     <!--cuadro para crear partida-->
     <div
-      class="absolute top-25 left-100 w-[1060px] h-[790px] bg-[#211525]/80 border border-[#3B494B] backdrop-blur-sm rounded-lg"
+      class="create-game-panel absolute top-25 left-100 w-[1060px] h-[790px] bg-[#211525]/80 border border-[#3B494B] backdrop-blur-sm rounded-lg"
     >
       <h1 class="text-[#BCDBFF] font-pixel text-[40px] text-center mt-10">
         CONFIGURACION DE PARTIDA

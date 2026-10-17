@@ -25,6 +25,8 @@ export default class Level1Scene extends BaseScene {
     //this.player.on('animationcomplete-playerDie', () => this.onPlayerDeath())
 
     this.player.on('animationcomplete-atacar', () => {
+      if (this.player.attack?.repetirAnimacionCargaCosa3()) return
+
       this.player.ataque = false
       if (!this.player.muerto) this.player.setTexture(this.player.idleTexture)
     })

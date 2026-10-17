@@ -15,6 +15,7 @@ export default class PlayerController extends IController {
     super()
     this.entity = entity
     this.inputService = inputService
+    this.attackWasDown = false
   }
 
   /**
@@ -22,16 +23,20 @@ export default class PlayerController extends IController {
    * @param {number} _delta
    */
   handleInput(_delta) {
-    if (!this.entity.isAlive()) return
+    if (!this.entity.isAlive()) {
+      this.attackWasDown = false
+      this.entity.cancelarCargaAtaque?.()
+      return
+    }
     this.entity.movement?.update()
-    if (this.entity.recibiendoDano) return
-    if (this.entity.ataque) return
-
-    if (this.inputService.isAttacking()) {
-      this.entity.atacar()
+    if (this.entity.recibiendoDano) {
+      this.attackWasDown = false
+      this.entity.cancelarCargaAtaque?.()
       return
     }
 
+    // La dirección se actualiza incluso durante el ataque; así se puede atacar
+    // caminando y cambiar hacia dónde mira el personaje sin cortar la animación.
     if (this.inputService.isMovingLeft()) {
       this.entity.moverIzquierda()
     } else if (this.inputService.isMovingRight()) {
@@ -40,8 +45,28 @@ export default class PlayerController extends IController {
       this.entity.detenerMovimiento()
     }
 
-    if (this.inputService.isJumping()) {
+    // Cosa 3 usa L tanto para el disparo normal como para iniciar la carga.
+    if (this.entity.idleTexture === 'cosa3') {
+      const ataquePresionado = this.inputService.isAttacking()
+      const teclaAtaqueAbajo = this.inputService.isAttackDown()
+      const ataqueSoltado = this.attackWasDown && !teclaAtaqueAbajo
+      this.attackWasDown = teclaAtaqueAbajo
+
+      this.entity.manejarEntradaAtaqueCosa3(
+        ataquePresionado,
+        teclaAtaqueAbajo,
+        ataqueSoltado,
+      )
+    } else if (!this.entity.ataque && this.inputService.isAttacking()) {
+      this.entity.atacar()
+    }
+
+    if (!this.entity.ataque && this.inputService.isJumping()) {
       this.entity.saltar()
+    }
+
+    if (this.inputService.isDroppingKey()) {
+      this.entity.soltarLlave?.()
     }
 
     // Alinea el cuadro de salto de Cosa 2 sin cambiar su escala ni el tamaño del hitbox.

@@ -33,6 +33,7 @@ export default class InputService {
     SPACE: Phaser.Input.Keyboard.KeyCodes.SPACE,
     L: Phaser.Input.Keyboard.KeyCodes.L,
     G: Phaser.Input.Keyboard.KeyCodes.G,
+    K: Phaser.Input.Keyboard.KeyCodes.K,
   })
 
   this._initialized = true
@@ -67,6 +68,11 @@ export default class InputService {
     return Phaser.Input.Keyboard.JustDown(this._keys.L)
   }
 
+  isAttackDown() {
+    this._ensureInit()
+    return this._keys.L.isDown
+  }
+
   isInteracting() {
     this._ensureInit()
         
@@ -79,6 +85,11 @@ export default class InputService {
         
         return this._interactingThisFrame
       }
+
+  isDroppingKey() {
+    this._ensureInit()
+    return Phaser.Input.Keyboard.JustDown(this._keys.K)
+  }
 
   getKey(keyCode) {
     this._ensureInit()

@@ -12,12 +12,12 @@ function irCreate() {
 }
 </script>
 <template>
-  <div class="relative min-h-screen">
+  <div class="multiplayer-screen relative min-h-screen">
     <!--fondo del multijugador-->
     <img
       src="/img/multy-player/partida.png"
       alt="imagen del multi"
-      class="h-full w-full absolute inset-0 objet-cover -z-10"
+      class="h-full w-full absolute inset-0 object-cover -z-10"
     />
 
     <button
@@ -25,10 +25,10 @@ function irCreate() {
       @click="irLobby"
     >
       &lt;- VOLVER AL MENU</button
-    >npom
+    >
     <!--cuadro para crear sala-->
     <div
-      class="bg-[#190C2D]/70 h-[563px] w-[463px] absolute left-[250px] top-[100px] backdrop-blur-sm rounded-lg"
+      class="private-lobby-panel bg-[#190C2D]/70 h-[563px] w-[463px] absolute left-[250px] top-[100px] backdrop-blur-sm rounded-lg"
     >
       <!--texto-->
       <h1 class="text-[#00f7ff] font-pixel ml-5 mt-5">UNIRSE A LOBBY PRIVADO</h1>
@@ -56,7 +56,7 @@ function irCreate() {
       </button>
     </div>
     <div
-      class="h-[720px] w-[793px] bg-[#190C2D]/70 absolute top-[80px] right-[200px] backdrop-blur-sm rounded-lg border border-[#3B494B]"
+      class="server-browser-panel h-[720px] w-[793px] bg-[#190C2D]/70 absolute top-[80px] right-[200px] backdrop-blur-sm rounded-lg border border-[#3B494B]"
     >
       <div class="ml-5 mt-5">
         <h1 class="text-[#ECDCFF] font-pixel text-[20px]">BUSCADOR DE PARTIDAS</h1>

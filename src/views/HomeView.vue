@@ -9,7 +9,7 @@ function irLogin() {
 </script>
 
 <template>
-  <section id="home-screen">
+  <section id="home-screen" class="min-h-screen overflow-hidden">
     <!-- Fondo -->
     <img
       src="/img/lobby/fondoinicio.png"

@@ -57,18 +57,18 @@ function irAlJuego() {
 </script>
 
 <template>
-  <section class="fixed inset-0 overflow-hidden">
+  <section class="mission-screen fixed inset-0 overflow-hidden">
     <img src="/img/present/loadingscene.png" alt="mission" class="absolute inset-0 w-full h-full object-cover blur-[4px] scale-105" />
     <img
       src="/img/present/tutorialPersonaje.png"
       alt="tutorial"
-      class="absolute top-[460px] left-[650px] w-[500px]"
+      class="mission-character absolute top-[460px] left-[650px] w-[500px]"
     />
 
-    <h1 class="absolute top-[200px] left-[750px] text-[50px] text-white font-pixel text-[30px]">
+    <h1 class="mission-title absolute top-[200px] left-[750px] text-[50px] text-white font-pixel text-[30px]">
       NIVEL {{ nivelActual }}
     </h1>
-    <div class="absolute top-[295px] left-[760px] w-[760px] h-[220px]">
+    <div class="mission-dialogue absolute top-[295px] left-[760px] w-[760px] h-[220px]">
       <img
         src="/img/textbox/textbox.png"
         alt=""
@@ -95,7 +95,7 @@ function irAlJuego() {
 
     <button
       @click="irAlJuego"
-      class="absolute bottom-20 right-20 text-white px-10 py-4 rounded-xl font-pixel transition-all duration-300 hover:text-white hover:bg-[#9747FF] hover:shadow-[0_0_25px_#9747FF] hover:scale-105"
+      class="mission-continue absolute bottom-20 right-20 text-white px-10 py-4 rounded-xl font-pixel transition-all duration-300 hover:text-white hover:bg-[#9747FF] hover:shadow-[0_0_25px_#9747FF] hover:scale-105"
     >
       JUGAR
     </button>

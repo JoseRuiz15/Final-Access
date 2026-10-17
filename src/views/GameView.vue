@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 import Phaser from 'phaser'
 import Hud from '@/components/HUD.vue'
 import SceneFactory from '@/game/factories/SceneFactory.js'
@@ -7,7 +8,9 @@ import { useGameStore } from '@/stores/game.js'
 
 let game
 let levelScene
+let levelTransitionStarted = false
 const gameStore = useGameStore()
+const router = useRouter()
 
 onMounted(() => {
   // Se crea la escena según el botón de nivel que eligió el usuario.
@@ -44,7 +47,11 @@ onMounted(() => {
       default: 'arcade',
       arcade: {
         gravity: { y: 800 },
-        debug: false,
+        // Activa el lienzo de depuración; solo el cuerpo del jugador se dibuja.
+        debug: true,
+        debugShowBody: false,
+        debugShowStaticBody: false,
+        debugShowVelocity: false,
       },
     },
 
@@ -52,6 +59,7 @@ onMounted(() => {
   }
 
   game = new Phaser.Game(config)
+  game.events.on('level-completed', avanzarAlSiguienteNivel)
   game.events.once(Phaser.Core.Events.READY, () => {
     enfocarCanvasDelJuego()
     game.canvas?.addEventListener('pointerdown', enfocarCanvasDelJuego)
@@ -59,8 +67,26 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  game?.events.off('level-completed', avanzarAlSiguienteNivel)
   game?.destroy(true)
 })
+
+function avanzarAlSiguienteNivel(sceneCompletada) {
+  if (levelTransitionStarted || sceneCompletada !== levelScene) return
+  levelTransitionStarted = true
+
+  if (Number(gameStore.nivelActual) === 1) {
+    // El flujo de misión inicia el nivel 2 con sus propias vidas y su HUD.
+    gameStore.nivelActual = 2
+    gameStore.llaves = 0
+    gameStore.enemigos = 0
+    router.push('/mission')
+    return
+  }
+
+  // Solo hay escenas jugables para los niveles 1 y 2 por ahora.
+  router.push('/levels')
+}
 
 function restartLevel() {
   // Reintentar restaura el nivel activo, sin asumir que todos tienen cinco vidas.
@@ -70,6 +96,11 @@ function restartLevel() {
 
   // Reinicia la escena Phaser activa; create() vuelve a crear al jugador y el nivel.
   levelScene?.scene.restart()
+}
+
+function soltarLlave() {
+  if (gameStore.llaves <= 0) return
+  if (levelScene?.player?.soltarLlave()) enfocarCanvasDelJuego()
 }
 
 function enfocarCanvasDelJuego() {
@@ -88,6 +119,6 @@ function enfocarCanvasDelJuego() {
     <!-- Phaser -->
     <div id="game-container" style="width: 100%; height: 100%"></div>
 
-    <Hud @retry-level="restartLevel" />
+    <Hud @retry-level="restartLevel" @drop-key="soltarLlave" />
   </div>
 </template>

@@ -88,6 +88,7 @@ export default class DoorManager {
           puerta.abierta = true
           doorOpened = true
           console.log('✅ PUERTA ABIERTA - VERDE')
+          this.scene.game?.events?.emit('level-completed', this.scene)
         }
       }
     })

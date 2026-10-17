@@ -15,9 +15,13 @@ export default class Enemy extends Entity {
     scene.add.existing(this)
     scene.physics.add.existing(this)
     this.setDepth(1) 
-    // ★ Caja de colisión — ajústala a tu gusto
-    this.body.setSize(40, 31)    // ancho, alto del hitbox
-    this.body.setOffset(5, 1)    // desplazamiento X, Y respecto al sprite
+    // El sprite usa cuadros de 48x32. La hitbox es más baja, pero conserva
+    // su base alineada con los pies para que no se hunda al tocar el suelo.
+    this.body.setSize(44, 24)
+    this.body.setOffset(2, 8)
+    // Oculta el contorno de depuración sin cambiar la hitbox ni sus colisiones.
+    this.body.debugShowBody = false
+    this.body.debugBodyColor = 0xff00ff
 
     this.setScale(1.5)
     this.setCollideWorldBounds(true)

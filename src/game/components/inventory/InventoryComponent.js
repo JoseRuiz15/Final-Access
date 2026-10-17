@@ -25,18 +25,21 @@ export default class InventoryComponent {
     llave.destroy()
   }
 
-    async devolverUltimaLlaveAlMapa(x, y) {
-    const keyData = this.llaves.pop()
-    if (!keyData) return
-
-    this.gameRepository.llaves = this.llaves.length
+  devolverUltimaLlaveAlMapa(x, y, velocidadX = 0, velocidadY = 0) {
+    const keyData = this.llaves[this.llaves.length - 1]
+    if (!keyData) return false
 
     const scene = this.player.scene
     const keysGroup = scene.keyManager?.getKeysGroup()
-    if (!keysGroup) return
+    if (!keysGroup) return false
 
     const llave = EntityFactory.createKey(scene, x, y, keyData.texture, keyData)
     keysGroup.add(llave)
+    llave.setVelocity(velocidadX, velocidadY)
+
+    this.llaves.pop()
+    this.gameRepository.llaves = this.llaves.length
+    return true
   }
 
   getLlaves() {

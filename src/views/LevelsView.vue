@@ -55,106 +55,153 @@ function obtenerDescripcion() {
 </script>
 
 <template>
-  <section>
+  <section class="fixed inset-0 overflow-hidden bg-[#08071B]">
     <button
       class="absolute top-6 left-6 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9] transition-all duration-300"
       @click="volverASeleccionarModo"
     >
       &lt;- VOLVER AL MENU
     </button>
-    <div class="relative w-[1920px] h-[1080px]">
-      <!--fondo del modo de juego-->
-      <img src="/img/map/mapa.png" alt="imagen del fondo" class="w-full h-full" />
+
+    <!-- El mapa ocupa el lienzo completo y los niveles conservan sus posiciones porcentuales. -->
+    <div class="absolute inset-0 z-10">
+      <div class="relative h-full w-full">
+        <img
+          src="/img/map/mapa.png"
+          alt="Mapa de selección de niveles"
+          class="pointer-events-none absolute inset-0 h-full w-full select-none object-fill"
+        />
       <!--Iconos de niveles-->
 
       <!-- Nivel 1 -->
-      <button @click="seleccionarNivel(1)">
+      <button
+        class="absolute top-[39.44%] left-[20.81%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+        aria-label="Seleccionar nivel 1"
+        @click="seleccionarNivel(1)"
+      >
         <img
           src="/img/level-icons/icono_level_1.png"
           alt="nivel 1"
-          class="absolute top-[30%] left-[18%] w-30 h-30 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+          class="h-full w-full object-contain"
         />
       </button>
 
       <!-- Nivel 2 -->
-      <button @click="seleccionarNivel(2)">
+      <button
+        class="absolute top-[45.65%] left-[26.77%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+        aria-label="Seleccionar nivel 2"
+        @click="seleccionarNivel(2)"
+      >
         <img
           src="/img/level-icons/icono_level_2.png"
           alt="nivel 2"
-          class="absolute top-[37%] left-[24%] w-30 h-30 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+          class="h-full w-full object-contain"
         />
       </button>
 
       <!-- Nivel 3 -->
-      <button @click="seleccionarNivel(3)">
+      <button
+        class="absolute top-[52.96%] left-[23.39%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+        aria-label="Seleccionar nivel 3"
+        @click="seleccionarNivel(3)"
+      >
         <img
           src="/img/level-icons/icono_level_3.png"
           alt="nivel 3"
-          class="absolute top-[45%] left-[19%] w-30 h-30 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+          class="h-full w-full object-contain"
         />
       </button>
 
       <!-- Nivel 4 -->
-      <button @click="seleccionarNivel(4)">
+      <button
+        class="absolute top-[68.43%] left-[30.1%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+        aria-label="Seleccionar nivel 4"
+        @click="seleccionarNivel(4)"
+      >
         <img
           src="/img/level-icons/icono_level_4.png"
           alt="nivel 4"
-          class="absolute top-[59%] left-[26%] w-30 h-30 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+          class="h-full w-full object-contain"
         />
       </button>
 
       <!-- Nivel 5 -->
-      <button @click="seleccionarNivel(5)">
+      <button
+        class="absolute top-[50.83%] left-[41.04%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+        aria-label="Seleccionar nivel 5"
+        @click="seleccionarNivel(5)"
+      >
         <img
           src="/img/level-icons/icono_level_5.png"
           alt="nivel 5"
-          class="absolute top-[42%] left-[48%] w-30 h-30 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+          class="h-full w-full object-contain"
         />
       </button>
       <!-- Nivel 6 BLOQUEADO -->
-      <button>
+      <button
+        class="absolute top-[50.93%] left-[51.72%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0"
+        aria-label="Nivel 6 bloqueado"
+        disabled
+      >
         <img
           src="/img/level-icons/nivel_bloqueado.png"
           alt="nivel 6"
-          class="absolute top-[48%] left-[58%] w-30 h-30 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+          class="h-full w-full object-contain"
         />
       </button>
 
       <!-- Nivel 7 BLOQUEADO -->
-      <button>
+      <button
+        class="absolute top-[57.22%] left-[60.89%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0"
+        aria-label="Nivel 7 bloqueado"
+        disabled
+      >
         <img
           src="/img/level-icons/nivel_bloqueado.png"
           alt="nivel 7"
-          class="absolute top-[42%] left-[66%] w-30 h-30 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+          class="h-full w-full object-contain"
         />
       </button>
 
       <!-- Nivel 8 BLOQUEADO -->
-      <button>
+      <button
+        class="absolute top-[50.93%] left-[69.79%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0"
+        aria-label="Nivel 8 bloqueado"
+        disabled
+      >
         <img
           src="/img/level-icons/nivel_bloqueado.png"
           alt="nivel 8"
-          class="absolute top-[33%] left-[74%] w-30 h-30 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+          class="h-full w-full object-contain"
         />
       </button>
 
       <!-- Nivel 9 BLOQUEADO -->
-      <button>
+      <button
+        class="absolute top-[42.22%] left-[77.71%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0"
+        aria-label="Nivel 9 bloqueado"
+        disabled
+      >
         <img
           src="/img/level-icons/nivel_bloqueado.png"
           alt="nivel 9"
-          class="absolute top-[45%] left-[78%] w-30 h-30 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+          class="h-full w-full object-contain"
         />
       </button>
 
       <!-- Nivel 10 BLOQUEADO -->
-      <button>
+      <button
+        class="absolute top-[54.07%] left-[81.51%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0"
+        aria-label="Nivel 10 bloqueado"
+        disabled
+      >
         <img
           src="/img/level-icons/nivel_bloqueado.png"
           alt="nivel 10"
-          class="absolute top-[75%] left-[80%] w-30 h-30 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+          class="h-full w-full object-contain"
         />
       </button>
+      </div>
     </div>
   </section>
 
@@ -162,17 +209,23 @@ function obtenerDescripcion() {
   <!-- Modal -->
   <div
     v-if="mostrarModalNivel"
-    class="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/70 p-4"
   >
     <!-- Cuadro -->
-    <div class="w-[800px] h-[500px] bg-black/70 border-4 border-[#585B7A] rounded-2xl p-8">
+    <div
+      class="h-[min(500px,90vh)] w-[min(800px,90vw)] overflow-y-auto rounded-2xl border-4 border-[#585B7A] bg-black/70 p-4 sm:p-8"
+    >
       <!-- Título -->
-      <h1 class="font-pixel text-[#00AAFF] text-3xl text-center">NIVEL {{ nivelSeleccionado }}</h1>
+      <h1 class="text-center font-pixel text-2xl text-[#00AAFF] sm:text-3xl">
+        NIVEL {{ nivelSeleccionado }}
+      </h1>
 
       <!-- Contenido -->
-      <div class="flex mt-8 gap-8">
+      <div class="mt-6 flex flex-col gap-4 sm:mt-8 sm:flex-row sm:gap-8">
         <!-- Imagen -->
-        <div class="w-[300px] h-[250px] border-2 border-[#585B7A] rounded-lg overflow-hidden">
+        <div
+          class="h-[180px] w-full shrink-0 overflow-hidden rounded-lg border-2 border-[#585B7A] sm:h-[250px] sm:w-[300px]"
+        >
           <img
             :src="`/img/referencia-mapas/MAPA_${nivelSeleccionado}.png`"
             class="w-full h-full object-cover"
@@ -190,17 +243,17 @@ function obtenerDescripcion() {
       </div>
 
       <!-- Botones -->
-      <div class="flex justify-center gap-10 mt-10">
+      <div class="mt-6 flex flex-col justify-center gap-4 sm:mt-10 sm:flex-row sm:gap-10">
         <button
           @click="irLoadingScene"
-          class="w-[220px] h-14 bg-[#00AAFF] rounded-xl border-2 border-cyan-400 font-pixel transition-all duration-300 hover:border-cyan-400 hover:shadow-[0_0_20px_#00AAFF] hover:-translate-y-2"
+          class="h-14 w-full rounded-xl border-2 border-cyan-400 bg-[#00AAFF] font-pixel transition-all duration-300 hover:-translate-y-2 hover:border-cyan-400 hover:shadow-[0_0_20px_#00AAFF] sm:w-[220px]"
         >
           JUGAR
         </button>
 
         <button
           @click="mostrarModalNivel = false"
-          class="w-[220px] h-14 bg-[#2B2E46] rounded-xl border-2 border-gray-500 font-pixel text-white transition-all duration-300 hover:border-cyan-400 hover:shadow-[0_0_20px_#00AAFF] hover:-translate-y-2"
+          class="h-14 w-full rounded-xl border-2 border-gray-500 bg-[#2B2E46] font-pixel text-white transition-all duration-300 hover:-translate-y-2 hover:border-cyan-400 hover:shadow-[0_0_20px_#00AAFF] sm:w-[220px]"
         >
           CERRAR
         </button>

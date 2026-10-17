@@ -41,11 +41,11 @@ onMounted(() => {
     <div class="relative min-h-screen flex flex-col">
       <!-- Barra superior -->
       <header
-        class="w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
+        class="app-header w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
       >
         <!-- Usuario -->
         <div
-          class="bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
+          class="header-profile bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
         >
           <div class="w-[100px] h-[100px] border-3 border-[#444665] rounded-lg overflow-hidden">
             <img
@@ -61,7 +61,7 @@ onMounted(() => {
         </div>
 
         <!-- Menú central -->
-        <nav class="flex items-center gap-20 ml-16">
+        <nav class="header-nav flex items-center gap-20 ml-16">
           <h1
             class="text-[#FB00FF] hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2] font-pixel"
           >
@@ -86,7 +86,7 @@ onMounted(() => {
         </nav>
 
         <!-- Acciones derecha -->
-        <div class="ml-auto flex items-center gap-8">
+        <div class="header-actions ml-auto flex items-center gap-8">
           <div class="flex items-center gap-2">
             <img src="/img/iconos/moneda.png" alt="puntos" class="h-[30px]" />
             <h1 class="font-pixel text-[20px] text-[#FB00FF]">12.000</h1>
@@ -118,9 +118,9 @@ onMounted(() => {
       </header>
 
       <!-- Contenido principal -->
-      <main class="flex justify-between px-10 pt-20 flex-1">
+      <main class="lobby-main flex justify-between px-10 pt-20 flex-1">
         <!-- Lado izquierdo -->
-        <section class="flex flex-col gap-10">
+        <section class="lobby-shortcuts flex flex-col gap-10">
           <button
             class="h-20 w-80 border-4 border-[#00FFEA] bg-[#000004] rounded-lg flex items-center transition-all duration-300 hover:shadow-[0_0_20px_#00FFEA] hover:-translate-y-2"
           >
@@ -147,7 +147,7 @@ onMounted(() => {
         </section>
 
         <!-- Lado derecho -->
-        <section class="flex flex-col items-center gap-20">
+        <section class="lobby-widgets flex flex-col items-center gap-20">
           <!-- Misiones -->
           <section
             class="bg-[#000208] w-80 h-52 border-3 border-[#2D2F4B] rounded-lg flex flex-col"
@@ -336,7 +336,7 @@ onMounted(() => {
     v-if="mostrarConfirmacion"
     class="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
   >
-    <div class="w-[700px] h-[400px] bg-black border-4 border-[#8B7A91] rounded-lg">
+    <div class="confirm-dialog w-[700px] h-[400px] bg-black border-4 border-[#8B7A91] rounded-lg">
       <h1 class="font-pixel text-[#FB00FF] text-3xl text-center mt-8">
         ¿ESTÁS SEGURO DE QUE QUIERES SALIR?
       </h1>

@@ -3,6 +3,7 @@ import Enemy from '../entities/enemy.js'
 import Box from '../entities/box.js'
 import Key from '../entities/key.js'
 import AttackHitbox from '../entities/attackHitbox.js'
+import PlayerProjectile from '../entities/playerProjectile.js'
 import Projectile from './projectile.js'
 
 /**
@@ -93,6 +94,18 @@ export default class EntityFactory {
    */
   static createProjectile(scene, x, y, texture) {
     return new Projectile(scene, x, y, texture)
+  }
+
+  /**
+   * Crea el proyectil ofensivo de Cosa 3, separado del proyectil enemigo.
+   * @param {Phaser.Scene} scene
+   * @param {number} x
+   * @param {number} y
+   * @param {number} damage
+   * @returns {PlayerProjectile}
+   */
+  static createPlayerProjectile(scene, x, y, damage, options = {}) {
+    return new PlayerProjectile(scene, x, y, damage, options)
   }
 
   /**

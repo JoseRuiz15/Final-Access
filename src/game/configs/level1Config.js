@@ -1,7 +1,7 @@
 export const LEVEL1_CONFIG = {
   vidasIniciales: 5,
   hud: {
-    tiempoInicial: 285,
+    tiempoInicial: 300,
     imagenLlave: '/img/keys/Key1-SILVER.png',
     mision: [
       'CONSIGUE UNA LLAVE',

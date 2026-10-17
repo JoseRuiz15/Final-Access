@@ -65,7 +65,7 @@ watch(
   },
 )
 
-const emit = defineEmits(['retry-level'])
+const emit = defineEmits(['retry-level', 'drop-key'])
 
 function restartLevel() {
   tiempo.value = hudConfig.value.tiempoInicial
@@ -80,7 +80,7 @@ function volverASeleccionDeNivel() {
 </script>
 <template>
   <div
-    class="absolute top-5 left-0 w-full flex justify-center items-center gap-12"
+    class="game-hud absolute top-5 left-0 w-full flex justify-center items-center gap-12"
   >
     <div class="relative">
       <img src="/img/hud/hudVidas.png" class="w-64" />
@@ -128,6 +128,15 @@ function volverASeleccionDeNivel() {
       >
         {{ llaves }}/1
       </p>
+      <button
+        type="button"
+        :disabled="llaves <= 0"
+        aria-label="Soltar una llave"
+        class="font-pixel absolute top-full left-1/2 z-20 mt-1 -translate-x-1/2 whitespace-nowrap rounded border border-[#00D9FF] bg-[#0B1020]/90 px-3 py-2 text-[8px] text-[#00D9FF] transition-colors hover:bg-[#00D9FF] hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
+        @click.stop="emit('drop-key')"
+      >
+        SOLTAR LLAVE [K]
+      </button>
     </div>
 
     <div class="relative">

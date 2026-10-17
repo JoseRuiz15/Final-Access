@@ -7,16 +7,20 @@ export default class MovementComponent {
 
   isGrounded() {
     const body = this.player.body
-    const touchingGround = body?.blocked?.down || body?.touching?.down
+    const characterId = this.player.gameRepository?.selectedCharacterId
+    const needsConfirmedGroundContact = characterId === 'cosa2' || characterId === 'cosa3'
+    const groundContact =
+      body?.blocked?.down || (!needsConfirmedGroundContact && body?.touching?.down)
 
-    // Evita que el contacto del frame anterior cuente como suelo justo al despegar.
-    return Boolean(touchingGround && body.velocity.y >= 0)
+    // Cosa 2 y 3 requieren apoyo confirmado para no contar un roce como suelo.
+    return Boolean(groundContact && body?.velocity?.y >= 0)
   }
 
   moveLeft() {
     this.player.setVelocityX(-this.velocidad)
     this.player.setFlipX(true)
-    if (this.isGrounded()) {
+    // Mantiene el desplazamiento, pero no sustituye la animación de ataque.
+    if (this.isGrounded() && !this.player.ataque && !this.player.recibiendoDano) {
       this.player.play('caminar', true)
     }
   }
@@ -24,7 +28,8 @@ export default class MovementComponent {
   moveRight() {
     this.player.setVelocityX(this.velocidad)
     this.player.setFlipX(false)
-    if (this.isGrounded()) {
+    // Mantiene el desplazamiento, pero no sustituye la animación de ataque.
+    if (this.isGrounded() && !this.player.ataque && !this.player.recibiendoDano) {
       this.player.play('caminar', true)
     }
   }

@@ -19,7 +19,7 @@ function irLobby() {
   <img
     src="/img/lobby/a.png"
     alt="imagen del fondo"
-    class="h-full w-full absolute inset-0 objet-cover"
+    class="screen-background fixed inset-0 h-full w-full object-cover"
   />
 
   <button
@@ -29,18 +29,18 @@ function irLobby() {
     &lt;- VOLVER AL MENU
   </button>
 
-  <div class="relative min-h-screen flex items-center justify-center">
-    <div class="h-120 w-150 bg-[#0C0C0C]/50 rounded-lg backdrop-blur-sm">
+  <div class="game-mode-screen relative min-h-screen flex items-center justify-center">
+    <div class="game-mode-panel h-120 w-150 bg-[#0C0C0C]/50 rounded-lg backdrop-blur-sm">
       <!--texto que mas quieres que te diga-->
       <p class="text-[#1FD0E4] font-pixel mt-10 text-center">SELECCIONA EL MODO DE JUEGO</p>
 
-      <div class="flex items-center justify-center mt-10">
+      <div class="game-mode-labels flex items-center justify-center mt-10">
         <p class="text-[#FF00D9] font-pixel text-center ml-5">JUGAR SOLO</p>
         <p class="text-[#FF00D9] font-pixel ml-25">MULTIJUGADOR</p>
       </div>
 
       <!--cajas para el modo de juego-->
-      <div class="flex items-center justify-center mt-[5px]">
+      <div class="game-mode-cards flex items-center justify-center mt-[5px]">
         <!--solo jugador-->
         <button
           class="bg-white h-70 w-50 rounded-lg hover:scale-105 hover:shadow-[0_0_40px_#FF00D9]"

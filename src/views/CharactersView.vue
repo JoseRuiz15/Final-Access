@@ -1,14 +1,11 @@
 <script setup>
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGameStore } from '@/stores/game'
-//import { onMounted } from 'vue'
+
 const mostrarConfirmacion = ref(false)
 const router = useRouter()
 const gameStore = useGameStore()
-
-import { ref } from 'vue'
-
-const personajeSeleccionado = ref(0)
 
 const personajes = [
   {
@@ -40,14 +37,22 @@ const personajes = [
   },
 ]
 
+const personajeEquipadoIndex = personajes.findIndex(
+  (personaje) => personaje.id === gameStore.selectedCharacterId,
+)
+const personajeSeleccionado = ref(personajeEquipadoIndex >= 0 ? personajeEquipadoIndex : 0)
+
+const personajeEstaEquipado = computed(
+  () => personajes[personajeSeleccionado.value].id === gameStore.selectedCharacterId,
+)
+
 function selectCharacter(id) {
-  gameStore.selectedCharacterId = id
+  gameStore.equipCharacter(id)
 }
 
 function equipar() {
   const p = personajes[personajeSeleccionado.value]
   selectCharacter(p.id)
-  // opcional: feedback visual
 }
 
 function irLobby() { router.push('/lobby') }
@@ -60,7 +65,7 @@ function irLoggin() { router.push('/login') }
 </script>
 
 <template>
-  <section id="lobby-screen">
+  <section id="lobby-screen" class="relative min-h-screen overflow-hidden">
     <img
       src="/img/lobby/lobby2.png"
       alt="imagen del la tienda"
@@ -69,11 +74,11 @@ function irLoggin() { router.push('/login') }
 
     <div class="relative z-10 min-h-screen">
       <header
-        class="w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
+        class="app-header w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
       >
         <!-- Usuario -->
         <div
-          class="bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
+          class="header-profile bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
         >
           <div class="w-[100px] h-[100px] border-3 border-[#444665] rounded-lg overflow-hidden">
             <img
@@ -89,7 +94,7 @@ function irLoggin() { router.push('/login') }
         </div>
 
         <!-- Menú central -->
-        <nav class="flex items-center gap-20 ml-16">
+        <nav class="header-nav flex items-center gap-20 ml-16">
           <button @click="irLobby">
             <h1
               class="text-[#876988] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]"
@@ -116,7 +121,7 @@ function irLoggin() { router.push('/login') }
         </nav>
 
         <!-- Acciones derecha -->
-        <div class="ml-auto flex items-center gap-8">
+        <div class="header-actions ml-auto flex items-center gap-8">
           <div class="flex items-center gap-2">
             <img src="/img/iconos/moneda.png" alt="puntos" class="h-[30px]" />
             <h1 class="font-pixel text-[20px] text-[#FB00FF]">12.000</h1>
@@ -148,10 +153,10 @@ function irLoggin() { router.push('/login') }
       </header>
 
       <!-- cuadro del centro -->
-      <div class="min-h-[calc(100vh-150px)] flex items-center justify-center">
-        <div class="h-[480px] w-[1350px] bg-[#000313] border-4 border-[#20273C] rounded-lg flex">
+      <div class="character-layout min-h-[calc(100vh-150px)] flex items-center justify-center">
+        <div class="character-panel h-[480px] w-[1350px] bg-[#000313] border-4 border-[#20273C] rounded-lg flex">
           <!-- donde estan los personajes -->
-          <div class="h-full w-[900px] flex items-center justify-center gap-10 px-10">
+          <div class="character-list h-full w-[900px] flex items-center justify-center gap-10 px-10">
             <button
               v-for="(personaje, index) in personajes"
               :key="personaje.nombre"
@@ -172,7 +177,7 @@ function irLoggin() { router.push('/login') }
           </div>
 
           <!-- cuadro derecho -->
-          <div class="h-full flex-1 border-l-3 border-[#20273C] flex flex-col">
+          <div class="character-detail h-full flex-1 border-l-3 border-[#20273C] flex flex-col">
             <!-- cuadro de arriba -->
             <div class="h-1/2 border-b-3 border-[#20273C] flex">
               <!-- imagen de perfil del personaje -->
@@ -196,9 +201,15 @@ function irLoggin() { router.push('/login') }
 
                 <button
                   @click="equipar"
-                  class="bg-[#2A1A4B] h-12 w-40 text-white font-pixel rounded-lg border-4 border-[#B17BE3] transition-all duration-300 hover:shadow-[0_0_30px_#FF00D9] hover:bg-[#FF00D9] hover:border-[#FF00D9]"
+                  :aria-pressed="personajeEstaEquipado"
+                  class="h-12 w-40 font-pixel rounded-lg border-4 transition-all duration-300"
+                  :class="
+                    personajeEstaEquipado
+                      ? 'bg-[#123C32] text-[#B7F7D5] border-[#58D6A3] shadow-[0_0_18px_#58D6A355] cursor-default'
+                      : 'bg-[#2A1A4B] text-white border-[#B17BE3] hover:shadow-[0_0_30px_#FF00D9] hover:bg-[#FF00D9] hover:border-[#FF00D9]'
+                  "
                 >
-                  EQUIPAR
+                  {{ personajeEstaEquipado ? 'EQUIPADO' : 'EQUIPAR' }}
                 </button>
               </div>
             </div>
@@ -224,7 +235,7 @@ function irLoggin() { router.push('/login') }
     v-if="mostrarConfirmacion"
     class="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
   >
-    <div class="w-[700px] h-[400px] bg-black border-4 border-[#8B7A91] rounded-lg">
+    <div class="confirm-dialog w-[700px] h-[400px] bg-black border-4 border-[#8B7A91] rounded-lg">
       <h1 class="font-pixel text-[#FB00FF] text-3xl text-center mt-8">
         ¿ESTÁS SEGURO DE QUE QUIERES SALIR?
       </h1>

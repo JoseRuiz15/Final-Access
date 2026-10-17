@@ -8,7 +8,7 @@ function irLobby() {
 }
 </script>
 <template>
-  <section id="code-screen" class="relative">
+  <section id="code-screen" class="relative min-h-screen overflow-hidden">
     <!--fondo codigo-->
     <img
       src="/img/lobby/sesion.png"
@@ -17,7 +17,7 @@ function irLobby() {
     />
     <!--cuadro de verificacion de codigo-->
     <div class="relative z-10 flex items-center justify-center min-h-screen">
-      <div class="w-[550px] h-[550px] rounded-3xl bg-[#14172C] border-4 border-[#68699E]">
+      <div class="auth-panel w-[550px] h-[550px] rounded-3xl bg-[#14172C] border-4 border-[#68699E]">
         <!--textos-->
         <p class="text-[#A55CCF] font-pixel text-3xl text-center mt-10">VERIFICACION DE CORREO</p>
 

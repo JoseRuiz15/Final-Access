@@ -14,7 +14,7 @@ function irLobby() {
 </script>
 
 <template>
-  <section id="login-screen" class="relative">
+  <section id="login-screen" class="relative min-h-screen overflow-hidden">
     <!--fondo login-->
     <img
       src="/img/lobby/sesion.png"
@@ -23,7 +23,7 @@ function irLobby() {
     />
     <!--cuadro-->
     <div class="relative z-10 flex items-center justify-center min-h-screen">
-      <div class="w-[510px] h-[560px] bg-black/50 rounded-3xl backdrop-blur-sm">
+      <div class="auth-panel w-[510px] h-[560px] bg-black/50 rounded-3xl backdrop-blur-sm">
         <!--texto-->
         <h2 class="font-pixel text-4xl text-[#E41F1F] text-center mt-[50px]">INICIO DE SESION</h2>
         <!--USUARIO-->

@@ -9,7 +9,7 @@ function irCodeVerification() {
 </script>
 
 <template>
-  <section id="record-screen" class="relative">
+  <section id="record-screen" class="relative min-h-screen overflow-hidden">
     <!--fondo registro-->
     <img
       src="/img/lobby/sesion.png"
@@ -18,7 +18,7 @@ function irCodeVerification() {
     />
     <!--cuadro registro-->
     <div class="relative z-10 flex items-center justify-center min-h-screen">
-      <div class="w-[510px] h-[700px] bg-black/50 rounded-3xl backdrop-blur-sm">
+      <div class="auth-panel w-[510px] h-[700px] bg-black/50 rounded-3xl backdrop-blur-sm">
         <!--texto-->
         <h2 class="font-pixel text-4xl text-[#E41F1F] text-center mt-[50px]">REGISTRO</h2>
         <!--USUARIO-->

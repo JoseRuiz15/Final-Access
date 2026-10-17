@@ -100,15 +100,19 @@ function irExplicacionNivel() {
 </script>
 
 <template>
-  <section @click="siguienteDialogo">
-    <img src="/img/present/loadingscene.png" alt="loading" class="absolute inset-0 w-full h-full" />
+  <section class="tutorial-screen fixed inset-0 overflow-hidden" @click="siguienteDialogo">
+    <img
+      src="/img/present/loadingscene.png"
+      alt="loading"
+      class="absolute inset-0 h-full w-full scale-105 object-cover blur-[4px]"
+    />
     <img
       :src="dialogos[dialogoActual].personaje"
       alt="loading"
-      class="absolute top-[393px] left-[650px]"
+      class="tutorial-character absolute top-[393px] left-[650px]"
     />
 
-    <div class="absolute top-[200px] left-[850px] w-[780px] h-[250px]">
+    <div class="tutorial-dialogue absolute top-[200px] left-[850px] w-[780px] h-[250px]">
       <img
         :src="dialogos[dialogoActual].cuadro"
         alt="loading"
@@ -126,7 +130,7 @@ function irExplicacionNivel() {
     <button
       v-if="ultimoDialogo()"
       @click.stop="irExplicacionNivel"
-      class="absolute bottom-20 right-20 text-white px-10 py-4 rounded-xl font-pixel transition-all duration-300 hover:text-white hover:bg-[#9747FF] hover:shadow-[0_0_25px_#9747FF] hover:scale-105"
+      class="tutorial-continue absolute bottom-20 right-20 text-white px-10 py-4 rounded-xl font-pixel transition-all duration-300 hover:text-white hover:bg-[#9747FF] hover:shadow-[0_0_25px_#9747FF] hover:scale-105"
     >
       CONTINUAR
     </button>

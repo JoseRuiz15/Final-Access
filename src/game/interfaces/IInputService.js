@@ -14,4 +14,7 @@ export default class IInputService {
   isInteracting() {
     throw new Error('Method "isInteracting()" must be implemented.')
   }
+  isDroppingKey() {
+    throw new Error('Method "isDroppingKey()" must be implemented.')
+  }
 }

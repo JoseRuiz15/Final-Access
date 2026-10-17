@@ -132,6 +132,10 @@ export default class AnimationRegistry {
         caminar: ranges.walk,
         saltar: ranges.jump,
         atacar: ranges.attack,
+        atacarAereo: ranges.jumpAttack,
+        cosa3Projectile: ranges.projectile,
+        cosa3ChargeEffect: ranges.chargeEffect,
+        cosa3ChargedProjectile: ranges.chargedProjectile,
         playerDamage: ranges.damage,
         playerDead: ranges.dead,
   }
