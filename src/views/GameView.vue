@@ -10,7 +10,16 @@ let levelScene
 const gameStore = useGameStore()
 
 onMounted(() => {
-  levelScene = SceneFactory.createLevel2Scene()
+  // Se crea la escena según el botón de nivel que eligió el usuario.
+  levelScene =
+    Number(gameStore.nivelActual) === 1
+      ? SceneFactory.createLevel1Scene()
+      : SceneFactory.createLevel2Scene()
+
+  // El HUD y el jugador empiezan con las vidas que corresponden a este nivel.
+  gameStore.vidas = levelScene.config.vidasIniciales ?? 5
+  gameStore.llaves = 0
+  gameStore.enemigos = 0
 
   const config = {
     type: Phaser.AUTO,
@@ -43,25 +52,34 @@ onMounted(() => {
   }
 
   game = new Phaser.Game(config)
-})
-
-onBeforeUnmount(() => {
-  if (game) {
-    game.destroy(true)
-  }
-  // Escuchar evento de vidas agotadas
-  game.events.on('player-out-of-lives', () => {
-    showDeathScreen = true
+  game.events.once(Phaser.Core.Events.READY, () => {
+    enfocarCanvasDelJuego()
+    game.canvas?.addEventListener('pointerdown', enfocarCanvasDelJuego)
   })
 })
 
+onBeforeUnmount(() => {
+  game?.destroy(true)
+})
+
 function restartLevel() {
-  gameStore.vidas = 5
+  // Reintentar restaura el nivel activo, sin asumir que todos tienen cinco vidas.
+  gameStore.vidas = levelScene?.config.vidasIniciales ?? 5
   gameStore.llaves = 0
   gameStore.enemigos = 0
 
   // Reinicia la escena Phaser activa; create() vuelve a crear al jugador y el nivel.
   levelScene?.scene.restart()
+}
+
+function enfocarCanvasDelJuego() {
+  if (!game?.canvas) return
+
+  // Hace el canvas enfocable para que el teclado siga controlando el juego
+  // aunque el nivel se haya abierto desde un botón del menú.
+  game.canvas.tabIndex = 0
+  game.canvas.style.outline = 'none'
+  game.canvas.focus({ preventScroll: true })
 }
 </script>
 

@@ -26,24 +26,24 @@ export const CHARACTERS = {
     attackType: 'rangedCharged',
     stats: { vida: 80, velocidad: 140, daño: 15 },
     animFrames: {
-        walk:   { sheet: 'character2Walk.png',   start: 0, end: 7, frameRate: 10, repeat: -1 },
-        jump:   { sheet: 'character2Jump.png',   start: 0, end: 6, frameRate: 3,  repeat: 0 },
-        jumpAttack: { sheet: 'character2JumpAttack.png', start: 0, end: 6, frameRate: 3, repeat: 0 },
-        attack: { sheet: 'character2Attack1.png', start: 0, end: 12, frameRate: 18, repeat: 0 },
-        damage: { sheet: 'character2Damage.png', start: 0, end: 5, frameRate: 12, repeat: 0 },
-        dead:   { sheet: 'character2Dead.png',   start: 0, end: 5, frameRate: 12, repeat: 0 },
+        walk:   { sheet: 'character2Walk',   start: 0, end: 7, frameRate: 10, repeat: -1 },
+        jump:   { sheet: 'character2Jump',   start: 0, end: 6, frameRate: 3,  repeat: 0 },
+        jumpAttack: { sheet: 'character2JumpAttack', start: 0, end: 6, frameRate: 3, repeat: 0 },
+        attack: { sheet: 'character2Attack1', start: 0, end: 21, frameRate: 18, repeat: 0 },
+        damage: { sheet: 'character2Damage', start: 0, end: 5, frameRate: 12, repeat: 0 },
+        dead:   { sheet: 'character2Dead',   start: 0, end: 5, frameRate: 12, repeat: 0 },
     },
     // Aquí defines qué hay que cargar para este personaje
     spritesheets: [
-      ['character2Walk', '/img/animatics-player/character2Walk', { frameWidth: 32, frameHeight: 32 }],
-      ['character2Jump', '/img/animatics-player/character2Jump', { frameWidth: 32, frameHeight: 32 }],
-      ['character2JumpAttack', '/img/animatics-player/character2JumpAttack', { frameWidth: 48, frameHeight: 32 }],
-      ['character2Attack1', '/img/animatics-player/character2Attack1', { frameWidth: 48, frameHeight: 32 }],
-      ['character2Damage', '/img/animatics-player/character2Damage', { frameWidth: 32, frameHeight: 32 }],
-      ['character2Dead', '/img/animatics-player/character2Dead', { frameWidth: 64, frameHeight: 32 }],
+      ['character2Walk', '/img/animatics-player/character2Walk.png', { frameWidth: 32, frameHeight: 32 }],
+      ['character2Jump', '/img/animatics-player/character2Jump.png', { frameWidth: 32, frameHeight: 48 }],
+      ['character2JumpAttack', '/img/animatics-player/character2JumpAttack.png', { frameWidth: 48, frameHeight: 32 }],
+      ['character2Attack1', '/img/animatics-player/character2Attack1.png', { frameWidth: 64, frameHeight: 32 }],
+      ['character2Damage', '/img/animatics-player/character2Damage.png', { frameWidth: 32, frameHeight: 32 }],
+      ['character2Dead', '/img/animatics-player/character2Dead.png', { frameWidth: 64, frameHeight: 32 }],
     ],
     images: [
-      ['cosa2', '/img/character/cosa2.png'],
+      ['cosa2', '/img/character/character2.png'],
     ],
   },
   
@@ -56,21 +56,21 @@ export const CHARACTERS = {
     animFrames: {
         walk:   { sheet: 'character3Walk',   start: 0, end: 7, frameRate: 10, repeat: -1 },
         jump:   { sheet: 'character3Jump',   start: 0, end: 6, frameRate: 3,  repeat: 0 },
-        attack: { sheet: 'character3Attack', start: 0, end: 12, frameRate: 18, repeat: 0 },
+        attack: { sheet: 'character3Attack', start: 0, end: 7, frameRate: 18, repeat: 0 },
         damage: { sheet: 'character3Damage', start: 0, end: 5, frameRate: 12, repeat: 0 },
         dead:   { sheet: 'character3Dead',   start: 0, end: 5, frameRate: 12, repeat: 0 },
     },
     // Aquí defines qué hay que cargar para este personaje
     spritesheets: [
-      ['character3Walk', '/img/animatics-player/character3Walk', { frameWidth: 32, frameHeight: 32 }],
-      ['character3Jump', '/img/animatics-player/character3Jump', { frameWidth: 32, frameHeight: 32 }],
-      ['character3JumpAttack', '/img/animatics-player/character3JumpAttack', { frameWidth: 48, frameHeight: 32 }],
-      ['character3Attack', '/img/animatics-player/character3RunAttack', { frameWidth: 48, frameHeight: 32 }],
-      ['character3Damage', '/img/animatics-player/character3Damage', { frameWidth: 32, frameHeight: 32 }],
-      ['character3Dead', '/img/animatics-player/character3Dead', { frameWidth: 64, frameHeight: 32 }],
+      ['character3Walk', '/img/animatics-player/character3Walk.png', { frameWidth: 32, frameHeight: 32 }],
+      ['character3Jump', '/img/animatics-player/character3Jump.png', { frameWidth: 32, frameHeight: 32 }],
+      ['character3JumpAttack', '/img/animatics-player/character3JumpAttack.png', { frameWidth: 32, frameHeight: 32 }],
+      ['character3Attack', '/img/animatics-player/character3RunAttack.png', { frameWidth: 32, frameHeight: 32 }],
+      ['character3Damage', '/img/animatics-player/character3Damage.png', { frameWidth: 32, frameHeight: 32 }],
+      ['character3Dead', '/img/animatics-player/character3Death.png', { frameWidth: 64, frameHeight: 32 }],
     ],
     images: [
-      ['cosa3', '/img/character/cosa3.png'],
+      ['cosa3', '/img/character/charcter3.png'],
     ],
   }
 

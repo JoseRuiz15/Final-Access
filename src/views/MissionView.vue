@@ -1,32 +1,53 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import musicLevel1 from '@/assets/music/musicLevel1.mp3'
+import { useGameStore } from '@/stores/game.js'
 
 const router = useRouter()
+const gameStore = useGameStore()
 const musica = new Audio(musicLevel1)
 musica.loop = true
 musica.volume = 0.1
 
-const textoCompleto =
-  'Para pasar el nivel necesitas esta Llave de plata del grupo comun la cual podras encontrar en cajas que tendras que destruir.'
+const nivelActual = computed(() => Number(gameStore.nivelActual) || 1)
+const textoCompleto = computed(() =>
+  nivelActual.value === 2
+    ? 'Para pasar el nivel necesitas una llave dorada del grupo común, la cual podrás encontrar en cajas que tendrás que destruir. También tendrás que matar a todos los enemigos.'
+    : 'Para pasar el nivel necesitas esta llave de plata del grupo común, la cual podrás encontrar en cajas que tendrás que destruir.',
+)
+const imagenLlave = computed(() =>
+  nivelActual.value === 2 ? '/img/keys/Key10-GOLD.png' : '/img/keys/Key1-SILVER.png',
+)
 const textoMostrado = ref('')
 
 let indice = 0
+let intervalo
 
 function escribirTexto() {
-  const intervalo = setInterval(() => {
-    if (indice < textoCompleto.length) {
-      textoMostrado.value += textoCompleto[indice]
+  clearInterval(intervalo)
+  indice = 0
+  textoMostrado.value = ''
+
+  intervalo = setInterval(() => {
+    if (indice < textoCompleto.value.length) {
+      textoMostrado.value += textoCompleto.value[indice]
       indice++
     } else {
       clearInterval(intervalo)
+      intervalo = undefined
     }
   }, 40)
 }
 
 onMounted(() => {
   escribirTexto()
+})
+
+watch(nivelActual, escribirTexto)
+
+onUnmounted(() => {
+  clearInterval(intervalo)
 })
 
 function irAlJuego() {
@@ -36,8 +57,8 @@ function irAlJuego() {
 </script>
 
 <template>
-  <section>
-    <img src="/img/present/loadingscene.png" alt="mission" class="absolute inset-0 w-full h-full" />
+  <section class="fixed inset-0 overflow-hidden">
+    <img src="/img/present/loadingscene.png" alt="mission" class="absolute inset-0 w-full h-full object-cover blur-[4px] scale-105" />
     <img
       src="/img/present/tutorialPersonaje.png"
       alt="tutorial"
@@ -45,25 +66,31 @@ function irAlJuego() {
     />
 
     <h1 class="absolute top-[200px] left-[750px] text-[50px] text-white font-pixel text-[30px]">
-      NIVEL 1
+      NIVEL {{ nivelActual }}
     </h1>
-    <div>
+    <div class="absolute top-[295px] left-[760px] w-[760px] h-[220px]">
       <img
         src="/img/textbox/textbox.png"
-        alt="tutorial"
-        class="absolute top-[280px] left-[750px]"
+        alt=""
+        class="absolute inset-0 w-full h-full"
       />
 
-      <div>
-        <p class="absolute top-[300px] left-[820px] w-[599px] text-black font-pixel text-[15px]">
-          {{ textoMostrado }}
+      <div
+        :style="
+          nivelActual === 2
+            ? { left: '60px', right: '90px' }
+            : { left: '90px', right: '120px' }
+        "
+        class="absolute top-4 bottom-6 overflow-y-auto"
+      >
+        <p
+          class="min-h-full -translate-x-2 -translate-y-8 flex items-center justify-center px-4 text-center text-black font-pixel text-[15px] leading-6 break-words"
+        >
+          <span class="w-full">{{ textoMostrado }}</span>
         </p>
-        <img
-          src="/img/keys/Key1-SILVER.png"
-          alt="llave"
-          class="absolute top-[300px] left-[1430px] w-[30px]"
-        />
       </div>
+
+      <img :src="imagenLlave" alt="llave" class="absolute right-[52px] top-7 w-[30px] rotate-[20deg]" />
     </div>
 
     <button

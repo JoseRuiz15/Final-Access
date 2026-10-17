@@ -17,6 +17,9 @@ export default class InputService {
   this.scene = scene
 
   const keyboard = scene.input.keyboard
+  // El nivel puede abrirse desde un botón Vue que conserva el foco del teclado.
+  // Volvemos a activar el plugin al inicializar cada escena.
+  keyboard.enabled = true
 
   // Descarta las referencias a teclas del ciclo anterior de la escena.
   keyboard.removeAllKeys(true)
@@ -53,7 +56,10 @@ export default class InputService {
 
   isJumping() {
     this._ensureInit()
-    return this._keys.SPACE.isDown || this._keys.W.isDown
+    // Un salto por pulsación: mantener SPACE o W no provoca otro salto al aterrizar.
+    const spacePressed = Phaser.Input.Keyboard.JustDown(this._keys.SPACE)
+    const wPressed = Phaser.Input.Keyboard.JustDown(this._keys.W)
+    return spacePressed || wPressed
   }
 
   isAttacking() {

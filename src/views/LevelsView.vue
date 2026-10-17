@@ -1,14 +1,34 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useGameStore } from '@/stores/game.js'
 
 const router = useRouter()
+const gameStore = useGameStore()
 
 const mostrarModalNivel = ref(false)
 const nivelSeleccionado = ref(null)
 
+function volverASeleccionarModo() {
+  router.push('/gamemode')
+}
+
 function irLoadingScene() {
-  router.push('/loading')
+  const nivel = Number(nivelSeleccionado.value)
+
+  // El nivel elegido viaja en Pinia hasta GameView, sin depender del orden.
+  gameStore.nivelActual = nivel
+
+  if (nivel === 1 && !gameStore.tutorialNivel1Visto) {
+    // La explicación se presenta la primera vez que se inicia el nivel 1.
+    gameStore.tutorialNivel1Visto = true
+    router.push('/loading')
+    return
+  }
+
+  // La misión propia aparece siempre para los niveles implementados.
+  // El tutorial general de LoadingScene solo se muestra la primera vez en nivel 1.
+  router.push(nivel === 1 || nivel === 2 ? '/mission' : '/game')
 }
 function seleccionarNivel(nivel) {
   nivelSeleccionado.value = nivel
@@ -38,7 +58,7 @@ function obtenerDescripcion() {
   <section>
     <button
       class="absolute top-6 left-6 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9] transition-all duration-300"
-      @click="irLobby"
+      @click="volverASeleccionarModo"
     >
       &lt;- VOLVER AL MENU
     </button>

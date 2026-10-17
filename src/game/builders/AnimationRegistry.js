@@ -16,9 +16,6 @@ export default class AnimationRegistry {
       this._registerFromCharacter(scene, characterConfig)
     }
 
-    if (characterConfig?.spritesheets?.length) {
-      this._registerFromCharacter(scene, characterConfig)
-    }
   }
 
   _registerPlayerDefault(scene){

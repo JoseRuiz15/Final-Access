@@ -1,10 +1,19 @@
 <script setup>
 //aqui empieza el tiempo
 
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useGameStore } from '@/stores/game'
+import { useRouter } from 'vue-router'
+import { LEVEL1_CONFIG } from '@/game/configs/level1Config.js'
+import { LEVEL2_CONFIG } from '@/game/configs/level2Config.js'
 
-const tiempo = ref(285) // 5 minutos = 300 segundos
+const gameStore = useGameStore()
+const router = useRouter()
+const nivelActual = computed(() => Number(gameStore.nivelActual) || 1)
+const hudConfig = computed(() =>
+  nivelActual.value === 1 ? LEVEL1_CONFIG.hud : LEVEL2_CONFIG.hud,
+)
+const tiempo = ref(hudConfig.value.tiempoInicial)
 
 const tiempoFormateado = computed(() => {
   const minutos = Math.floor(tiempo.value / 60)
@@ -15,15 +24,21 @@ const tiempoFormateado = computed(() => {
 
 let intervalo
 
-onMounted(() => {
+function iniciarTemporizador() {
+  clearInterval(intervalo)
   intervalo = setInterval(() => {
     if (tiempo.value > 0) {
       tiempo.value--
     } else {
       clearInterval(intervalo)
+      intervalo = undefined
       console.log('¡Tiempo terminado!')
     }
   }, 1000)
+}
+
+onMounted(() => {
+  iniciarTemporizador()
 })
 
 onUnmounted(() => {
@@ -31,8 +46,6 @@ onUnmounted(() => {
 })
 // aqui termina
 //vida
-
-const gameStore = useGameStore()
 
 const vidas = computed(() => gameStore.vidas)
 
@@ -44,11 +57,25 @@ const llaves = computed(() => gameStore.llaves)
 
 const enemigos = computed(() => gameStore.enemigos)
 
+watch(
+  () => hudConfig.value.tiempoInicial,
+  (tiempoInicial) => {
+    tiempo.value = tiempoInicial
+    iniciarTemporizador()
+  },
+)
+
 const emit = defineEmits(['retry-level'])
 
 function restartLevel() {
+  tiempo.value = hudConfig.value.tiempoInicial
+  iniciarTemporizador()
   // GameView tiene acceso a la escena Phaser y ejecutará el reinicio.
   emit('retry-level')
+}
+
+function volverASeleccionDeNivel() {
+  router.push('/levels')
 }
 </script>
 <template>
@@ -74,7 +101,7 @@ function restartLevel() {
       <img src="/img/hud/hudObjetivo.png" class="w-72" />
 
       <img
-        src="/img/keys/Key10-GOLD.png"
+        :src="hudConfig.imagenLlave"
         class="absolute w-[18.64px] h-[31.75px] mt-[-70px] ml-[190px] rotate-40"
       />
       <!-- Aquí irá la misión -->
@@ -84,24 +111,12 @@ function restartLevel() {
         OBJETIVO
       </p>
       <p
-        class="font-pixel absolute inset-0 justify-center text-[8px] font-bold ml-[20px] mt-[50px] text-white text-shadow-[0_0_40px_#CF56D2]"
+        v-for="(linea, indice) in hudConfig.mision"
+        :key="linea"
+        class="font-pixel absolute inset-0 flex text-[8px] font-bold ml-[20px] text-white text-shadow-[0_0_40px_#CF56D2]"
+        :style="{ marginTop: `${50 + indice * 10}px` }"
       >
-        CONSIGUE UNA LLAVE
-      </p>
-      <p
-        class="font-pixel absolute inset-0 flex text-[8px] font-bold ml-[20px] mt-[60px] text-white text-shadow-[0_0_40px_#CF56D2]"
-      >
-        NORMAL DE COLOR
-      </p>
-      <p
-        class="font-pixel absolute inset-0 flex text-[8px] font-bold ml-[20px] mt-[70px] text-white text-shadow-[0_0_40px_#CF56D2]"
-      >
-        PLATEADO PARA PASAR
-      </p>
-      <p
-        class="font-pixel absolute inset-0 flex text-[8px] font-bold ml-[20px] mt-[80px] text-white text-shadow-[0_0_40px_#CF56D2]"
-      >
-        AL SIGUIENTE NIVEL
+        {{ linea }}
       </p>
       <p
         class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold ml-[150px] mt-[-50px] text-[#00D9FF] text-shadow-[0_0_40px_#00D9FF]"
@@ -166,7 +181,7 @@ function restartLevel() {
 
     <div class="flex flex-col sm:flex-row gap-5">
       <button
-        @click="volverLobby"
+        @click="volverASeleccionDeNivel"
           class="font-pixel text-xs px-6 py-4 w-full sm:w-auto
            bg-[#14182D] text-[#00D9FF]
            border border-[#00D9FF] rounded
@@ -178,7 +193,7 @@ function restartLevel() {
 
            active:scale-95"
       >
-           VOLVER AL LOBBY
+           VOLVER AL MAPA
       </button>
 
       <button
@@ -202,4 +217,3 @@ function restartLevel() {
   </div>
 </template>
 
-<script setup></script>

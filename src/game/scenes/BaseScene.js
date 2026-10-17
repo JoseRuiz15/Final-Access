@@ -38,6 +38,7 @@ export default class BaseScene extends Phaser.Scene {
 
     const id = this.gameRepository?.selectedCharacterId ?? 'cosa1'
     const character = getCharacter(id)
+    this.characterConfig = character
     if (this.assetLoader && this.config.assets) {
       this.assetLoader.load(this, this.config.assets, character)
     }
@@ -47,7 +48,8 @@ export default class BaseScene extends Phaser.Scene {
     this._deathHandled = false // Limpia la protección al iniciar o reintentar el nivel.
     
     console.log(`${this.scene.key} iniciado`)
-    const vidasIniciales = data.vidas ?? this.gameRepository.vidas ?? 5
+    const vidasIniciales =
+      data.vidas ?? this.config.vidasIniciales ?? this.gameRepository.vidas ?? 5
     this.gameRepository.vidas = vidasIniciales
 
     this.cameras.main.setZoom(this.config.zoom || 0.8)
@@ -67,7 +69,8 @@ export default class BaseScene extends Phaser.Scene {
       )
     }
 
-    const character = getCharacter(this.gameRepository?.selectedCharacterId ?? 'cosa1')
+    const character = this.characterConfig ?? getCharacter(this.gameRepository?.selectedCharacterId ?? 'cosa1')
+    this.characterConfig = character
     this.animationRegistry?.registerAll(this, character)
 
     // === PARALLAX ===

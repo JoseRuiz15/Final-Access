@@ -23,6 +23,7 @@ export default class PlayerController extends IController {
    */
   handleInput(_delta) {
     if (!this.entity.isAlive()) return
+    this.entity.movement?.update()
     if (this.entity.recibiendoDano) return
     if (this.entity.ataque) return
 
@@ -43,9 +44,8 @@ export default class PlayerController extends IController {
       this.entity.saltar()
     }
 
-    if (!this.entity.body?.blocked?.down && !this.entity.ataque) {
-      this.entity.play?.('saltar', true)
-    }
+    // Alinea el cuadro de salto de Cosa 2 sin cambiar su escala ni el tamaño del hitbox.
+    this.entity.alignJumpSpriteWithHitbox?.()
   }
 
   reset() {

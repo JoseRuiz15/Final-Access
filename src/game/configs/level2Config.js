@@ -1,4 +1,15 @@
 export const LEVEL2_CONFIG = {
+  vidasIniciales: 4,
+  hud: {
+    tiempoInicial: 240,
+    imagenLlave: '/img/keys/Key10-GOLD.png',
+    mision: [
+      'CONSIGUE LA LLAVE DE',
+      'COLOR DORADO PARA',
+      'SEGUIR AL SIGUIENTE',
+      'NIVEL.',
+    ],
+  },
   assets: {
     tilemaps: [['level2', '/maps/Mapa_level_2.json']],
     images: [

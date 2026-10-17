@@ -15,9 +15,9 @@ export default class Player extends Entity {
     this.gameRepository = gameRepository
     this._enemies = null
     this._boxes = null
+    this.idleTexture = texture
 
     this.setDisplaySize(48, 48)
-    this.texture = texture
 
     scene.add.existing(this)
     scene.physics.add.existing(this)
@@ -27,6 +27,9 @@ export default class Player extends Entity {
     // ★ Caja de colisión — ajústala a tu gusto
     this.body.setSize(22, 30)    // ancho, alto del hitbox
     this.body.setOffset(5, 1)    // desplazamiento X, Y respecto al sprite
+    this._idleOriginY = this.originY
+    this._idleBodyOffsetY = this.body.offset.y
+    this.on('animationstart', () => this.alignJumpSpriteWithHitbox())
 
     this.movement = new MovementComponent(this)
     this.attack = new MeleeAttackComponent(this)
@@ -109,6 +112,23 @@ set boxes(b) {
   update(delta) {
     this.movement.update(delta)
     this.animation.update(delta)
+  }
+
+  alignJumpSpriteWithHitbox() {
+    if (!this.body || !this.frame) return
+
+    // El cuadro de salto de Cosa 2 mide 48 px de alto y tiene los pies abajo.
+    // Ajustamos el origen para alinear sus pies sin reducir el sprite ni agrandar
+    // la caja física; el hitbox conserva el tamaño 22x30 configurado arriba.
+    const isCosa2Jump = this.texture.key === 'character2Jump'
+    const originY = isCosa2Jump ? 0.677 : this._idleOriginY
+    const offsetY = isCosa2Jump ? 17.5 : this._idleBodyOffsetY
+
+    if (this.originY === originY && this.body.offset.y === offsetY) return
+
+    this.setOrigin(this.originX, originY)
+    this.body.setOffset(this.body.offset.x, offsetY)
+    this.body.updateFromGameObject()
   }
 
   atacar() {

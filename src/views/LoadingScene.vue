@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -34,6 +34,7 @@ const dialogos = [
 ]
 
 const sonidoEscritura = new Audio('/audio/audioText.mp3')
+let intervaloEscritura = null
 
 function reproducirSonido() {
   sonidoEscritura.currentTime = 0
@@ -46,6 +47,16 @@ function ultimoDialogo() {
 }
 
 function siguienteDialogo() {
+  const textoActual = dialogos[dialogoActual.value].texto
+
+  // El primer clic completa la frase actual, sin crear otro temporizador.
+  if (textoMostrado.value.length < textoActual.length) {
+    clearInterval(intervaloEscritura)
+    intervaloEscritura = null
+    textoMostrado.value = textoActual
+    return
+  }
+
   if (ultimoDialogo()) {
     return
   }
@@ -57,20 +68,30 @@ function siguienteDialogo() {
 const textoMostrado = ref('')
 
 function escribirTexto() {
+  clearInterval(intervaloEscritura)
   textoMostrado.value = ''
   let indice = 0
-  const intervalo = setInterval(() => {
-    textoMostrado.value += dialogos[dialogoActual.value].texto[indice]
-    reproducirSonido()
-    indice++
-    if (indice >= dialogos[dialogoActual.value].texto.length) {
-      clearInterval(intervalo)
+  const texto = dialogos[dialogoActual.value].texto
+
+  intervaloEscritura = setInterval(() => {
+    if (indice < texto.length) {
+      textoMostrado.value = texto.slice(0, indice + 1)
+      reproducirSonido()
+      indice++
+    } else {
+      clearInterval(intervaloEscritura)
+      intervaloEscritura = null
     }
   }, 40)
 }
 
 onMounted(() => {
   escribirTexto()
+})
+
+onUnmounted(() => {
+  clearInterval(intervaloEscritura)
+  sonidoEscritura.pause()
 })
 
 function irExplicacionNivel() {
@@ -87,13 +108,19 @@ function irExplicacionNivel() {
       class="absolute top-[393px] left-[650px]"
     />
 
-    <div class="absolute top-[200px] left-[850px]">
-      <img :src="dialogos[dialogoActual].cuadro" alt="loading" class="w-[780px] h-[250px]" />
-      <p
-        class="absolute top-[20px] left-[50px] w-[700px] text-black font-pixel text-[20px] leading-8"
-      >
-        {{ textoMostrado }}
-      </p>
+    <div class="absolute top-[200px] left-[850px] w-[780px] h-[250px]">
+      <img
+        :src="dialogos[dialogoActual].cuadro"
+        alt="loading"
+        class="absolute inset-0 w-full h-full"
+      />
+      <div class="absolute left-12 right-12 top-6 bottom-6 overflow-y-auto">
+        <p
+          class="min-h-full -translate-y-10 flex items-center justify-center px-4 text-center text-black font-pixel text-[20px] leading-8 break-words"
+        >
+          <span class="w-full">{{ textoMostrado }}</span>
+        </p>
+      </div>
     </div>
 
     <button

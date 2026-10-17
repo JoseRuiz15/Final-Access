@@ -1,4 +1,15 @@
 export const LEVEL1_CONFIG = {
+  vidasIniciales: 5,
+  hud: {
+    tiempoInicial: 285,
+    imagenLlave: '/img/keys/Key1-SILVER.png',
+    mision: [
+      'CONSIGUE UNA LLAVE',
+      'NORMAL DE COLOR',
+      'PLATEADO PARA PASAR',
+      'AL SIGUIENTE NIVEL',
+    ],
+  },
   assets: {
     tilemaps: [['level1', '/maps/Mapa_level_1.json']],
     images: [

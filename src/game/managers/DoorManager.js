@@ -29,12 +29,36 @@ export default class DoorManager {
 
   create(mapResult) {
     this._ensureInit()
-    this.doors = mapResult?.objectLayers?.[this.doorLayerName]
-    if (this.doors?.objects?.[0]) {
-      const puerta = this.doors.objects[0]
-      this.doorSprite = this.scene.add.image(puerta.x + 32, puerta.y + 32, 'redDoor')
+
+    // Cada mapa tiene una capa de puerta registrada en su propia configuración.
+    // Nivel 1 conserva el nombre histórico "DoorObjet" y nivel 2 usa "DoorObject".
+    const capasConfiguradas = this.scene.config?.map?.objectLayers ?? []
+    const nombresCandidatos = [
+      this.doorLayerName,
+      ...capasConfiguradas.filter((nombre) => /door/i.test(nombre)),
+      'DoorObjet',
+      'DoorObject',
+    ]
+    const nombreCapa = nombresCandidatos.find((nombre) =>
+      mapResult?.objectLayers?.[nombre]?.objects?.length,
+    )
+
+    this.doors = nombreCapa ? mapResult.objectLayers[nombreCapa] : null
+
+    const puerta = this.doors?.objects?.find((objeto) => objeto.visible !== false)
+    if (puerta) {
+      // Tiled da la esquina superior izquierda; Phaser ubica la imagen por el centro.
+      this.doorSprite = this.scene.add.image(
+        puerta.x + (puerta.width ?? 64) / 2,
+        puerta.y + (puerta.height ?? 64) / 2,
+        'redDoor',
+      )
+      // Las capas del mapa están en profundidad 0; jugadores y enemigos usan 1.
+      // Así la puerta queda visible sobre el mapa, pero detrás de las entidades.
       this.doorSprite.setDepth(0)
+      this.doorSprite.setVisible(true)
     }
+
     return this.doorSprite
   }
 

@@ -4,12 +4,12 @@ export default class PlayerHealthComponent {
     this.gameRepository = gameRepository
     this.vida = 100
     this.maxVida = 100
-    this.maxVidas = 5
+    this.maxVidas = player.scene.config?.vidasIniciales ?? 5
 
     this.muerto = false
     this.recibiendoDano = false
 
-    this.vidas = this.gameRepository.vidas ?? this.maxVidas
+    this.vidas = Math.min(this.gameRepository.vidas ?? this.maxVidas, this.maxVidas)
     this.gameRepository.vidas = this.vidas
   }
 

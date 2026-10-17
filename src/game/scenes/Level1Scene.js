@@ -11,7 +11,13 @@ export default class Level1Scene extends BaseScene {
 
   _createPlayer() {
     const { x, y } = this.config.player
-    this.player = EntityFactory.createPlayer(this, x, y, 'player', this.gameRepository)
+    this.player = EntityFactory.createPlayer(
+      this,
+      x,
+      y,
+      this.characterConfig?.texture ?? 'player',
+      this.gameRepository,
+    )
     this.playerController = new PlayerController(this.player, this.inputService)
 
     this.cameras.main.startFollow(this.player)
@@ -20,13 +26,15 @@ export default class Level1Scene extends BaseScene {
 
     this.player.on('animationcomplete-atacar', () => {
       this.player.ataque = false
-      if (!this.player.muerto) this.player.setTexture('player')
+      if (!this.player.muerto) this.player.setTexture(this.player.idleTexture)
     })
 
     this.player.on('animationcomplete-playerDamage', () => {
-      if (!this.player.muerto && this.player.body.blocked.down) this.player.setTexture('player')
+      if (!this.player.muerto && this.player.body.blocked.down) {
+        this.player.setTexture(this.player.idleTexture)
+      }
       this.player.recibiendoDano = false
-      this.player.setTexture('player')
+      this.player.setTexture(this.player.idleTexture)
     })
   }
 
