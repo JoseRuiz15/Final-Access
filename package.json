@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
+    "axios": "^1.7.7",
     "flowbite": "^4.0.2",
     "phaser": "^4.2.1",
     "pinia": "^3.0.4",

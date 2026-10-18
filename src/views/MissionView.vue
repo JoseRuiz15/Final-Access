@@ -6,19 +6,23 @@ import { useGameStore } from '@/stores/game.js'
 
 const router = useRouter()
 const gameStore = useGameStore()
+
 const musica = new Audio(musicLevel1)
 musica.loop = true
 musica.volume = 0.1
 
 const nivelActual = computed(() => Number(gameStore.nivelActual) || 1)
+
 const textoCompleto = computed(() =>
   nivelActual.value === 2
     ? 'Para pasar el nivel necesitas una llave dorada del grupo común, la cual podrás encontrar en cajas que tendrás que destruir. También tendrás que matar a todos los enemigos.'
     : 'Para pasar el nivel necesitas esta llave de plata del grupo común, la cual podrás encontrar en cajas que tendrás que destruir.',
 )
+
 const imagenLlave = computed(() =>
   nivelActual.value === 2 ? '/img/keys/Key10-GOLD.png' : '/img/keys/Key1-SILVER.png',
 )
+
 const textoMostrado = ref('')
 
 let indice = 0
@@ -40,6 +44,11 @@ function escribirTexto() {
   }, 40)
 }
 
+function irAlJuego() {
+  musica.play()
+  router.push('/game')
+}
+
 onMounted(() => {
   escribirTexto()
 })
@@ -48,12 +57,9 @@ watch(nivelActual, escribirTexto)
 
 onUnmounted(() => {
   clearInterval(intervalo)
+  musica.pause()
+  musica.currentTime = 0
 })
-
-function irAlJuego() {
-  musica.play()
-  router.push('/game')
-}
 </script>
 
 <template>
@@ -68,6 +74,7 @@ function irAlJuego() {
     <h1 class="mission-title absolute top-[200px] left-[750px] text-[50px] text-white font-pixel text-[30px]">
       NIVEL {{ nivelActual }}
     </h1>
+
     <div class="mission-dialogue absolute top-[295px] left-[760px] w-[760px] h-[220px]">
       <img
         src="/img/textbox/textbox.png"

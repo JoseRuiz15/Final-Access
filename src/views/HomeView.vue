@@ -1,11 +1,27 @@
 <script setup>
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
-function irLogin() {
-  router.push('/login')
+async function checkAuth() {
+  if (!authStore.isAuthenticated) {
+    try {
+      await authStore.fetchMe()
+      router.push('/lobby')
+    } catch (err) {
+      // Not authenticated, stay on home
+    }
+  } else {
+    router.push('/lobby')
+  }
 }
+
+onMounted(() => {
+  checkAuth()
+})
 </script>
 
 <template>
@@ -26,7 +42,7 @@ function irLogin() {
 
       <!-- Botón iniciar -->
       <button
-        @click="irLogin"
+        @click="() => router.push('/login')"
         class="font-pixel text-[12px] relative z-20 bg-[#9747FF] text-black py-3 px-8 rounded-lg mb-24 transition-all duration-300 hover:text-white hover:shadow-[0_0_25px_#9747FF] hover:scale-105"
       >
         INICIAR

@@ -4,15 +4,48 @@ import { useRouter } from 'vue-router'
 import Phaser from 'phaser'
 import Hud from '@/components/HUD.vue'
 import SceneFactory from '@/game/factories/SceneFactory.js'
+import { useCharacterStore } from '@/stores/characters'
 import { useGameStore } from '@/stores/game.js'
+import { useProfileStore } from '@/stores/profile'
+import { useProgressionStore } from '@/stores/progression'
 
 let game
 let levelScene
 let levelTransitionStarted = false
 const gameStore = useGameStore()
+const characterStore = useCharacterStore()
+const profileStore = useProfileStore()
+const progressionStore = useProgressionStore()
 const router = useRouter()
+let isUnmounted = false
 
 onMounted(() => {
+  initializeGame()
+})
+
+async function initializeGame() {
+  // Si se abre el juego directamente, recupera del perfil el personaje equipado.
+  if (!characterStore.equippedCharacterId && !profileStore.profile?.characterId) {
+    try {
+      await profileStore.fetchProfile()
+    } catch (err) {
+      // El juego todavía puede iniciar con la selección guardada localmente.
+      console.warn('No se pudo cargar el personaje equipado; se usará la selección guardada.', err)
+    }
+  }
+
+  if (isUnmounted) return
+
+  const equippedCharacterId =
+    characterStore.equippedCharacterId ||
+    profileStore.profile?.equippedCharacterId ||
+    profileStore.profile?.characterId
+
+  if (equippedCharacterId) {
+    characterStore.setEquipped(equippedCharacterId)
+    gameStore.equipCharacter(equippedCharacterId)
+  }
+
   // Se crea la escena según el botón de nivel que eligió el usuario.
   levelScene =
     Number(gameStore.nivelActual) === 1
@@ -47,7 +80,6 @@ onMounted(() => {
       default: 'arcade',
       arcade: {
         gravity: { y: 800 },
-        // Activa el lienzo de depuración; solo el cuerpo del jugador se dibuja.
         debug: true,
         debugShowBody: false,
         debugShowStaticBody: false,
@@ -59,21 +91,40 @@ onMounted(() => {
   }
 
   game = new Phaser.Game(config)
-  game.events.on('level-completed', avanzarAlSiguienteNivel)
+  game.events.on('level-completed', handleLevelCompleted)
   game.events.once(Phaser.Core.Events.READY, () => {
     enfocarCanvasDelJuego()
     game.canvas?.addEventListener('pointerdown', enfocarCanvasDelJuego)
   })
-})
+}
 
 onBeforeUnmount(() => {
-  game?.events.off('level-completed', avanzarAlSiguienteNivel)
+  isUnmounted = true
+  game?.events.off('level-completed', handleLevelCompleted)
   game?.destroy(true)
 })
 
-function avanzarAlSiguienteNivel(sceneCompletada) {
+async function handleLevelCompleted(sceneCompletada, stats) {
   if (levelTransitionStarted || sceneCompletada !== levelScene) return
   levelTransitionStarted = true
+
+  const levelId = Number(gameStore.nivelActual)
+  
+  // Prepare level completion data
+  const completionData = {
+    timeSec: stats?.timeSec || Math.floor((Date.now() - (sceneCompletada.levelStartTime || Date.now())) / 1000),
+    stars: stats?.stars || 1,
+    deaths: stats?.deaths || (5 - gameStore.vidas),
+    keys: stats?.keys || gameStore.llaves,
+    kills: stats?.kills || gameStore.enemigos,
+  }
+
+  // Send to backend
+  try {
+    await progressionStore.completeLevel(levelId, completionData)
+  } catch (err) {
+    console.error('Error saving progress:', err)
+  }
 
   if (Number(gameStore.nivelActual) === 1) {
     // El flujo de misión inicia el nivel 2 con sus propias vidas y su HUD.
