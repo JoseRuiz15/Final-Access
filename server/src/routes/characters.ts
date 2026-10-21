@@ -1,22 +1,12 @@
 import { FastifyPluginAsync } from 'fastify';
+import { authGuard } from '../plugins/authGuard.js';
 import fp from 'fastify-plugin';
 import { z } from 'zod';
 import * as profileService from '../services/profileService.js';
 
 const charactersRoutes: FastifyPluginAsync = async (app) => {
   // Register auth middleware for protected routes in this encapsulation
-  app.addHook('preHandler', async (req, reply) => {
-    const config = req.routeOptions.config as { public?: boolean } | undefined;
-    const isPublic = config?.public === true;
-    if (isPublic) return;
-
-    try {
-      const payload = await req.jwtVerify<{ id: number; email: string; username: string }>();
-      req.authUser = { id: payload.id, email: payload.email, username: payload.username };
-    } catch {
-      return reply.code(401).send({ error: 'Unauthorized', message: 'Token inválido o expirado' });
-    }
-  });
+  app.addHook('preHandler', authGuard);
   // GET /characters - Catálogo global de personajes
   app.get('/characters', {
     config: { public: false },

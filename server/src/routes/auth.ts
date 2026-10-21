@@ -1,4 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
+import { authGuard } from '../plugins/authGuard.js';
 import fp from 'fastify-plugin';
 import { z } from 'zod';
 import * as authService from '../services/authService.js';
@@ -19,18 +20,7 @@ const verifyEmailBodySchema = z.object({
 
 const authRoutes: FastifyPluginAsync = async (app) => {
   // Register auth middleware for protected routes in this encapsulation
-  app.addHook('preHandler', async (req, reply) => {
-    const config = req.routeOptions.config as { public?: boolean } | undefined;
-    const isPublic = config?.public === true;
-    if (isPublic) return;
-
-    try {
-      const payload = await req.jwtVerify<{ id: number; email: string; username: string }>();
-      req.authUser = { id: payload.id, email: payload.email, username: payload.username };
-    } catch {
-      return reply.code(401).send({ error: 'Unauthorized', message: 'Token inválido o expirado' });
-    }
-  });
+  app.addHook('preHandler', authGuard);
   // POST /auth/register - Paso 1: Iniciar registro (envía código)
   app.post('/auth/register', {
     config: { public: true },
@@ -188,7 +178,14 @@ const authRoutes: FastifyPluginAsync = async (app) => {
     },
   }, async (req, reply) => {
     const body = loginBodySchema.parse(req.body);
-    const user = await authService.login(body.email, body.password);
+
+    let user;
+    try {
+      user = await authService.login(body.email, body.password);
+    } catch {
+      // Credenciales incorrectas: es un fallo de autenticación (401), no del servidor.
+      return reply.code(401).send({ error: 'Unauthorized', message: 'Credenciales inválidas' });
+    }
 
     const token = app.jwt.sign({ id: user.id, email: user.email, username: user.username });
     setAuthCookie(reply, token);

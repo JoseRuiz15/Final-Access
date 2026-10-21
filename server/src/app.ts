@@ -1,4 +1,4 @@
-import Fastify, { FastifyInstance } from 'fastify';
+import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import fastifyJwt from '@fastify/jwt';
 import fastifyCookie from '@fastify/cookie';
 import fastifyWebsocket from '@fastify/websocket';
@@ -126,13 +126,25 @@ export async function createApp(): Promise<FastifyInstance> {
     });
   });
 
-  app.setNotFoundHandler((request, reply) => {
-    return reply.code(404).send({
-      error: 'Not Found',
-      message: `Ruta ${request.method} ${request.url} no encontrada`,
-      statusCode: 404,
-    });
-  });
+  // Las rutas de cada plugin registran su propio hook de autenticación en el
+  // scope raíz, así que sin este preHandler una ruta inexistente devolvería
+  // 401 en vez de 404.
+  app.setNotFoundHandler(
+    {
+      preHandler: async (_request: FastifyRequest, reply: FastifyReply) => reply.code(404).send({
+        error: 'Not Found',
+        message: 'Ruta no encontrada',
+        statusCode: 404,
+      }),
+    },
+    (request, reply) => {
+      return reply.code(404).send({
+        error: 'Not Found',
+        message: `Ruta ${request.method} ${request.url} no encontrada`,
+        statusCode: 404,
+      });
+    },
+  );
 
   return app;
 }
