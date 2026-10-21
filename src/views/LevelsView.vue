@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGameStore } from '@/stores/game.js'
 import { useProgressionStore } from '@/stores/progression'
@@ -90,7 +90,7 @@ onMounted(async () => {
       class="absolute top-6 left-6 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9] transition-all duration-300"
       @click="volverASeleccionarModo"
     >
-      <- VOLVER AL MENU
+      &lt;- VOLVER AL MENU
     </button>
 
     <!-- El mapa ocupa el lienzo completo y los niveles conservan sus posiciones porcentuales. -->

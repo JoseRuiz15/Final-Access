@@ -3,6 +3,7 @@ import fastifyJwt from '@fastify/jwt';
 import fastifyCookie from '@fastify/cookie';
 import fastifyWebsocket from '@fastify/websocket';
 import { env } from './config/env.js';
+import { ZodError } from 'zod';
 import dbPlugin from './plugins/db.js';
 import zodPlugin from './plugins/zod.js';
 import corsPlugin from './plugins/cors.js';
@@ -34,6 +35,25 @@ export async function createApp(): Promise<FastifyInstance> {
       },
     } : true,
     ajv: { customOptions: { coerceTypes: 'array' } },
+  });
+
+  // Acepta cuerpos JSON vacíos. Axios envía `Content-Type: application/json`
+  // incluso en POST sin payload (p. ej. /auth/logout o /missions/:id/claim),
+  // y el parser por defecto de Fastify rechaza esas peticiones.
+  app.removeContentTypeParser('application/json');
+  app.addContentTypeParser('application/json', { parseAs: 'string' }, (_req, body, done) => {
+    const raw = typeof body === 'string' ? body.trim() : '';
+    if (raw === '') {
+      done(null, undefined);
+      return;
+    }
+    try {
+      done(null, JSON.parse(raw));
+    } catch (err) {
+      const parseError = err as Error & { statusCode?: number };
+      parseError.statusCode = 400;
+      done(parseError, undefined);
+    }
   });
 
   // Register JWT and Cookie DIRECTLY at root level (no encapsulation)
@@ -75,6 +95,16 @@ export async function createApp(): Promise<FastifyInstance> {
   }));
 
   app.setErrorHandler((error, request, reply) => {
+    // Los errores de validación de Zod son 400 (petición inválida), no 500.
+    if (error instanceof ZodError) {
+      return reply.code(400).send({
+        error: 'Bad Request',
+        message: 'Datos inválidos',
+        statusCode: 400,
+        details: error.flatten().fieldErrors,
+      });
+    }
+
     app.log.error(error);
     const statusCode = error.statusCode ?? 500;
     return reply.code(statusCode).send({

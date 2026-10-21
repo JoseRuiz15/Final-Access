@@ -1,6 +1,6 @@
 import { useAuthStore } from '@/stores/auth'
 
-export async function requireAuth(to, from) {
+export async function requireAuth(to, _from) {
   const authStore = useAuthStore()
 
   // If already have user, allow
@@ -18,7 +18,7 @@ export async function requireAuth(to, from) {
   }
 }
 
-export async function guestOnly(to, from) {
+export async function guestOnly(_to, _from) {
   const authStore = useAuthStore()
 
   // If not authenticated, allow
@@ -37,7 +37,7 @@ export async function guestOnly(to, from) {
   }
 }
 
-export async function optionalAuth(to, from) {
+export async function optionalAuth(_to, _from) {
   const authStore = useAuthStore()
 
   // Try to restore session but don't block navigation

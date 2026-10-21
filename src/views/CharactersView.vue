@@ -75,6 +75,9 @@ async function equipCharacter() {
 
 function irLobby() { router.push('/lobby') }
 function irStore() { router.push('/store') }
+function irCharacters() {
+  // Ya estamos en la pantalla de personajes: no navega.
+}
 function irLogin() {
   authStore.logout()
   router.push('/login')

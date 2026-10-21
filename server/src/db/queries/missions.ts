@@ -20,13 +20,25 @@ export async function getUserMissionsWithDetails(userId: number) {
     .innerJoin(missions, eq(userMissions.missionId, missions.id))
     .where(and(
       eq(userMissions.userId, userId),
+      eq(userMissions.resetDate, today),
       eq(missions.isActive, true),
     ))
     .orderBy(missions.isDaily, missions.id);
 
+  // Se devuelve una forma plana: el frontend consume `id`, `target` y `claimed`.
   return result.map(row => ({
-    ...row.userMission,
-    mission: row.mission,
+    id: row.mission.id,
+    title: row.mission.title,
+    description: row.mission.description,
+    missionType: row.mission.missionType,
+    target: row.mission.targetValue,
+    currentProgress: row.userMission.currentProgress,
+    completed: row.userMission.completed,
+    claimed: row.userMission.claimedAt !== null,
+    claimedAt: row.userMission.claimedAt,
+    rewardCoins: row.mission.rewardCoins,
+    rewardXp: row.mission.rewardXp,
+    isDaily: row.mission.isDaily,
   }));
 }
 

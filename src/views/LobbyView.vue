@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useLobbyStore } from '@/stores/lobbies'
@@ -235,6 +235,37 @@ onUnmounted(() => {
               <p class="text-[#777787] font-pixel text-[12px]">{{ lobbyStore.lobbies.length }} disponibles</p>
             </div>
           </button>
+
+          <!-- Lista de lobbies públicos disponibles -->
+          <div
+            v-if="lobbyStore.lobbies.length > 0"
+            class="w-80 max-h-[420px] overflow-y-auto flex flex-col gap-3"
+          >
+            <div
+              v-for="lobby in lobbyStore.lobbies"
+              :key="lobby.code"
+              class="bg-[#000208] border-3 border-[#2D2F4B] rounded-lg p-4 flex flex-col gap-3"
+            >
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-pixel text-white text-[12px]">{{ lobby.name }}</p>
+                  <p class="font-pixel text-[#777787] text-[10px] mt-1">
+                    {{ lobby.code }} · {{ lobby.players?.length ?? 0 }}/{{ lobby.maxPlayers }}
+                  </p>
+                </div>
+                <span class="font-pixel text-[9px] text-[#00FFEA] uppercase">{{ lobby.mode }}</span>
+              </div>
+
+              <button
+                type="button"
+                @click="handleJoinLobby(lobby.code)"
+                :disabled="lobbyStore.isLoading"
+                class="w-full h-9 font-pixel text-[11px] rounded-lg border-2 border-[#00FFEA] text-[#00FFEA] transition-all duration-300 hover:bg-[#00FFEA] hover:text-black disabled:opacity-50"
+              >
+                UNIRSE
+              </button>
+            </div>
+          </div>
         </section>
 
         <!-- Lado derecho -->
@@ -273,7 +304,7 @@ onUnmounted(() => {
                 <button
                   v-if="lobbyStore.isCreator"
                   @click="startMatch"
-                  :disabled="!lobbyStore.allReady || lobbyStore.isLoading"
+                  :disabled="!lobbyStore.canStartMatch || lobbyStore.isLoading"
                   class="w-full h-10 bg-[#FF00D9] text-black font-pixel text-[11px] rounded-lg border-2 border-[#FF00D9] transition-all duration-300 hover:bg-[#FF33E0] hover:shadow-[0_0_20px_#FF00D9] disabled:opacity-50"
                 >
                   INICIAR PARTIDA

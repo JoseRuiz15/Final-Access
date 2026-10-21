@@ -95,8 +95,32 @@ const progressionRoutes: FastifyPluginAsync = async (app) => {
           type: 'object',
           properties: {
             ok: { type: 'boolean' },
-            levelProgress: { type: 'object' },
-            gameProgress: { type: 'object' },
+            levelProgress: {
+              type: 'object',
+              properties: {
+                userId: { type: 'number' },
+                levelId: { type: 'number' },
+                completed: { type: 'boolean' },
+                stars: { type: 'number' },
+                bestTimeSec: { type: ['number', 'null'] },
+                deaths: { type: 'number' },
+                completedAt: { type: ['string', 'null'] },
+                createdAt: { type: 'string' },
+                updatedAt: { type: 'string' },
+              },
+            },
+            gameProgress: {
+              type: 'object',
+              properties: {
+                userId: { type: 'number' },
+                currentLevelId: { type: 'number' },
+                lives: { type: 'number' },
+                keysCollected: { type: 'number' },
+                enemiesKilled: { type: 'number' },
+                totalPlaytimeSec: { type: 'number' },
+                updatedAt: { type: 'string' },
+              },
+            },
             xpGain: { type: 'number' },
             coinGain: { type: 'number' },
             newLevel: { type: ['number', 'null'] },
@@ -130,8 +154,14 @@ const progressionRoutes: FastifyPluginAsync = async (app) => {
       kills: z.number().int().nonnegative(),
     }).parse(req.body);
 
-    const result = await progressionService.completeLevel(req.authUser!.id, params.levelId, body);
-    return reply.code(200).send({ ok: true, ...result });
+    try {
+      const result = await progressionService.completeLevel(req.authUser!.id, params.levelId, body);
+      return reply.code(200).send({ ok: true, ...result });
+    } catch (err: any) {
+      // Un nivel inexistente es un 404, no un fallo del servidor.
+      const status = err.message.includes('no encontrado') ? 404 : 400;
+      return reply.code(status).send({ error: 'Error', message: err.message });
+    }
   });
 };
 

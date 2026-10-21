@@ -9,29 +9,34 @@ describe('Lobbies Endpoints', () => {
 
   beforeAll(async () => {
     app = await createTestApp();
-    
+
+    // El endpoint de registro no devuelve username/email, así que se guardan
+    // aquí para reutilizarlos en la verificación.
+    const username = `lobbyuser${Date.now()}`;
+    const email = `lobby${Date.now()}@test.com`;
+
     const registerResponse = await app.inject({
       method: 'POST',
       url: '/auth/register',
       payload: {
-        username: `lobbyuser${Date.now()}`,
-        email: `lobby${Date.now()}@test.com`,
+        username,
+        email,
         password: '12345678',
       },
     });
     const registerData = JSON.parse(registerResponse.body);
-    
+
     const verifyResponse = await app.inject({
       method: 'POST',
       url: '/auth/verify-email',
       payload: {
-        username: registerData.username!,
-        email: registerData.email!,
+        username,
+        email,
         password: '12345678',
         code: registerData.devCode!,
       },
     });
-    
+
     const cookie = getCookie(verifyResponse.headers);
     authCookie = parseCookie(cookie!);
   });
@@ -126,23 +131,27 @@ describe('Lobbies Endpoints', () => {
 
   it('POST /lobbies/:code/join - should join a public lobby', async () => {
     // Create second user
+    const stamp = Date.now();
+    const user2Username = `joinuser${stamp}`;
+    const user2Email = `join${stamp}@test.com`;
+
     const user2Register = await app.inject({
       method: 'POST',
       url: '/auth/register',
       payload: {
-        username: `joinuser${Date.now()}`,
-        email: `join${Date.now()}@test.com`,
+        username: user2Username,
+        email: user2Email,
         password: '12345678',
       },
     });
     const user2RegisterData = JSON.parse(user2Register.body);
-    
+
     const user2Verify = await app.inject({
       method: 'POST',
       url: '/auth/verify-email',
       payload: {
-        username: user2RegisterData.username!,
-        email: user2RegisterData.email!,
+        username: user2Username,
+        email: user2Email,
         password: '12345678',
         code: user2RegisterData.devCode!,
       },
@@ -284,7 +293,7 @@ describe('Lobbies Endpoints', () => {
     const createResponse = await app.inject({
       method: 'POST',
       url: '/lobbies',
-      headers: { 
+      headers: {
         cookie: authCookie,
         'Content-Type': 'application/json',
       },
@@ -297,6 +306,47 @@ describe('Lobbies Endpoints', () => {
     });
     const createData = JSON.parse(createResponse.body);
     const lobbyCode = createData.lobby.code;
+
+    // El creador entra listo, así que hace falta un segundo jugador listo
+    // para poder iniciar la partida.
+    const stamp = Date.now();
+    const user2Username = `startuser${stamp}`;
+    const user2Email = `start${stamp}@test.com`;
+
+    const user2Register = await app.inject({
+      method: 'POST',
+      url: '/auth/register',
+      payload: { username: user2Username, email: user2Email, password: '12345678' },
+    });
+    const user2RegisterData = JSON.parse(user2Register.body);
+
+    const user2Verify = await app.inject({
+      method: 'POST',
+      url: '/auth/verify-email',
+      payload: {
+        username: user2Username,
+        email: user2Email,
+        password: '12345678',
+        code: user2RegisterData.devCode!,
+      },
+    });
+    const user2AuthCookie = parseCookie(getCookie(user2Verify.headers)!);
+
+    await app.inject({
+      method: 'POST',
+      url: `/lobbies/${lobbyCode}/join`,
+      headers: { cookie: user2AuthCookie, 'Content-Type': 'application/json' },
+      payload: { characterId: 'cosa1' },
+    });
+
+    // El segundo jugador marca "listo"
+    const readyResponse = await app.inject({
+      method: 'PATCH',
+      url: `/lobbies/${lobbyCode}/ready`,
+      headers: { cookie: user2AuthCookie, 'Content-Type': 'application/json' },
+      payload: { ready: true },
+    });
+    expect(readyResponse.statusCode).toBe(200);
 
     const startResponse = await app.inject({
       method: 'POST',

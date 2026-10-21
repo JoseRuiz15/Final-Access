@@ -33,16 +33,21 @@ describe('Auth Endpoints', () => {
   });
 
   it('POST /auth/verify-email - should verify code and return JWT cookie', async () => {
+    // El endpoint de registro no devuelve username/email, así que se guardan
+    // aquí para reutilizarlos en la verificación.
+    const username = `verifyuser${Date.now()}`;
+    const email = `verify${Date.now()}@test.com`;
+
     const registerResponse = await registerUser(app, {
-      username: `verifyuser${Date.now()}`,
-      email: `verify${Date.now()}@test.com`,
+      username,
+      email,
       password: testPassword,
     });
     const registerData = JSON.parse(registerResponse.body);
-    
+
     const response = await verifyEmail(app, {
-      username: registerData.username || `verifyuser${Date.now()}`,
-      email: registerData.email || `verify${Date.now()}@test.com`,
+      username,
+      email,
       password: testPassword,
       code: registerData.devCode!,
     });
@@ -82,9 +87,12 @@ describe('Auth Endpoints', () => {
   });
 
   it('POST /auth/login - should login with email/password', async () => {
-    const loginEmail = `login${Date.now()}@test.com`;
-    const loginUsername = `loginuser${Date.now()}`;
-    
+    const stamp = Date.now();
+    const loginEmail = `login${stamp}@test.com`;
+    const loginUsername = `loginuser${stamp}`;
+    const secondEmail = `login2${stamp}@test.com`;
+    const secondUsername = `loginuser2${stamp}`;
+
     // First register and verify
     await registerUser(app, {
       username: loginUsername,
@@ -92,29 +100,29 @@ describe('Auth Endpoints', () => {
       password: testPassword,
     });
     const registerResponse = await registerUser(app, {
-      username: loginUsername + '2',
-      email: loginEmail + '2',
+      username: secondUsername,
+      email: secondEmail,
       password: testPassword,
     });
     const registerData = JSON.parse(registerResponse.body);
-    
+
     await verifyEmail(app, {
-      username: registerData.username!,
-      email: registerData.email!,
+      username: secondUsername,
+      email: secondEmail,
       password: testPassword,
       code: registerData.devCode!,
     });
 
     // Now login
     const response = await loginUser(app, {
-      email: registerData.email!,
+      email: secondEmail,
       password: testPassword,
     });
 
     expect(response.statusCode).toBe(200);
     const data = JSON.parse(response.body);
     expect(data.ok).toBe(true);
-    expect(data.user.email).toBe(registerData.email);
+    expect(data.user.email).toBe(secondEmail);
   });
 
   it('POST /auth/logout - should clear cookie', async () => {
@@ -131,16 +139,26 @@ describe('Auth Endpoints', () => {
   });
 
   it('POST /auth/register - should fail with duplicate email', async () => {
-    const email = `duplicate${Date.now()}@test.com`;
-    const username = `dupuser${Date.now()}`;
-    
-    // First registration
-    await registerUser(app, {
+    const stamp = Date.now();
+    const email = `duplicate${stamp}@test.com`;
+    const username = `dupuser${stamp}`;
+
+    // First registration (queda pendiente de verificar)
+    const registerResponse = await registerUser(app, {
       username,
       email,
       password: testPassword,
     });
-    
+    const registerData = JSON.parse(registerResponse.body);
+
+    // Verificamos para que el usuario exista de verdad en la tabla `users`
+    await verifyEmail(app, {
+      username,
+      email,
+      password: testPassword,
+      code: registerData.devCode!,
+    });
+
     // Second registration with same email
     const response = await registerUser(app, {
       username: username + '2',

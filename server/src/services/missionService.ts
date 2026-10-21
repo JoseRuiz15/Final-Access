@@ -6,6 +6,8 @@ import type { Mission } from '../db/schema.js';
 // ============================================
 
 export async function getUserMissions(userId: number) {
+  // Asegura que el usuario tenga las misiones de hoy (reset diario perezoso).
+  await queries.initializeUserMissions(userId);
   return queries.getUserMissionsWithDetails(userId);
 }
 

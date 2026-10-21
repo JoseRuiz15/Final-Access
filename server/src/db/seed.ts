@@ -1,6 +1,8 @@
 import { db } from './pool.js';
 import { levels } from './schema.js';
 import { eq } from 'drizzle-orm';
+import { pathToFileURL } from 'node:url';
+import { sql } from './pool.js';
 
 export async function seedLevels() {
   const existing = await db.select().from(levels).where(eq(levels.id, 1)).limit(1);
@@ -39,7 +41,12 @@ export async function seedLevels() {
   console.log('✅ Levels seeded successfully');
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Permite ejecutar el archivo directamente (`npm run db:seed`) tanto en
+// Windows como en Linux/macOS.
+const esEjecucionDirecta = import.meta.url === pathToFileURL(process.argv[1] ?? '').href;
+
+if (esEjecucionDirecta) {
   await seedLevels();
+  await sql.end({ timeout: 5 });
   process.exit(0);
 }

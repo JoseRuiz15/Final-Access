@@ -1,6 +1,8 @@
 import { db } from './pool.js';
 import { characters } from './schema.js';
 import { eq } from 'drizzle-orm';
+import { pathToFileURL } from 'node:url';
+import { sql } from './pool.js';
 
 export async function seedCharacters() {
   const existing = await db.select().from(characters).where(eq(characters.id, 'cosa1')).limit(1);
@@ -60,7 +62,8 @@ export async function seedCharacters() {
   console.log('✅ Characters seeded successfully');
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   await seedCharacters();
+  await sql.end({ timeout: 5 });
   process.exit(0);
 }

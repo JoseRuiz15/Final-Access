@@ -10,26 +10,30 @@ describe('Progression & Missions Endpoints', () => {
 
   beforeAll(async () => {
     app = await createTestApp();
-    
-    // Create and verify a test user
+
+    // El endpoint de registro no devuelve username/email, así que se guardan
+    // aquí para reutilizarlos en la verificación.
+    const username = `proguser${Date.now()}`;
+    const email = `prog${Date.now()}@test.com`;
+
     const registerResponse = await registerUser(app, {
-      username: `proguser${Date.now()}`,
-      email: `prog${Date.now()}@test.com`,
+      username,
+      email,
       password: '12345678',
     });
     const registerData = JSON.parse(registerResponse.body);
-    
+
     const verifyResponse = await app.inject({
       method: 'POST',
       url: '/auth/verify-email',
       payload: {
-        username: registerData.username!,
-        email: registerData.email!,
+        username,
+        email,
         password: '12345678',
         code: registerData.devCode!,
       },
     });
-    
+
     const cookie = getCookie(verifyResponse.headers);
     authCookie = parseCookie(cookie!);
   });

@@ -4,6 +4,7 @@ import { env } from '../config/env.js';
 import * as queries from '../db/queries/auth.js';
 import * as profileQueries from '../db/queries/profile.js';
 import * as progressionQueries from '../db/queries/progression.js';
+import * as missionQueries from '../db/queries/missions.js';
 import { sendVerificationEmail } from './emailService.js';
 import type { User } from '../db/schema.js';
 
@@ -57,7 +58,9 @@ export async function startRegister(
     if (existingVerification.expiresAt > now && existingVerification.attempts < 3) {
       // Reenviar código existente
       const emailResult = await sendVerificationEmail(email, existingVerification.code);
-      const devCode = env.NODE_ENV === 'development' && emailResult ? emailResult.code : undefined;
+      // `emailResult` solo viene definido cuando el email no se envió de verdad
+      // (transporte de consola en local y en tests).
+      const devCode = emailResult ? emailResult.code : undefined;
       return { ok: true, message: 'Código reenviado a tu email', devCode };
     } else {
       // Expirada o muchos intentos: borrar y crear nueva
@@ -78,7 +81,9 @@ export async function startRegister(
 
   // Enviar email
   const emailResult = await sendVerificationEmail(email, code);
-  const devCode = env.NODE_ENV === 'development' && emailResult ? emailResult.code : undefined;
+  // `emailResult` solo viene definido cuando el email no se envió de verdad
+  // (transporte de consola en local y en tests).
+  const devCode = emailResult ? emailResult.code : undefined;
 
   return { ok: true, message: 'Código de verificación enviado a tu email', devCode };
 }
@@ -122,6 +127,9 @@ export async function completeRegistration(
 
   // Crear progreso de juego para el usuario
   await progressionQueries.createGameProgress(user.id);
+
+  // Asignar las misiones diarias del día al nuevo usuario
+  await missionQueries.initializeUserMissions(user.id);
 
   // Borrar verificación usada
   await queries.deleteVerification(email);

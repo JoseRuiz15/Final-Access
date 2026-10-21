@@ -59,8 +59,15 @@ const authRoutes: FastifyPluginAsync = async (app) => {
     },
   }, async (req, reply) => {
     const body = registerStartBodySchema.parse(req.body);
-    const result = await authService.startRegister(body.username, body.email, body.password);
-    return reply.code(200).send(result);
+    try {
+      const result = await authService.startRegister(body.username, body.email, body.password);
+      return reply.code(200).send(result);
+    } catch (err: any) {
+      // El email o el username ya están en uso: es un error de validación (400),
+      // no un fallo del servidor.
+      const status = err.message.includes('ya está') || err.message.includes('ya existe') ? 400 : 500;
+      return reply.code(status).send({ error: 'Bad Request', message: err.message });
+    }
   });
 
   // POST /auth/verify-email - Paso 2: Verificar código + completar registro

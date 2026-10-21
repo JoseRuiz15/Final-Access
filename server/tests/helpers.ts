@@ -94,15 +94,3 @@ export async function createAuthenticatedUser(app: FastifyInstance, overrides?: 
     userId: JSON.parse(verifyResponse.body).user.id,
   };
 }
-
-export function getCookie(headers: Record<string, string | string[] | undefined>): string | undefined {
-  const setCookie = headers['set-cookie'];
-  if (!setCookie) return undefined;
-  if (Array.isArray(setCookie)) return setCookie[0];
-  return setCookie;
-}
-
-export function parseCookie(cookie: string | undefined): string {
-  if (!cookie) return '';
-  return cookie.split(';')[0];
-}

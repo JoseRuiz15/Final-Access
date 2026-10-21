@@ -19,6 +19,13 @@ coverage
 .env.*
 !.env.example
 
+# Artefactos compilados de los tests del servidor (se generan con tsc).
+# Si se commitean, rompen la resolución de imports en Vitest.
+server/tests/**/*.js
+server/tests/**/*.d.ts
+server/tests/**/*.js.map
+server/tests/**/*.d.ts.map
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

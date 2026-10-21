@@ -2,6 +2,9 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { lobbyApi } from '@/api/client'
 
+// Jugadores mínimos para poder iniciar una partida (debe coincidir con el backend).
+const MIN_PLAYERS_TO_START = 2
+
 export const useLobbyStore = defineStore('lobbies', () => {
   const lobbies = ref([])
   const currentLobby = ref(null)
@@ -14,6 +17,10 @@ export const useLobbyStore = defineStore('lobbies', () => {
   const isCreator = computed(() => currentLobby.value?.creatorId === getCurrentUserId())
   const players = computed(() => currentLobby.value?.players || [])
   const allReady = computed(() => players.value.length > 0 && players.value.every((p) => p.isReady))
+  // El backend exige al menos 2 jugadores listos para iniciar la partida.
+  const canStartMatch = computed(
+    () => allReady.value && players.value.length >= MIN_PLAYERS_TO_START,
+  )
 
   function getCurrentUserId() {
     // This will be populated from auth store
@@ -293,6 +300,7 @@ export const useLobbyStore = defineStore('lobbies', () => {
     isCreator,
     players,
     allReady,
+    canStartMatch,
     fetchLobbies,
     createLobby,
     getLobby,

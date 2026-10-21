@@ -11,7 +11,7 @@ async function checkAuth() {
     try {
       await authStore.fetchMe()
       router.push('/lobby')
-    } catch (err) {
+    } catch {
       // Not authenticated, stay on home
     }
   } else {

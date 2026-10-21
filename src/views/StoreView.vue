@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useCharacterStore } from '@/stores/characters'
@@ -68,6 +68,10 @@ function irLobby() {
 
 function irCharacters() {
   router.push('/characters')
+}
+
+function irStore() {
+  // Ya estamos en la pantalla de la tienda: no navega.
 }
 
 onMounted(() => {
