@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { levelProgressSchema, gameProgressSchema, levelSchema, userMissionSchema, missionSchema } from '../db/schema.js';
 
 // ============================================
 // PROGRESSION SCHEMAS

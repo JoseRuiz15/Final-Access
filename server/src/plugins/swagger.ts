@@ -1,7 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
-import { env } from '../config/env.js';
 
 const swaggerPlugin: FastifyPluginAsync = async (app) => {
   await app.register(fastifySwagger, {
@@ -12,7 +11,8 @@ const swaggerPlugin: FastifyPluginAsync = async (app) => {
         version: '1.0.0',
       },
       servers: [
-        { url: `http://localhost:${env.PORT}`, description: 'Desarrollo local' },
+        // Ruta relativa: funciona en local y en Railway sin hardcodear el host.
+        { url: '/', description: 'Servidor actual' },
       ],
       components: {
         securitySchemes: {

@@ -1,5 +1,5 @@
 import * as queries from '../db/queries/profile.js';
-import type { Profile, Character } from '../db/schema.js';
+import type { Character } from '../db/schema.js';
 
 // ============================================
 // PROFILE SERVICE

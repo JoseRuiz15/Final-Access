@@ -1,7 +1,7 @@
 import { db } from '../pool.js';
 import { levelProgress, gameProgress, levels, playerProfiles, playerCharacters, characters } from '../schema.js';
-import { eq, and, sql, gte, lte, count } from 'drizzle-orm';
-import type { LevelProgress, GameProgress, Level, Profile, Character } from '../schema.js';
+import { eq, and, sql } from 'drizzle-orm';
+import type { LevelProgress, GameProgress, Level } from '../schema.js';
 
 // ============================================
 // PROGRESSION QUERIES

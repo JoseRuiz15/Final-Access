@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { createTestApp, registerUser, verifyEmail, getCookie, parseCookie } from './helpers.js';
+import { createTestApp, registerUser, getCookie, parseCookie } from './helpers.js';
 import type { FastifyInstance } from 'fastify';
 
 describe('Progression & Missions Endpoints', () => {
   let app: FastifyInstance;
-  let testPassword = '12345678';
+  let _testPassword = '12345678';
   let authCookie: string;
-  let userId: number;
+  let _userId: number;
 
   beforeAll(async () => {
     app = await createTestApp();

@@ -37,7 +37,7 @@ export function createJwtPayload(user: User): { id: number; email: string; usern
 export async function startRegister(
   username: string,
   email: string,
-  password: string
+  _password: string
 ): Promise<{ ok: true; message: string; devCode?: string }> {
   // Verificar si ya existe usuario con ese email
   const existingUser = await queries.findUserByEmail(email);

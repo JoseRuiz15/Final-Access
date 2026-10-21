@@ -172,7 +172,7 @@ describe('Auth Endpoints', () => {
   });
 
   it('POST /auth/verify-email - should fail with wrong code', async () => {
-    const registerResponse = await registerUser(app, {
+    const _registerResponse = await registerUser(app, {
       username: `wrongcode${Date.now()}`,
       email: `wrongcode${Date.now()}@test.com`,
       password: testPassword,

@@ -8,11 +8,20 @@ function usesSmtpTransport(): boolean {
 }
 
 function getFromAddress(): string {
+  // En producción el remitente debe ser una dirección verificada por el
+  // proveedor SMTP. SMTP_USER sirve de respaldo (en Gmail es el propio correo).
+  if (env.NODE_ENV === 'production' && !env.EMAIL_FROM && !env.SMTP_USER) {
+    throw new Error('EMAIL_FROM es obligatorio en producción (remitente verificado)');
+  }
   return env.EMAIL_FROM || env.SMTP_USER || '"Final Acces" <noreply@example.com>';
 }
 
 function getTransporter(): Transporter {
   if (transporter) return transporter;
+
+  console.log(
+    `📮 SMTP: ${env.SMTP_HOST}:${env.SMTP_PORT} | from: ${getFromAddress()}`,
+  );
 
   if (!usesSmtpTransport()) {
     // En desarrollo: transporte de consola (no envía emails reales)
@@ -109,7 +118,19 @@ export async function sendVerificationEmail(email: string, code: string): Promis
     return { code };
   }
 
-  await transporter.sendMail(mailOptions);
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (err: any) {
+    // 535 = credenciales, 550 = remitente sin verificar, ETIMEDOUT = red.
+    // Se registra el código real de SMTP para poder diagnosticarlo en los logs.
+    console.error(
+      `❌ Error SMTP (${err.code ?? 'desconocido'} / ${err.responseCode ?? '-'}):`,
+      err.message,
+    );
+    throw new Error(
+      `No se pudo enviar el email de verificación (${err.code ?? 'SMTP_ERROR'})`,
+    );
+  }
 }
 
 export async function sendWelcomeEmail(email: string, username: string): Promise<void> {

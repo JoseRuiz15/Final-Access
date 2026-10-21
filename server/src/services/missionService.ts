@@ -1,5 +1,4 @@
 import * as queries from '../db/queries/missions.js';
-import type { Mission } from '../db/schema.js';
 
 // ============================================
 // MISSION SERVICE

@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { createTestApp, registerUser, verifyEmail, getCookie, parseCookie } from './helpers.js';
+import { createTestApp, getCookie, parseCookie } from './helpers.js';
 import type { FastifyInstance } from 'fastify';
 
 describe('Lobbies Endpoints', () => {
   let app: FastifyInstance;
-  let testPassword = '12345678';
+  let _testPassword = '12345678';
   let authCookie: string;
 
   beforeAll(async () => {
@@ -157,7 +157,7 @@ describe('Lobbies Endpoints', () => {
       },
     });
     const user2Cookie = getCookie(user2Verify.headers);
-    const user2AuthCookie = parseCookie(user2Cookie!);
+    const _user2AuthCookie = parseCookie(user2Cookie!);
 
     // Create lobby with first user
     const createResponse = await app.inject({

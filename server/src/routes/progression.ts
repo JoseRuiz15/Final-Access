@@ -2,7 +2,6 @@ import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import { z } from 'zod';
 import * as progressionService from '../services/progressionService.js';
-import * as missionService from '../services/missionService.js';
 
 const progressionRoutes: FastifyPluginAsync = async (app) => {
   // Auth middleware

@@ -1,6 +1,6 @@
 import { db } from '../pool.js';
 import { missions, userMissions, playerProfiles } from '../schema.js';
-import { eq, and, sql, count } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import type { Mission, UserMission } from '../schema.js';
 
 // ============================================

@@ -1,5 +1,4 @@
 import { FastifyPluginAsync } from 'fastify';
-import { env } from '../config/env.js';
 
 declare module 'fastify' {
   interface FastifyRequest {

@@ -1,7 +1,7 @@
 import { db } from '../pool.js';
-import { users, playerProfiles, characters, playerCharacters } from '../schema.js';
-import { eq, and, desc, sql, count } from 'drizzle-orm';
-import type { Profile, InsertProfile, Character, PlayerCharacter, User } from '../schema.js';
+import { playerProfiles, characters, playerCharacters } from '../schema.js';
+import { eq, and, sql, count } from 'drizzle-orm';
+import type { Profile, Character, PlayerCharacter } from '../schema.js';
 
 // ============================================
 // PROFILE QUERIES

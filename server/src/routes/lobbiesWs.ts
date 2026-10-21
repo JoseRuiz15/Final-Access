@@ -3,127 +3,130 @@ import fp from 'fastify-plugin';
 import * as queries from '../db/queries/lobbies.js';
 import { lobbyPlayers } from '../db/schema.js';
 import { eq, and } from 'drizzle-orm';
+import {
+  registerConnection,
+  unregisterConnection,
+  broadcastLobbyState,
+  broadcastPlayers,
+  type LobbySocket,
+} from '../realtime/lobbyHub.js';
 
-// Map para almacenar conexiones WebSocket por lobby
-const lobbyConnections = new Map<number, Set<any>>();
-
-function broadcastToLobby(lobbyId: number, message: object, exclude?: any) {
-  const connections = lobbyConnections.get(lobbyId);
-  if (!connections) return;
-  
-  const data = JSON.stringify(message);
-  for (const ws of connections) {
-    if (ws !== exclude && ws.readyState === 1) { // WebSocket.OPEN = 1
-      ws.send(data);
-    }
-  }
+/**
+ * Convierte el payload que entrega 'ws' (Buffer | ArrayBuffer | Buffer[]) en
+ * un Buffer legible.
+ */
+function toBuffer(raw: any): Buffer {
+  if (Buffer.isBuffer(raw)) return raw;
+  if (Array.isArray(raw)) return Buffer.concat(raw);
+  if (raw instanceof ArrayBuffer) return Buffer.from(raw);
+  return Buffer.from(String(raw));
 }
 
-function addConnection(lobbyId: number, ws: any) {
-  if (!lobbyConnections.has(lobbyId)) {
-    lobbyConnections.set(lobbyId, new Set());
-  }
-  lobbyConnections.get(lobbyId)!.add(ws);
-}
-
-function removeConnection(lobbyId: number, ws: any) {
-  const connections = lobbyConnections.get(lobbyId);
-  if (connections) {
-    connections.delete(ws);
-    if (connections.size === 0) {
-      lobbyConnections.delete(lobbyId);
-    }
-  }
-}
-
+/**
+ * WebSocket del lobby.
+ *
+ * El protocolo usa nombres en minúsculas y el payload en la raíz, que es lo
+ * que espera el cliente (`src/stores/lobbies.js`):
+ *   - recibe:  set_ready, set_character, ping
+ *   - envía:    lobby_state, player_joined, player_left, player_ready,
+ *               player_character, lobby_cancelled, match_started, error
+ */
 const lobbiesWsRoutes: FastifyPluginAsync = async (app) => {
-  // WebSocket endpoint para lobby
   app.register(async (fastify) => {
-    fastify.get('/ws/lobby/:code', { websocket: true }, async (ws: any, req: any) => {
-      const params = req.params as { code: string };
-      const code = params.code;
-      
-      // Validar lobby
+    // El WebSocket reutiliza la cookie de sesión del navegador, así que se
+    // autentica igual que el resto de rutas. Sin esto, cualquiera que supiera
+    // el código del lobby vería la lista de jugadores.
+    fastify.addHook('preHandler', async (req, reply) => {
+      try {
+        const payload = await req.jwtVerify<{ id: number; email: string; username: string }>();
+        req.authUser = { id: payload.id, email: payload.email, username: payload.username };
+      } catch {
+        return reply.code(401).send({ error: 'Unauthorized', message: 'Token inválido o expirado' });
+      }
+    });
+
+    fastify.get('/ws/lobby/:code', { websocket: true }, async (conn: any, req: any) => {
+      // @fastify/websocket entrega un stream Duplex; el WebSocket real (con
+      // send/close/readyState) está en `conn.socket`.
+      const socket = conn.socket as LobbySocket;
+      const { code } = req.params as { code: string };
+      const userId = req.authUser!.id;
+
       const lobby = await queries.getLobbyByCode(code);
       if (!lobby) {
-        ws.close(4004, 'Lobby no encontrado');
+        socket.close(4004, 'Lobby no encontrado');
         return;
       }
-      
+
       const lobbyId = lobby.lobby.id;
-      addConnection(lobbyId, ws);
-      
-      // Enviar estado inicial
+
+      // Solo los miembros del lobby (o su creador) pueden conectarse.
       const lobbyData = await queries.getLobbyWithPlayers(lobbyId);
-      if (lobbyData) {
-        ws.send(JSON.stringify({
-          type: 'LOBBY_STATE',
-          payload: lobbyData,
-        }));
+      const isMember =
+        lobby.lobby.creatorId === userId ||
+        (lobbyData?.players ?? []).some((player) => player.userId === userId);
+
+      if (!isMember) {
+        socket.close(4003, 'No perteneces a este lobby');
+        return;
       }
-      
-      // Notificar a otros que alguien se conectó
-      broadcastToLobby(lobbyId, {
-        type: 'PLAYER_CONNECTED',
-        payload: { userId: req.authUser?.id },
-      }, ws);
-      
-      ws.on('message', async (data: Buffer) => {
+
+      registerConnection(lobbyId, socket);
+
+      // Estado inicial para quien se conecta y resincronización para el resto:
+      // `lobby_state` es la fuente de verdad y evita perder eventos.
+      if (lobbyData) {
+        socket.send(JSON.stringify({ type: 'lobby_state', lobby: lobbyData }));
+      }
+      await broadcastLobbyState(lobbyId, socket);
+
+      socket.on('message', async (raw: any) => {
+        let message: any;
         try {
-          const message = JSON.parse(data.toString());
-          
+          message = JSON.parse(toBuffer(raw).toString());
+        } catch {
+          socket.send(JSON.stringify({ type: 'error', message: 'Mensaje inválido' }));
+          return;
+        }
+
+        try {
           switch (message.type) {
-            case 'PING':
-              ws.send(JSON.stringify({ type: 'PONG' }));
+            case 'ping':
+              socket.send(JSON.stringify({ type: 'pong' }));
               break;
-              
-            case 'SET_READY':
-              if (message.payload?.ready !== undefined) {
-                await queries.setPlayerReady(lobbyId, req.authUser!.id, message.payload.ready);
-                
-                // Broadcast updated state
-                const updatedLobby = await queries.getLobbyWithPlayers(lobbyId);
-                broadcastToLobby(lobbyId, {
-                  type: 'LOBBY_STATE',
-                  payload: updatedLobby,
-                });
-              }
+
+            case 'set_ready': {
+              // Se acepta el campo plano (`ready`) y también anidado (`payload.ready`).
+              const ready = message.ready ?? message.payload?.ready;
+              if (typeof ready !== 'boolean') break;
+              await queries.setPlayerReady(lobbyId, userId, ready);
+              await broadcastPlayers(lobbyId, 'player_ready');
               break;
-              
-            case 'CHANGE_CHARACTER':
-              if (message.payload?.characterId) {
-                // Update player's character
-                await fastify.db
-                  .update(lobbyPlayers)
-                  .set({ characterId: message.payload.characterId })
-                  .where(and(
-                    eq(lobbyPlayers.lobbyId, lobbyId),
-                    eq(lobbyPlayers.userId, req.authUser!.id)
-                  ));
-                
-                const updatedLobby = await queries.getLobbyWithPlayers(lobbyId);
-                broadcastToLobby(lobbyId, {
-                  type: 'LOBBY_STATE',
-                  payload: updatedLobby,
-                });
-              }
+            }
+
+            case 'set_character': {
+              const characterId = message.characterId ?? message.payload?.characterId;
+              if (!characterId) break;
+              await fastify.db
+                .update(lobbyPlayers)
+                .set({ characterId })
+                .where(and(eq(lobbyPlayers.lobbyId, lobbyId), eq(lobbyPlayers.userId, userId)));
+              await broadcastPlayers(lobbyId, 'player_character');
               break;
+            }
           }
         } catch (err) {
-          ws.send(JSON.stringify({
-            type: 'ERROR',
-            payload: { message: err instanceof Error ? err.message : 'Error desconocido' },
+          socket.send(JSON.stringify({
+            type: 'error',
+            message: err instanceof Error ? err.message : 'Error desconocido',
           }));
         }
       });
-      
-      ws.on('close', () => {
-        removeConnection(lobbyId, ws);
-        
-        // Notificar a otros que alguien se desconectó
-        broadcastToLobby(lobbyId, {
-          type: 'PLAYER_DISCONNECTED',
-          payload: { userId: req.authUser?.id },
+
+      socket.on('close', () => {
+        unregisterConnection(lobbyId, socket);
+        void broadcastPlayers(lobbyId, 'player_left').catch(() => {
+          // El hub ya absorbe los errores: esto es solo un seguro extra.
         });
       });
     });

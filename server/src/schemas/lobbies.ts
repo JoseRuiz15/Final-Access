@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { lobbySchema, lobbyPlayerSchema, insertLobbySchema } from '../db/schema.js';
 
 // ============================================
 // LOBBIES SCHEMAS

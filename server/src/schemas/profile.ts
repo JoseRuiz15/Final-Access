@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { profileSchema, characterSchema, playerCharacterSchema } from '../db/schema.js';
+import { characterSchema } from '../db/schema.js';
 
 // ============================================
 // PROFILE SCHEMAS

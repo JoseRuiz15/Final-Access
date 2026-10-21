@@ -34,6 +34,9 @@ export async function createApp(): Promise<FastifyInstance> {
         options: { translateTime: 'HH:MM:ss Z', ignore: 'pid,hostname' },
       },
     } : true,
+    // Necesario detrás del proxy de Railway: sin esto `req.ip` es la IP del
+    // proxy y el rate limit se comparte entre todos los usuarios.
+    trustProxy: true,
     ajv: { customOptions: { coerceTypes: 'array' } },
   });
 
@@ -59,7 +62,11 @@ export async function createApp(): Promise<FastifyInstance> {
   // Register JWT and Cookie DIRECTLY at root level (no encapsulation)
   await app.register(fastifyCookie, {
     secret: env.COOKIE_SECRET,
-    parseOptions: { httpOnly: true, secure: env.COOKIE_SECURE, sameSite: 'lax' },
+    parseOptions: {
+      httpOnly: true,
+      secure: env.COOKIE_SECURE,
+      sameSite: env.COOKIE_SAME_SITE,
+    },
   });
 
   await app.register(fastifyJwt, {
@@ -75,7 +82,12 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(zodPlugin);
   await app.register(corsPlugin);
   await app.register(rateLimitPlugin);
-  await app.register(swaggerPlugin);
+
+  // La documentación de la API solo se expone fuera de producción: en Railway
+  // publicaría todos los endpoints (y sus esquemas) a cualquier visitante.
+  if (env.NODE_ENV !== 'production') {
+    await app.register(swaggerPlugin);
+  }
 
   // Rutas REST (wrapped with fp so they don't create new encapsulation)
   await app.register(authRoutes, { prefix: '' });

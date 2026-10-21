@@ -1,6 +1,7 @@
 import { db } from '../pool.js';
 import { users, emailVerifications } from '../schema.js';
-import { eq, and, gt, sql } from 'drizzle-orm';
+import { eq, and, gt, lt, desc, sql } from 'drizzle-orm';
+import { env } from '../../config/env.js';
 import type { InsertUser, InsertEmailVerification, User, EmailVerification } from '../schema.js';
 
 // ============================================
@@ -42,6 +43,10 @@ export async function findValidVerification(email: string, code: string): Promis
         eq(emailVerifications.email, email),
         eq(emailVerifications.code, code),
         gt(emailVerifications.expiresAt, now),
+        // El código de 6 dígitos solo es seguro si los intentos fallidos se
+        // cuentan: sin este límite se puede forzar la verificación de una
+        // cuenta ajena dentro de la ventana de expiración.
+        lt(emailVerifications.attempts, env.EMAIL_VERIFICATION_MAX_ATTEMPTS),
       )
     )
     .limit(1);
@@ -53,7 +58,9 @@ export async function findVerificationByEmail(email: string): Promise<EmailVerif
     .select()
     .from(emailVerifications)
     .where(eq(emailVerifications.email, email))
-    .orderBy(emailVerifications.createdAt)
+    // Del más reciente al más antiguo: si hay varias filas por email (registros
+    // simultáneos), la válida siempre es la última creada.
+    .orderBy(desc(emailVerifications.createdAt))
     .limit(1);
   return result[0] ?? null;
 }

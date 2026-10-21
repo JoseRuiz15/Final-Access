@@ -1,16 +1,31 @@
 import { db } from '../pool.js';
-import { lobbies, lobbyPlayers, users, characters, levels, matches } from '../schema.js';
-import { eq, and, desc, sql, count } from 'drizzle-orm';
-import type { Lobby, LobbyPlayer, User, Character, Level } from '../schema.js';
-import { v4 as uuidv4 } from 'uuid';
+import { lobbies, lobbyPlayers, users, characters, matches } from '../schema.js';
+import { eq, and, desc, count } from 'drizzle-orm';
+import { randomBytes } from 'node:crypto';
+import type { Lobby } from '../schema.js';
 
 // ============================================
 // LOBBIES QUERIES
 // ============================================
 
+// Sin I, O, 0 ni 1: evita confusiones al leer o dictar el código.
+const LOBBY_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const LOBBY_CODE_LENGTH = 8;
+
+/**
+ * El código del lobby es la credencial que permite unirse a uno privado, así
+ * que se genera con `crypto` (no con Math.random) y evita caracteres ambiguos.
+ */
 function generateLobbyCode(): string {
-  return Math.random().toString(36).substring(2, 10).toUpperCase();
+  const bytes = randomBytes(LOBBY_CODE_LENGTH);
+  let code = '';
+  for (const byte of bytes) {
+    code += LOBBY_CODE_ALPHABET[byte % LOBBY_CODE_ALPHABET.length];
+  }
+  return code;
 }
+
+const MAX_CODE_ATTEMPTS = 5;
 
 export async function createLobby(data: {
   name: string;
@@ -20,21 +35,33 @@ export async function createLobby(data: {
   creatorId: number;
   levelId?: number;
 }): Promise<Lobby> {
-  const code = generateLobbyCode();
-  
-  const result = await db.insert(lobbies).values({
-    code,
-    name: data.name,
-    mode: data.mode,
-    maxPlayers: data.maxPlayers,
-    isPrivate: data.isPrivate,
-    creatorId: data.creatorId,
-    levelId: data.levelId ?? null,
-    status: 'waiting',
-  }).returning();
-  
-  const lobby = result[0];
-  
+  // `code` es UNIQUE: si dos lobbies generan el mismo a la vez, se reintenta
+  // con un código nuevo en lugar de devolver un error 500.
+  let lobby: Lobby | undefined;
+  for (let attempt = 0; attempt < MAX_CODE_ATTEMPTS && !lobby; attempt++) {
+    try {
+      const result = await db.insert(lobbies).values({
+        code: generateLobbyCode(),
+        name: data.name,
+        mode: data.mode,
+        maxPlayers: data.maxPlayers,
+        isPrivate: data.isPrivate,
+        creatorId: data.creatorId,
+        levelId: data.levelId ?? null,
+        status: 'waiting',
+      }).returning();
+      lobby = result[0];
+    } catch (err: any) {
+      // Violación de la restricción única: colisión de código, se reintenta.
+      if (err?.code === '23505') continue;
+      throw err;
+    }
+  }
+
+  if (!lobby) {
+    throw new Error('No se pudo generar un código de lobby único');
+  }
+
   // Add creator as first player
   await db.insert(lobbyPlayers).values({
     lobbyId: lobby.id,
@@ -43,7 +70,7 @@ export async function createLobby(data: {
     characterId: null,
     isReady: true, // Creator is ready by default
   });
-  
+
   return lobby;
 }
 
@@ -171,7 +198,9 @@ export async function joinLobby(lobbyId: number, userId: number, characterId?: s
   const lobby = await getLobbyById(lobbyId);
   if (!lobby) throw new Error('Lobby no encontrado');
   if (lobby.lobby.status !== 'waiting') throw new Error('El lobby no está disponible');
-  if (lobby.lobby.isPrivate) throw new Error('El lobby es privado');
+  // No se comprueba `isPrivate`: quien llega aquí conoce el código, que es la
+  // credencial de acceso al lobby. Los lobbies privados no aparecen en el
+  // listado público, pero se puede entrar a ellos con el código.
   
   // Check if already in lobby
   const existing = await db

@@ -7,11 +7,9 @@ import {
   smallint,
   bigint,
   integer,
-  serial,
   primaryKey,
   uniqueIndex,
   index,
-  check,
 } from 'drizzle-orm/pg-core';
 import { createSelectSchema, createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';

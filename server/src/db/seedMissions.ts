@@ -1,6 +1,5 @@
 import { db } from './pool.js';
 import { missions } from './schema.js';
-import { eq } from 'drizzle-orm';
 import { pathToFileURL } from 'node:url';
 import { sql } from './pool.js';
 
