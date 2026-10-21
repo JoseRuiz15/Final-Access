@@ -105,7 +105,35 @@ export async function getLobbyById(lobbyId: number) {
 export async function getLobbyWithPlayers(lobbyId: number) {
   const lobbyResult = await getLobbyById(lobbyId);
   if (!lobbyResult) return null;
-  
+
+  const players = await getLobbyPlayers(lobbyId, lobbyResult.lobby.creatorId);
+
+  return {
+    ...lobbyResult.lobby,
+    creator: lobbyResult.creator,
+    players,
+  };
+}
+
+/**
+ * Devuelve el lobby (con sus jugadores) a partir del código, en una sola
+ * búsqueda. Evita el doble round-trip a la base de datos que existía al
+ * consultar por código y luego por id.
+ */
+export async function getLobbyWithPlayersByCode(code: string) {
+  const lobbyResult = await getLobbyByCode(code);
+  if (!lobbyResult) return null;
+
+  const players = await getLobbyPlayers(lobbyResult.lobby.id, lobbyResult.lobby.creatorId);
+
+  return {
+    ...lobbyResult.lobby,
+    creator: lobbyResult.creator,
+    players,
+  };
+}
+
+async function getLobbyPlayers(lobbyId: number, creatorId: number) {
   const playersResult = await db
     .select({
       player: lobbyPlayers,
@@ -117,23 +145,17 @@ export async function getLobbyWithPlayers(lobbyId: number) {
     .leftJoin(characters, eq(lobbyPlayers.characterId, characters.id))
     .where(eq(lobbyPlayers.lobbyId, lobbyId))
     .orderBy(lobbyPlayers.slot);
-  
-  const players = playersResult.map(row => ({
+
+  return playersResult.map(row => ({
     userId: row.user.id,
     username: row.user.username,
     slot: row.player.slot,
     characterId: row.player.characterId,
     character: row.character ?? null,
     isReady: row.player.isReady,
-    isCreator: row.player.userId === lobbyResult.lobby.creatorId,
+    isCreator: row.player.userId === creatorId,
     joinedAt: row.player.joinedAt.toISOString(),
   }));
-  
-  return {
-    ...lobbyResult.lobby,
-    creator: lobbyResult.creator,
-    players,
-  };
 }
 
 export async function getPublicLobbies(query: {

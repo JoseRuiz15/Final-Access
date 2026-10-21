@@ -66,10 +66,16 @@ export function broadcast(lobbyId: number, message: object, exclude?: LobbySocke
  * Los errores se absorben aquí a propósito: difundir el estado es un efecto
  * secundario y no debe tumbar la operación REST que lo disparó (ni dejar
  * promesas rechazadas sin capturar durante un cierre del servidor).
+ *
+ * @param data Estado ya consultado, para no repetir la consulta a la BD.
  */
-export async function broadcastLobbyState(lobbyId: number, exclude?: LobbySocket): Promise<void> {
+export async function broadcastLobbyState(
+  lobbyId: number,
+  exclude?: LobbySocket,
+  data?: unknown,
+): Promise<void> {
   try {
-    const lobby = await queries.getLobbyWithPlayers(lobbyId);
+    const lobby = data ?? (await queries.getLobbyWithPlayers(lobbyId));
     if (!lobby) return;
     broadcast(lobbyId, { type: 'lobby_state', lobby }, exclude);
   } catch (err) {

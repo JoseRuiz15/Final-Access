@@ -169,6 +169,30 @@ describe('Lobby WebSocket', () => {
     expect(closeCode).not.toBe(101);
   });
 
+  it('no pierde un mensaje enviado antes de que llegue el lobby_state', async () => {
+    const cookie = await createUser('early');
+    const createResponse = await app.inject({
+      method: 'POST',
+      url: '/lobbies',
+      headers: { cookie },
+      payload: { name: 'WS early', mode: 'competitive', maxPlayers: 3, isPrivate: false },
+    });
+    const code = JSON.parse(createResponse.body).lobby.code;
+
+    const { ws, messages } = openSocket(code, cookie);
+    await new Promise((resolve) => ws.on('open', resolve));
+
+    // Se envía nada más abrir: el servidor aún está consultando el lobby en la
+    // base de datos, así que este mensaje debe encolarse, no perderse.
+    ws.send(JSON.stringify({ type: 'set_ready', ready: true }));
+
+    await wait(3000);
+
+    const ready = messages.find((m) => m.type === 'player_ready');
+    expect(ready).toBeDefined();
+    expect(ready.players.some((p: any) => p.isReady === true)).toBe(true);
+  });
+
   it('permite unirse a un lobby privado usando el código', async () => {
     const ownerCookie = await createUser('powner');
     const guestCookie = await createUser('pguest');

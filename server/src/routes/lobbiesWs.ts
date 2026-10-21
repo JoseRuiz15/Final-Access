@@ -52,35 +52,15 @@ const lobbiesWsRoutes: FastifyPluginAsync = async (app) => {
       const { code } = req.params as { code: string };
       const userId = req.authUser!.id;
 
-      const lobby = await queries.getLobbyByCode(code);
-      if (!lobby) {
-        socket.close(4004, 'Lobby no encontrado');
-        return;
-      }
+      // Los listeners se registran de INMEDIATO, antes de tocar la base de
+      // datos. Si se registrations después, los mensajes que el cliente envía
+      // mientras se consulta el lobby se pierden (el primer "listo" del
+      // jugador se quedaba colgado cuando la base de datos tardaba).
+      let conectado = false;
+      let lobbyId = 0;
+      const pendientes: any[] = [];
 
-      const lobbyId = lobby.lobby.id;
-
-      // Solo los miembros del lobby (o su creador) pueden conectarse.
-      const lobbyData = await queries.getLobbyWithPlayers(lobbyId);
-      const isMember =
-        lobby.lobby.creatorId === userId ||
-        (lobbyData?.players ?? []).some((player) => player.userId === userId);
-
-      if (!isMember) {
-        socket.close(4003, 'No perteneces a este lobby');
-        return;
-      }
-
-      registerConnection(lobbyId, socket);
-
-      // Estado inicial para quien se conecta y resincronización para el resto:
-      // `lobby_state` es la fuente de verdad y evita perder eventos.
-      if (lobbyData) {
-        socket.send(JSON.stringify({ type: 'lobby_state', lobby: lobbyData }));
-      }
-      await broadcastLobbyState(lobbyId, socket);
-
-      socket.on('message', async (raw: any) => {
+      const procesarMensaje = async (raw: any) => {
         let message: any;
         try {
           message = JSON.parse(toBuffer(raw).toString());
@@ -121,14 +101,54 @@ const lobbiesWsRoutes: FastifyPluginAsync = async (app) => {
             message: err instanceof Error ? err.message : 'Error desconocido',
           }));
         }
+      };
+
+      socket.on('message', async (raw: any) => {
+        if (!conectado) {
+          pendientes.push(raw);
+          return;
+        }
+        await procesarMensaje(raw);
       });
 
       socket.on('close', () => {
+        if (!lobbyId) return;
         unregisterConnection(lobbyId, socket);
         void broadcastPlayers(lobbyId, 'player_left').catch(() => {
           // El hub ya absorbe los errores: esto es solo un seguro extra.
         });
       });
+
+      // A partir de aquí sí se consulta la base de datos.
+      const lobby = await queries.getLobbyWithPlayersByCode(code);
+      if (!lobby) {
+        socket.close(4004, 'Lobby no encontrado');
+        return;
+      }
+
+      lobbyId = lobby.id;
+
+      // Solo los miembros del lobby (o su creador) pueden conectarse.
+      const esMiembro =
+        lobby.creatorId === userId || (lobby.players ?? []).some((p) => p.userId === userId);
+      if (!esMiembro) {
+        socket.close(4003, 'No perteneces a este lobby');
+        return;
+      }
+
+      registerConnection(lobbyId, socket);
+
+      // Estado inicial para quien se conecta y resincronización para el resto:
+      // `lobby_state` es la fuente de verdad y evita perder eventos.
+      socket.send(JSON.stringify({ type: 'lobby_state', lobby }));
+      await broadcastLobbyState(lobbyId, socket, lobby);
+
+      // A partir de este momento los mensajes se procesan al instante.
+      conectado = true;
+      for (const raw of pendientes) {
+        await procesarMensaje(raw);
+      }
+      pendientes.length = 0;
     });
   });
 };
