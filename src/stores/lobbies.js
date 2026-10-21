@@ -175,7 +175,11 @@ export const useLobbyStore = defineStore('lobbies', () => {
   }
 
   function connectWebSocket(code) {
-    const WS_BASE_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:3000'
+    // Si no se define VITE_WS_URL se deriva de VITE_API_URL (http -> ws,
+    // https -> wss) para no tener que configurarlo aparte en Vercel.
+    const WS_BASE_URL =
+      import.meta.env.VITE_WS_URL ||
+      (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/^http/, 'ws')
     const wsUrl = `${WS_BASE_URL}/ws/lobby/${code}`
 
     if (ws.value) {

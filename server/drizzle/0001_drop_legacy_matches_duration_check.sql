@@ -1,0 +1,15 @@
+-- La tabla "matches" se creó en una versión anterior del proyecto con una
+-- restricción CHECK que exigía "duration_ms > 0". El esquema actual de
+-- Drizzle (src/db/schema.ts) ya no define esa restricción: la duración de
+-- una partida empieza a contar cuando la partida termina, así que al crear
+-- la fila en /lobbies/:code/start se insertan 0 ms.
+--
+-- La migración 0000 usa "CREATE TABLE IF NOT EXISTS", por lo que en bases
+-- de datos heredadas la tabla (y su CHECK) se conserva y el arranque de
+-- partida falla con:
+--   ERROR: el nuevo registro para la relación «matches» viola la
+--   restricción «check» «matches_duration_ms_check»
+--
+-- Se elimina la restricción para que la base de datos coincida con el
+-- esquema. Es idempotente: en bases nuevas (Neon) no existe y no hace nada.
+ALTER TABLE "matches" DROP CONSTRAINT IF EXISTS "matches_duration_ms_check";
