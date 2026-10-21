@@ -185,7 +185,7 @@ onUnmounted(() => {
     />
     <!--cuadro de verificacion de codigo-->
     <div class="relative z-10 flex items-center justify-center min-h-screen">
-      <div class="auth-panel w-[550px] h-[550px] rounded-3xl bg-[#14172C] border-4 border-[#68699E]">
+      <div class="auth-panel relative w-[550px] h-[550px] rounded-3xl bg-[#14172C] border-4 border-[#68699E]">
         <!--textos-->
         <p class="text-[#A55CCF] font-pixel text-3xl text-center mt-10">VERIFICACION DE CORREO</p>
 
@@ -213,15 +213,30 @@ onUnmounted(() => {
         </div>
 
         <!-- Error/Success message -->
-        <div v-if="error" class="mx-10 mt-4 p-3 bg-red-900/50 border border-red-500 rounded-lg text-red-200 text-sm font-pixel text-center">
+        <div
+          v-if="error"
+          role="alert"
+          aria-live="polite"
+          class="fixed top-4 left-1/2 z-50 w-[min(550px,calc(100vw-2rem))] -translate-x-1/2 rounded-lg border border-red-500 bg-red-900/90 p-3 text-center font-pixel text-sm text-red-200"
+        >
           {{ error }}
         </div>
 
-        <div v-if="success" class="mx-10 mt-4 p-3 bg-green-900/50 border border-green-500 rounded-lg text-green-200 text-sm font-pixel text-center">
+        <div
+          v-if="success"
+          role="status"
+          aria-live="polite"
+          class="fixed top-4 left-1/2 z-50 w-[min(550px,calc(100vw-2rem))] -translate-x-1/2 rounded-lg border border-green-500 bg-green-900/90 p-3 text-center font-pixel text-sm text-green-200"
+        >
           ¡Verificación exitosa! Redirigiendo...
         </div>
 
-        <div v-if="notice" class="mx-10 mt-4 p-3 bg-green-900/50 border border-green-500 rounded-lg text-green-200 text-sm font-pixel text-center">
+        <div
+          v-if="notice"
+          role="status"
+          aria-live="polite"
+          class="fixed top-4 left-1/2 z-50 w-[min(550px,calc(100vw-2rem))] -translate-x-1/2 rounded-lg border border-green-500 bg-green-900/90 p-3 text-center font-pixel text-sm text-green-200"
+        >
           {{ notice }}
         </div>
 
