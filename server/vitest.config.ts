@@ -1,5 +1,13 @@
 import { defineConfig } from 'vitest/config';
 import { fileURLToPath } from 'node:url';
+import { existsSync } from 'node:fs';
+import { config as loadEnv } from 'dotenv';
+
+// Los tests se ejecutan contra el Postgres local (server/.env.test, que no se
+// sube a git) para no dejar usuarios de prueba en la base de datos real
+// (Neon). Si el fichero no existe, se usa el DATABASE_URL de server/.env.
+const envTestPath = fileURLToPath(new URL('./.env.test', import.meta.url));
+if (existsSync(envTestPath)) loadEnv({ path: envTestPath });
 
 export default defineConfig({
   test: {
@@ -13,6 +21,7 @@ export default defineConfig({
     env: {
       NODE_ENV: 'development',
       EMAIL_TRANSPORT: 'console',
+      ...(process.env.DATABASE_URL ? { DATABASE_URL: process.env.DATABASE_URL } : {}),
     },
     pool: 'forks',
     poolOptions: {
