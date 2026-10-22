@@ -27,17 +27,35 @@ async function initializeData() {
   isLoading.value = true
   error.value = null
   try {
-    // Load the catalog and profile before deciding whether any free characters need unlocking.
-    await Promise.all([characterStore.fetchCatalog(), profileStore.fetchProfile()])
-    await characterStore.fetchUnlocked(profileStore.profile)
-    await characterStore.autoUnlockFreeCharacters()
+    // Catálogo y perfil se piden por separado: si el perfil falla (sesión
+    // caducada, error de red...) los personajes deben seguir viéndose. Con
+    // Promise.all un solo fallo abortaba el resto y la lista se quedaba
+    // vacía o con los personajes bloqueados.
+    const [catalogo, perfil] = await Promise.allSettled([
+      characterStore.fetchCatalog(),
+      profileStore.fetchProfile(),
+    ])
 
-    // Sync equipped character from profile
-    const equippedCharacterId =
-      profileStore.profile?.equippedCharacterId || profileStore.profile?.characterId
-    if (equippedCharacterId) {
-      characterStore.setEquipped(equippedCharacterId)
-      gameStore.equipCharacter(equippedCharacterId)
+    // Si el catálogo falla no hay nada que pintar: es un error de verdad.
+    if (catalogo.status === 'rejected') throw catalogo.reason
+
+    if (perfil.status === 'fulfilled') {
+      await characterStore.fetchUnlocked(profileStore.profile)
+      await characterStore.autoUnlockFreeCharacters()
+
+      // Sync equipped character from profile
+      const equippedCharacterId =
+        profileStore.profile?.equippedCharacterId || profileStore.profile?.characterId
+      if (equippedCharacterId) {
+        characterStore.setEquipped(equippedCharacterId)
+        gameStore.equipCharacter(equippedCharacterId)
+      }
+    } else {
+      // Sin perfil no se sabe qué personajes están desbloqueados: se avisa,
+      // pero el catálogo sigue en pantalla.
+      error.value =
+        perfil.reason?.response?.data?.message ||
+        'No se pudo cargar tu perfil. Si la sesión ha caducado, vuelve a entrar.'
     }
   } catch (err) {
     error.value = err.response?.data?.message || err.response?.data?.error || 'Error al cargar personajes'

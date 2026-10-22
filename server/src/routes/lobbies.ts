@@ -165,7 +165,27 @@ const lobbiesRoutes: FastifyPluginAsync = async (app) => {
                       username: { type: 'string' },
                       slot: { type: 'number' },
                       characterId: { type: ['string', 'null'] },
-                      character: { type: ['object', 'null'] },
+                      // Sin "properties", fast-json-stringify devuelve el
+                      // objeto vacío ({}) y el frontend se queda sin los
+                      // datos del personaje (textura, nombre, rareza...).
+                      character: {
+                        type: ['object', 'null'],
+                        properties: {
+                          id: { type: 'string' },
+                          name: { type: 'string' },
+                          rarity: { type: 'string' },
+                          attackType: { type: 'string' },
+                          baseHealth: { type: 'number' },
+                          baseSpeed: { type: 'number' },
+                          baseDamage: { type: 'number' },
+                          textureKey: { type: 'string' },
+                          walkTexture: { type: ['string', 'null'] },
+                          abilityName: { type: ['string', 'null'] },
+                          abilityDesc: { type: ['string', 'null'] },
+                          unlockCost: { type: 'number' },
+                          isActive: { type: 'boolean' },
+                        },
+                      },
                       isReady: { type: 'boolean' },
                       isCreator: { type: 'boolean' },
                       joinedAt: { type: 'string' },

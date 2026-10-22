@@ -19,13 +19,33 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
+// Rutas donde un 401 NO significa "sesión caducada", así que no hay que
+// redirigir: en ellas el 401 es la respuesta normal (credenciales
+// incorrectas, o simplemente que no hay sesión).
+const RUTAS_SIN_REDIRECT = [
+  '/auth/login',
+  '/auth/register',
+  '/auth/verify-email',
+  '/auth/resend-verification',
+  '/auth/logout',
+  '/auth/me',
+  '/health',
+]
+
 // Response interceptor - handle common errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid - redirect to login
-      // We don't redirect here to avoid loops, let the component/router handle it
+    const status = error.response?.status
+    const url = error.config?.url || ''
+
+    // 401 en una ruta protegida = sesión caducada (el JWT dura 15 minutos) o
+    // cuenta que ya no existe. El backend borra la cookie en ese caso; aquí
+    // se manda al login para no dejar la pantalla a medias (por ejemplo, la
+    // de personajes se quedaba vacía sin explicar por qué).
+    if (status === 401 && !RUTAS_SIN_REDIRECT.some((ruta) => url.startsWith(ruta))) {
+      const destino = encodeURIComponent(window.location.pathname + window.location.search)
+      window.location.assign(`/login?redirect=${destino}`)
     }
     return Promise.reject(error)
   }
