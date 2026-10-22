@@ -54,7 +54,10 @@ export async function seedCharacters() {
       walkTexture: 'cosa3_walk',
       abilityName: 'Golpe espectral',
       abilityDesc: 'Un personaje ofensivo que causa mucho daño en poco tiempo, ideal para entrar fuerte en batalla.',
-      unlockCost: 500,
+      // Antes costaba 500 monedas. Ahora es gratuito para que los tres
+      // personajes estén disponibles desde el principio (se desbloquean
+      // solos al entrar en la pantalla de personajes).
+      unlockCost: 0,
       isActive: true,
     },
   ]);

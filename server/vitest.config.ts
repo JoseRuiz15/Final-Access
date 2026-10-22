@@ -6,8 +6,11 @@ import { config as loadEnv } from 'dotenv';
 // Los tests se ejecutan contra el Postgres local (server/.env.test, que no se
 // sube a git) para no dejar usuarios de prueba en la base de datos real
 // (Neon). Si el fichero no existe, se usa el DATABASE_URL de server/.env.
+// `override: true` para que .env.test gane siempre: si alguien tiene
+// DATABASE_URL apuntando a Neon en la terminal, los tests NO deben escribir
+// ahí.
 const envTestPath = fileURLToPath(new URL('./.env.test', import.meta.url));
-if (existsSync(envTestPath)) loadEnv({ path: envTestPath });
+if (existsSync(envTestPath)) loadEnv({ path: envTestPath, override: true });
 
 export default defineConfig({
   test: {
