@@ -1,0 +1,7 @@
+# El backend se despliega en Render, no en Vercel.
+# Excluirlo evita que Vercel lo detecte como un segundo servicio
+# ("Import multi-service project") y hace el deploy más ligero.
+server/
+
+# Copia antigua del proyecto que no forma parte del build.
+final-acces/
