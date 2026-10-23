@@ -158,4 +158,35 @@ describe('Progression & Missions Endpoints', () => {
     expect(data.levelProgress[0].completed).toBe(true);
     expect(data.levelProgress[0].stars).toBe(3);
   });
+
+  it('POST /progress/3/complete - should keep currentLevelId at 3 (last playable level)', async () => {
+    const complete = async (levelId: number) =>
+      app.inject({
+        method: 'POST',
+        url: `/progress/${levelId}/complete`,
+        headers: {
+          cookie: authCookie,
+          'Content-Type': 'application/json',
+        },
+        payload: {
+          timeSec: 150,
+          stars: 2,
+          deaths: 0,
+          keys: 1,
+          kills: 6,
+        },
+      });
+
+    // Nivel 2 → 3
+    const level2 = await complete(2);
+    expect(level2.statusCode).toBe(200);
+    expect(JSON.parse(level2.body).gameProgress.currentLevelId).toBe(3);
+
+    // Nivel 3 → se queda en 3: no existe un nivel 4 jugable.
+    const level3 = await complete(3);
+    expect(level3.statusCode).toBe(200);
+    const data = JSON.parse(level3.body);
+    expect(data.levelProgress.completed).toBe(true);
+    expect(data.gameProgress.currentLevelId).toBe(3);
+  });
 });

@@ -1,7 +1,16 @@
+import { KEY_SPRITESHEETS } from '../configs/keyAnimations.js'
+
+const KEY_ASSETS = KEY_SPRITESHEETS.map(({ texture, path, frameWidth, frameHeight }) => [
+  texture,
+  path,
+  { frameWidth, frameHeight },
+])
+
 export default class AssetLoader {
   static COMMON_ASSETS = {
     images: [['player', '/img/character/defaultCharacter.png']],
     spritesheets: [
+      ...KEY_ASSETS,
       ['playerWalk', '/img/animatics-player/playerWalk.png', { frameWidth: 32, frameHeight: 32 }],
       ['playerJump', '/img/animatics-player/playerJump.png', { frameWidth: 32, frameHeight: 32 }],
       [

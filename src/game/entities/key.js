@@ -17,11 +17,11 @@ class Key extends Entity {
 
     this.setScale(1.3)
 
-    if (texture === 'key2') {
-      this.play('key2Spin')
-    } else if (texture === 'key10') { 
-  this.play('key10Spin')
-}
+    // Cualquier llave con animación registrada como `${texture}Spin` gira sola.
+    const animationKey = datos?.animation || `${texture}Spin`
+    if (scene.anims.exists(animationKey)) {
+      this.play(animationKey)
+    }
   }
 
   pickUp(player) {

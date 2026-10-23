@@ -36,7 +36,8 @@ async function irLoadingScene() {
       return
     }
 
-    router.push(nivel === 1 || nivel === 2 ? '/mission' : '/game')
+    // Los tres niveles jugables pasan por la pantalla de misión.
+    router.push(nivel <= 3 ? '/mission' : '/game')
   } finally {
     isLoading.value = false
   }
@@ -54,7 +55,7 @@ function obtenerDescripcion() {
     case 2:
       return 'Debes rescatar a los rehenes antes de que se acabe el tiempo.'
     case 3:
-      return 'Encuentra la salida del laboratorio sin ser detectado.'
+      return 'Consigue la llave plateada Key 13, abre la compuerta al final de la ciudad y escapa.'
     case 4:
       return 'Desactiva la bomba y derrota al jefe final.'
     default:
@@ -63,6 +64,8 @@ function obtenerDescripcion() {
 }
 
 function isLevelUnlocked(level) {
+  // Solo existen escenas jugables para los niveles 1, 2 y 3.
+  if (level > 3) return false
   if (level === 1) return true
   return progressionStore.isLevelCompleted(level - 1)
 }

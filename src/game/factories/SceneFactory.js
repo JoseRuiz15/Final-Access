@@ -12,6 +12,7 @@ import KeyManager from '../managers/KeyManager.js'
 import ExplosionManager from '../managers/ExplosionManager.js'
 import Level1Scene from '../scenes/Level1Scene.js'
 import Level2Scene from '../scenes/Level2Scene.js'
+import Level3Scene from '../scenes/Level3Scene.js'
 
 function createDependencies() {
   return {
@@ -40,6 +41,12 @@ export class SceneFactory {
   static createLevel2Scene() {
     const deps = createDependencies()
     const scene = new Level2Scene(deps)
+    return scene
+  }
+
+  static createLevel3Scene() {
+    const deps = createDependencies()
+    const scene = new Level3Scene(deps)
     return scene
   }
 }

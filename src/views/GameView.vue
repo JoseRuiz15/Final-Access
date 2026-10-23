@@ -47,10 +47,13 @@ async function initializeGame() {
   }
 
   // Se crea la escena según el botón de nivel que eligió el usuario.
-  levelScene =
-    Number(gameStore.nivelActual) === 1
-      ? SceneFactory.createLevel1Scene()
-      : SceneFactory.createLevel2Scene()
+  const sceneFactories = {
+    1: () => SceneFactory.createLevel1Scene(),
+    2: () => SceneFactory.createLevel2Scene(),
+    3: () => SceneFactory.createLevel3Scene(),
+  }
+  const crearEscena = sceneFactories[Number(gameStore.nivelActual)] ?? sceneFactories[2]
+  levelScene = crearEscena()
 
   // El HUD y el jugador empiezan con las vidas que corresponden a este nivel.
   gameStore.vidas = levelScene.config.vidasIniciales ?? 5
@@ -109,14 +112,18 @@ async function handleLevelCompleted(sceneCompletada, stats) {
   levelTransitionStarted = true
 
   const levelId = Number(gameStore.nivelActual)
-  
+  const vidasIniciales = levelScene?.config?.vidasIniciales ?? 5
+  const tiempoTranscurrido = Math.floor(
+    (Date.now() - (sceneCompletada.levelStartTime || Date.now())) / 1000,
+  )
+
   // Prepare level completion data
   const completionData = {
-    timeSec: stats?.timeSec || Math.floor((Date.now() - (sceneCompletada.levelStartTime || Date.now())) / 1000),
-    stars: stats?.stars || 1,
-    deaths: stats?.deaths || (5 - gameStore.vidas),
-    keys: stats?.keys || gameStore.llaves,
-    kills: stats?.kills || gameStore.enemigos,
+    timeSec: stats?.timeSec || Math.max(1, tiempoTranscurrido),
+    stars: stats?.stars ?? 1,
+    deaths: stats?.deaths ?? Math.max(0, vidasIniciales - gameStore.vidas),
+    keys: stats?.keys ?? gameStore.llaves,
+    kills: stats?.kills ?? gameStore.enemigos,
   }
 
   // Send to backend
@@ -126,16 +133,16 @@ async function handleLevelCompleted(sceneCompletada, stats) {
     console.error('Error saving progress:', err)
   }
 
-  if (Number(gameStore.nivelActual) === 1) {
-    // El flujo de misión inicia el nivel 2 con sus propias vidas y su HUD.
-    gameStore.nivelActual = 2
+  // El flujo de misión inicia el siguiente nivel con sus propias vidas y HUD.
+  if (levelId === 1 || levelId === 2) {
+    gameStore.nivelActual = levelId + 1
     gameStore.llaves = 0
     gameStore.enemigos = 0
     router.push('/mission')
     return
   }
 
-  // Solo hay escenas jugables para los niveles 1 y 2 por ahora.
+  // El nivel 3 es el último nivel jugable por ahora.
   router.push('/levels')
 }
 

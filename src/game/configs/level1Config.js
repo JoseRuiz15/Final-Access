@@ -93,6 +93,17 @@ export const LEVEL1_CONFIG = {
     { x: 844, y: 435 },
     { x: 812, y: 403 },
     { x: 920, y: 660 },
+    {
+      x: 340,
+      y: 752,
+      keyData: {
+        texture: 'key11Gold',
+        grupo: 'keys',
+        color: 'gold',
+        efecto: 'ninguno',
+        correcta: false,
+      },
+    },
   ],
 
   player: { x: 230, y: 600 },

@@ -48,11 +48,15 @@ export default class DoorManager {
     const puerta = this.doors?.objects?.find((objeto) => objeto.visible !== false)
     if (puerta) {
       // Tiled da la esquina superior izquierda; Phaser ubica la imagen por el centro.
+      const ancho = puerta.width ?? 64
+      const alto = puerta.height ?? 64
       this.doorSprite = this.scene.add.image(
-        puerta.x + (puerta.width ?? 64) / 2,
-        puerta.y + (puerta.height ?? 64) / 2,
+        puerta.x + ancho / 2,
+        puerta.y + alto / 2,
         'redDoor',
       )
+      // La compuerta del nivel 3 ocupa 256x128; el sprite debe cubrirla entera.
+      this.doorSprite.setDisplaySize(ancho, alto)
       // Las capas del mapa están en profundidad 0; jugadores y enemigos usan 1.
       // Así la puerta queda visible sobre el mapa, pero detrás de las entidades.
       this.doorSprite.setDepth(0)
@@ -68,20 +72,21 @@ export default class DoorManager {
 
     let doorOpened = false
     this.doors.objects.forEach((puerta) => {
-      const distancia = Phaser.Math.Distance.Between(player.x, player.y, puerta.x, puerta.y)
+      // Mide la distancia al rectángulo de la puerta: con la compuerta grande
+      // del nivel 3, el jugador puede pulsar G en cualquier punto de su base.
+      const ancho = puerta.width ?? 64
+      const alto = puerta.height ?? 64
+      const masCercanoX = Phaser.Math.Clamp(player.x, puerta.x, puerta.x + ancho)
+      const masCercanoY = Phaser.Math.Clamp(player.y, puerta.y, puerta.y + alto)
+      const distancia = Phaser.Math.Distance.Between(
+        player.x,
+        player.y,
+        masCercanoX,
+        masCercanoY,
+      )
       if (distancia < 80) {
         const llaveNecesaria = puerta.properties?.find((p) => p.name === 'llave_necesaria')?.value
         const tieneLlave = player.llaves?.some((llave) => llave.texture === llaveNecesaria)
-        const interacting = inputService.isInteracting()
-      
-        console.log('🔍 Door check:', { 
-        distancia, 
-        llaveNecesaria, 
-        playerLlaves: player.llaves, 
-        tieneLlave, 
-        interacting,
-        puertaAbierta: puerta.abierta
-      })
 
         if (inputService.isInteracting() && tieneLlave && !puerta.abierta) {
           this.doorSprite.setTexture('greenDoor')

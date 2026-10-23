@@ -13,15 +13,21 @@ musica.volume = 0.1
 
 const nivelActual = computed(() => Number(gameStore.nivelActual) || 1)
 
-const textoCompleto = computed(() =>
-  nivelActual.value === 2
-    ? 'Para pasar el nivel necesitas una llave dorada del grupo común, la cual podrás encontrar en cajas que tendrás que destruir. También tendrás que matar a todos los enemigos.'
-    : 'Para pasar el nivel necesitas esta llave de plata del grupo común, la cual podrás encontrar en cajas que tendrás que destruir.',
-)
+const textoCompleto = computed(() => {
+  if (nivelActual.value === 2) {
+    return 'Para pasar el nivel necesitas una llave dorada del grupo común, la cual podrás encontrar en cajas que tendrás que destruir. También tendrás que matar a todos los enemigos.'
+  }
+  if (nivelActual.value === 3) {
+    return 'Para pasar el nivel necesitas la llave plateada Key 13, que encontrarás en una caja. Abre la puerta al final de la ciudad y escapa.'
+  }
+  return 'Para pasar el nivel necesitas esta llave de plata del grupo común, la cual podrás encontrar en cajas que tendrás que destruir.'
+})
 
-const imagenLlave = computed(() =>
-  nivelActual.value === 2 ? '/img/keys/Key10-GOLD.png' : '/img/keys/Key1-SILVER.png',
-)
+const imagenLlave = computed(() => {
+  if (nivelActual.value === 2) return '/img/keys/Key10-GOLD.png'
+  if (nivelActual.value === 3) return '/img/keys/Key13-SILVER.png'
+  return '/img/keys/Key1-SILVER.png'
+})
 
 const textoMostrado = ref('')
 

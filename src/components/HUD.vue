@@ -6,13 +6,16 @@ import { useGameStore } from '@/stores/game'
 import { useRouter } from 'vue-router'
 import { LEVEL1_CONFIG } from '@/game/configs/level1Config.js'
 import { LEVEL2_CONFIG } from '@/game/configs/level2Config.js'
+import { LEVEL3_CONFIG } from '@/game/configs/level3Config.js'
 
 const gameStore = useGameStore()
 const router = useRouter()
 const nivelActual = computed(() => Number(gameStore.nivelActual) || 1)
-const hudConfig = computed(() =>
-  nivelActual.value === 1 ? LEVEL1_CONFIG.hud : LEVEL2_CONFIG.hud,
-)
+const hudConfig = computed(() => {
+  if (nivelActual.value === 1) return LEVEL1_CONFIG.hud
+  if (nivelActual.value === 3) return LEVEL3_CONFIG.hud
+  return LEVEL2_CONFIG.hud
+})
 const tiempo = ref(hudConfig.value.tiempoInicial)
 
 const tiempoFormateado = computed(() => {
@@ -166,7 +169,7 @@ function volverASeleccionDeNivel() {
       <p
         class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold mt-[50px] ml-[80px] text-white text-shadow-[0_0_40px_#00D9FF]"
       >
-        {{ enemigos }}/3
+        {{ enemigos }}/{{ hudConfig.enemigosObjetivo ?? 3 }}
       </p>
     </div>
     <!-- Pantalla de Game Over -->

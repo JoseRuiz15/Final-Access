@@ -74,6 +74,28 @@ export const LEVEL2_CONFIG = {
         correcta: true,
       },
     },
+    {
+      x: 500,
+      y: 752,
+      keyData: {
+        texture: 'key4Gold',
+        grupo: 'keys',
+        color: 'gold',
+        efecto: 'ninguno',
+        correcta: false,
+      },
+    },
+    {
+      x: 2450,
+      y: 752,
+      keyData: {
+        texture: 'key15Gold',
+        grupo: 'keys',
+        color: 'gold',
+        efecto: 'ninguno',
+        correcta: false,
+      },
+    },
   ],
 
   player: { x: 230, y: 600 },

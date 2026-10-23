@@ -1,5 +1,10 @@
+import { getKeyAnimationKey, KEY_SPRITESHEETS } from '../configs/keyAnimations.js'
+
 export default class AnimationRegistry {
   registerAll(scene, characterConfig = null) {
+
+    // Llaves animadas: se registran siempre (assets comunes).
+    this._registerKeys(scene)
 
     // Comunes: solo una vez
     if (!scene.anims.exists('enemyWalk')) {
@@ -52,7 +57,41 @@ export default class AnimationRegistry {
     })
     }
 
-    _registerCommon(scene) {
+    _registerKeys(scene) {
+    KEY_SPRITESHEETS.forEach(({ texture, frames, frameRate = 12 }) => {
+      const animationKey = getKeyAnimationKey(texture)
+
+      if (scene.anims.exists(animationKey)) return
+
+      scene.anims.create({
+        key: animationKey,
+        frames: scene.anims.generateFrameNumbers(texture, { start: 0, end: frames - 1 }),
+        frameRate,
+        repeat: -1,
+      })
+    })
+
+    // Estas llaves se cargan en la configuración de su nivel (key2 en el 1,
+    // key10 en el 2), así que aquí solo se animan cuando la textura existe.
+    const levelKeys = [
+      { texture: 'key2', frames: 12 },
+      { texture: 'key10', frames: 25 },
+    ]
+
+    levelKeys.forEach(({ texture, frames }) => {
+      const animationKey = getKeyAnimationKey(texture)
+      if (scene.anims.exists(animationKey) || !scene.textures.exists(texture)) return
+
+      scene.anims.create({
+        key: animationKey,
+        frames: scene.anims.generateFrameNumbers(texture, { start: 0, end: frames - 1 }),
+        frameRate: 12,
+        repeat: -1,
+      })
+    })
+  }
+
+  _registerCommon(scene) {
     scene.anims.create({
       key: 'enemyWalk',
       frames: scene.anims.generateFrameNumbers('enemyWalk', { start: 0, end: 4 }),
@@ -82,18 +121,6 @@ export default class AnimationRegistry {
       frames: scene.anims.generateFrameNumbers('explosion', { start: 0, end: 5 }),
       frameRate: 8,
       repeat: 0,
-    })
-    scene.anims.create({
-      key: 'key2Spin',
-      frames: scene.anims.generateFrameNumbers('key2', { start: 0, end: 11 }),
-      frameRate: 12,
-      repeat: -1,
-    })
-    scene.anims.create({
-      key: 'key10Spin',
-      frames: scene.anims.generateFrameNumbers('key10', { start: 0, end: 24 }),
-      frameRate: 12,
-      repeat: -1,
     })
     scene.anims.create({
       key: 'proyectile',

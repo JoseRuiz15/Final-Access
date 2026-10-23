@@ -1,0 +1,16 @@
+Key 2 - GOLD - Spritesheet = Tiene 12 frames y la imagen mide 120x28
+Key 4 - BRONZE - Spritesheet = Tiene 5 frames y la imagen mide 70x27
+Key 4 - GOLD - Spritesheet = Tiene 5 frames y la imagen mide 70x27
+Key 4 - GREY - Spritesheet = Tiene 5 frames y la imagen mide 70x27
+Key 4 - SILVER - Spritesheet = Tiene 5 frames y la imagen mide 70x27
+Key 11 - BRONZE - Spritesheet = Tiene 12 frames y la imagen mide 132x27
+Key 11 - GOLD - Spritesheet = Tiene 12 frames y la imagen mide 132x27
+Key 11 - GREY - Spritesheet = Tiene 12 frames y la imagen mide 132x27
+Key 11 - SILVER - Spritesheet = Tiene 12 frames y la imagen mide 132x27
+Key 13 - BRONZE - Spritesheet = Tiene 25 frames y la imagen mide 250x27
+Key 13 - GREY - Spritesheet = Tiene 25 frames y la imagen mide 250x27
+Key 13 - SILVER - Spritesheet = Tiene 25 frames y la imagen mide 250x27
+Key 15 - BRONZE - Spritesheet = Tiene 48 frames y la imagen mide 720x29
+Key 15 - GOLD - Spritesheet = Tiene 48 frames y la imagen mide 720x29
+Key 15 - GREY - Spritesheet = Tiene 48 frames y la imagen mide 720x29
+Key 15 - SILVER - Spritesheet = Tiene 48 frames y la imagen mide 720x29

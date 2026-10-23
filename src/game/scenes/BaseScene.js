@@ -46,6 +46,7 @@ export default class BaseScene extends Phaser.Scene {
 
   create(data = {}) {
     this._deathHandled = false // Limpia la protección al iniciar o reintentar el nivel.
+    this.levelStartTime = Date.now() // Base para calcular el tiempo del nivel al completarlo.
     
     console.log(`${this.scene.key} iniciado`)
     const vidasIniciales =
