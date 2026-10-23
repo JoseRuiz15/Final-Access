@@ -44,12 +44,13 @@ function getTransporter(): Transporter {
       );
     }
 
-    // Gmail usa TLS implícito en 465 y STARTTLS en 587.
+    // Gmail usa TLS implícito en 465 y STARTTLS en 587. Brevo también ofrece
+    // STARTTLS en 2525, el puerto alternativo para redes que bloquean el 587.
     transporter = createTransport({
       host: env.SMTP_HOST,
       port: env.SMTP_PORT,
       secure: env.SMTP_PORT === 465,
-      requireTLS: env.SMTP_PORT === 587,
+      requireTLS: env.SMTP_PORT === 587 || env.SMTP_PORT === 2525,
       auth: {
         user: env.SMTP_USER,
         // Google suele mostrar la contraseña de aplicación agrupada con espacios.
@@ -131,6 +132,32 @@ export async function sendVerificationEmail(email: string, code: string): Promis
       `No se pudo enviar el email de verificación (${err.code ?? 'SMTP_ERROR'})`,
     );
   }
+}
+
+/** Resumen de la configuración SMTP activa. No expone la clave completa. */
+export function getSmtpConfigSummary() {
+  const password = env.SMTP_PASS.replace(/\s/g, '');
+  return {
+    transport: usesSmtpTransport() ? 'smtp' : 'console',
+    host: env.SMTP_HOST,
+    port: env.SMTP_PORT,
+    secure: env.SMTP_PORT === 465,
+    requireTLS: env.SMTP_PORT === 587 || env.SMTP_PORT === 2525,
+    user: env.SMTP_USER,
+    passLength: password.length,
+    passPrefix: password.slice(0, 9),
+    from: getFromAddress(),
+  };
+}
+
+/**
+ * Diagnóstico: conecta y autentica contra el SMTP configurado.
+ * Si falla, el error de nodemailer trae el código real del proveedor.
+ */
+export async function verifySmtpTransport() {
+  const transporter = getTransporter();
+  await transporter.verify();
+  return getSmtpConfigSummary();
 }
 
 export async function sendWelcomeEmail(email: string, username: string): Promise<void> {

@@ -16,6 +16,7 @@ import progressionRoutes from './routes/progression.js';
 import missionsRoutes from './routes/missions.js';
 import lobbiesRoutes from './routes/lobbies.js';
 import lobbiesWsRoutes from './routes/lobbiesWs.js';
+import { getSmtpConfigSummary, verifySmtpTransport } from './services/emailService.js';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -105,6 +106,29 @@ export async function createApp(): Promise<FastifyInstance> {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
   }));
+
+  // Diagnóstico temporal de SMTP: abre una conexión real y devuelve el código
+  // de error del proveedor, para no depender de los logs de Render.
+  app.get('/health/email', { config: { public: true } }, async (_request, reply) => {
+    try {
+      const summary = await verifySmtpTransport();
+      return { ok: true, ...summary };
+    } catch (error) {
+      const err = error as Error & {
+        code?: string;
+        responseCode?: number;
+        command?: string;
+      };
+      return reply.code(503).send({
+        ok: false,
+        config: getSmtpConfigSummary(),
+        code: err.code,
+        responseCode: err.responseCode,
+        command: err.command,
+        message: err.message,
+      });
+    }
+  });
 
   app.setErrorHandler((error, request, reply) => {
     // Los errores de validación de Zod son 400 (petición inválida), no 500.
