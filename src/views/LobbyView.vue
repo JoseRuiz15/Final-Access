@@ -130,13 +130,13 @@ onUnmounted(() => {
     <div class="relative min-h-screen flex flex-col">
       <!-- Barra superior -->
       <header
-        class="app-header w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
+        class="app-header w-full h-[150px] bg-[#000000]/50 backdrop-blur-sm flex items-center px-4"
       >
         <!-- Usuario -->
         <div
-          class="header-profile bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
+          class="header-profile w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
         >
-          <div class="w-[100px] h-[100px] border-3 border-[#444665] rounded-lg overflow-hidden">
+          <div class="w-[80px] h-[80px] border-3 border-[#444665] ml-4 rounded-lg overflow-hidden">
             <img
               src="/img/profile/perfil.png"
               alt="imagen de perfil"
@@ -144,7 +144,7 @@ onUnmounted(() => {
             />
           </div>
           <div class="flex flex-col ml-10">
-            <p class="text-white text-[30px] font-pixel">{{ authStore.user?.username || 'Usuario' }}</p>
+            <p class="text-white text-[25px] font-pixel">{{ authStore.user?.username || 'Usuario' }}</p>
             <p class="text-[#FB00FF] text-[14px] font-pixel mt-1">Nivel {{ authStore.user?.level || 1 }}</p>
           </div>
         </div>
@@ -152,14 +152,14 @@ onUnmounted(() => {
         <!-- Menú central -->
         <nav class="header-nav flex items-center gap-20 ml-16">
           <h1
-            class="text-[#FB00FF] hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2] font-pixel"
+            class="text-white hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2] font-pixel"
           >
             INICIO
           </h1>
 
           <button @click="irCharacters">
             <h1
-              class="text-[#876988] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]"
+              class="text-white font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]"
             >
               PERSONAJES
             </h1>
@@ -167,7 +167,7 @@ onUnmounted(() => {
 
           <button @click="irStore">
             <h1
-              class="text-[#876988] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]"
+              class="text-white font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]"
             >
               TIENDA
             </h1>
@@ -331,17 +331,17 @@ onUnmounted(() => {
 
           <!-- Misiones diarias (placeholder) -->
           <section
-            class="bg-[#000208] w-80 h-52 border-3 border-[#2D2F4B] rounded-lg flex flex-col"
+            class="bg-[#000000]/50 backdrop-blur-sm w-80 h-52 border-3 border-[#00F0FF] shadow-[0_0_10px_#00F0FF] rounded-lg flex flex-col"
           >
-            <div class="border-b-[3px] border-[#8450C2] py-2 px-5">
-              <p class="font-pixel text-[13px] text-[#8450C2]">MISIONES DIARIAS</p>
+            <div class="border-b-[3px] border-[#00F0FF] py-2 px-5">
+              <p class="font-pixel text-[13px] text-[#00F0FF]">MISIONES DIARIAS</p>
             </div>
 
-            <div class="p-5 space-y-5">
+            <div class="p-5 space-y-5 ">
               <div>
                 <div class="flex justify-between items-center mb-1">
-                  <p class="font-pixel text-[10px] text-[#6F89A5]">JUEGA 2 PARTIDAS</p>
-                  <p class="font-pixel text-[10px] text-[#6F89A5]">0/2</p>
+                  <p class="font-pixel text-white text-[10px]">JUEGA 2 PARTIDAS</p>
+                  <p class="font-pixel text-white text-[10px]">0/2</p>
                 </div>
                 <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
                   <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
@@ -349,8 +349,8 @@ onUnmounted(() => {
               </div>
               <div>
                 <div class="flex justify-between items-center mb-1">
-                  <p class="font-pixel text-[10px] text-[#6F89A5]">ELIMINA 10 ENEMIGOS</p>
-                  <p class="font-pixel text-[10px] text-[#6F89A5]">0/10</p>
+                  <p class="font-pixel text-white text-[10px]">ELIMINA 10 ENEMIGOS</p>
+                  <p class="font-pixel text-white text-[10px]">0/10</p>
                 </div>
                 <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
                   <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
@@ -358,8 +358,8 @@ onUnmounted(() => {
               </div>
               <div>
                 <div class="flex justify-between items-center mb-1">
-                  <p class="font-pixel text-[10px] text-[#6F89A5]">GANA 1 PARTIDA</p>
-                  <p class="font-pixel text-[10px] text-[#6F89A5]">0/1</p>
+                  <p class="font-pixel text-white text-[10px] text-[#6F89A5]">GANA 1 PARTIDA</p>
+                  <p class="font-pixel text-white text-[10px] text-[#6F89A5]">0/1</p>
                 </div>
                 <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
                   <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
@@ -369,9 +369,9 @@ onUnmounted(() => {
           </section>
 
           <!-- Carrusel de tienda -->
-          <div id="default-carousel" class="relative w-80 h-52" data-carousel="slide">
+          <div id="default-carousel" class="relative w-80 h-52" data-carousel="slide" >
             <div
-              class="relative w-full h-full overflow-hidden rounded-lg border-3 border-[#2D2F4B] bg-[#000208]"
+              class="relative w-full h-full overflow-hidden rounded-lg border-3 border-[#00F0FF] shadow-[0_0_10px_#00F0FF]"
             >
               <div class="hidden duration-400 ease-in-out" data-carousel-item="active">
                 <img
@@ -408,10 +408,10 @@ onUnmounted(() => {
           <!-- Botón jugar (para modo single player) -->
           <button
             v-if="!lobbyStore.isInLobby"
-            class="bg-[#2A1A4B] h-15 w-80 text-white font-pixel rounded-lg border-4 border-[#B17BE3] transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
+            class="bg-[#000000]/50 backdrop-blur-sm  h-15 w-80 text-white font-pixel rounded-lg border-4 border-[#00F0FF] shadow-[0_0_10px_#00F0FF] transition-all duration-300 hover:bg-fuchsia-500 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
             @click="irGameMode"
           >
-            JUGAR SOLO
+            JUGAR
           </button>
         </section>
       </main>

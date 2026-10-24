@@ -9,7 +9,8 @@ import type { InsertUser, InsertEmailVerification, User, EmailVerification } fro
 // ============================================
 
 export async function findUserByEmail(email: string): Promise<User | null> {
-  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  // TEMPORARY: case-insensitive search for debugging
+  const result = await db.select().from(users).where(sql`${users.email} ILIKE ${email}`).limit(1);
   return result[0] ?? null;
 }
 

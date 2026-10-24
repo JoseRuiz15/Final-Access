@@ -178,12 +178,14 @@ const authRoutes: FastifyPluginAsync = async (app) => {
     },
   }, async (req, reply) => {
     const body = loginBodySchema.parse(req.body);
+    req.log.info({ email: body.email }, '>>> LOGIN REQUEST RECEIVED <<<');
 
     let user;
     try {
       user = await authService.login(body.email, body.password);
-    } catch {
+    } catch (err) {
       // Credenciales incorrectas: es un fallo de autenticación (401), no del servidor.
+      req.log.info({ email: body.email, err }, '>>> LOGIN FAILED <<<');
       return reply.code(401).send({ error: 'Unauthorized', message: 'Credenciales inválidas' });
     }
 

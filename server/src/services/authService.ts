@@ -179,12 +179,15 @@ export async function resendVerification(email: string): Promise<{ ok: true; mes
 }
 
 export async function login(email: string, password: string): Promise<User> {
+  console.log('>>> AUTH SERVICE LOGIN CALLED <<<', { email });
   const user = await queries.findUserByEmail(email);
+  console.log('>>> USER FOUND <<<', user ? { id: user.id, email: user.email, provider: user.provider, hasHash: !!user.passwordHash } : 'NOT FOUND');
   if (!user) {
     throw new Error('Credenciales inválidas');
   }
 
   const valid = await verifyPassword(password, user.passwordHash);
+  console.log('>>> PASSWORD VALID <<<', valid);
   if (!valid) {
     throw new Error('Credenciales inválidas');
   }

@@ -1,0 +1,225 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" fill="none">
+  <defs>
+    <linearGradient id="sky" x1="800" y1="0" x2="800" y2="1000" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#080D1D"/>
+      <stop offset=".52" stop-color="#101832"/>
+      <stop offset="1" stop-color="#050913"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111A30" stop-opacity=".94"/>
+      <stop offset="1" stop-color="#080D1B" stop-opacity=".94"/>
+    </linearGradient>
+    <linearGradient id="pink" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FC4BE8"/><stop offset="1" stop-color="#A238D8"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#39F5E4"/><stop offset="1" stop-color="#18AFC9"/>
+    </linearGradient>
+    <linearGradient id="street" x1="800" y1="620" x2="800" y2="1000" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0A1429" stop-opacity=".16"/><stop offset="1" stop-color="#02050C" stop-opacity=".9"/>
+    </linearGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="28"/>
+    </filter>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#00030B" flood-opacity=".42"/>
+    </filter>
+    <pattern id="scan" width="4" height="4" patternUnits="userSpaceOnUse">
+      <path d="M0 3.5H4" stroke="#93A5CE" stroke-opacity=".045"/>
+    </pattern>
+  </defs>
+
+  <!-- Fondo nocturno de ciudad y reflejos -->
+  <path fill="url(#sky)" d="M0 0h1600v1000H0z"/>
+  <ellipse cx="248" cy="630" rx="280" ry="170" fill="#D920D6" fill-opacity=".17" filter="url(#glow)"/>
+  <ellipse cx="1392" cy="575" rx="310" ry="200" fill="#04CDEB" fill-opacity=".15" filter="url(#glow)"/>
+  <circle cx="804" cy="371" r="278" fill="#342E81" fill-opacity=".11" filter="url(#glow)"/>
+  <g fill="#080D1A" stroke="#18233A" stroke-opacity=".75">
+    <path d="M0 170h70v387H0zM75 103h85v465H75zM165 223h65v334h-65zM230 151h58v411h-58zM292 247h70v322h-70zM362 182h72v393h-72zM437 278h58v304h-58z"/>
+    <path d="M1168 222h69v353h-69zM1239 102h94v464h-94zM1337 177h70v390h-70zM1410 125h73v448h-73zM1486 225h52v355h-52zM1540 158h60v421h-60z"/>
+  </g>
+  <g fill="#21C9E2" fill-opacity=".66">
+    <path d="M96 148h9v18h-9zM133 194h8v11h-8zM270 191h8v22h-8zM385 215h8v14h-8zM1265 160h8v22h-8zM1304 205h8v12h-8zM1448 180h9v20h-9zM1570 220h8v15h-8z"/>
+  </g>
+  <g fill="#F443D5" fill-opacity=".72">
+    <path d="M188 295h21v5h-21zM320 326h28v5h-28zM1260 311h26v5h-26zM1460 280h31v5h-31zM1530 360h22v5h-22z"/>
+  </g>
+  <path d="M0 573c270-25 428 21 800 0 372-21 530-28 800 3v424H0z" fill="url(#street)"/>
+  <path d="M0 691c259-39 502-22 800-4 298-18 541-35 800 4" stroke="#303C64" stroke-opacity=".3" stroke-width="2"/>
+  <path d="M58 775 800 692l742 83M191 907l609-215 609 215M430 1000l370-308 370 308" stroke="#192641" stroke-opacity=".35" stroke-width="2"/>
+  <path d="M0 0h1600v1000H0z" fill="url(#scan)"/>
+  <rect width="1600" height="1000" fill="#030713" fill-opacity=".27"/>
+
+  <!-- Barra superior -->
+  <g filter="url(#shadow)">
+    <rect x="36" y="28" width="1528" height="96" rx="17" fill="#080D1B" fill-opacity=".91" stroke="#34415E" stroke-opacity=".75"/>
+    <path d="M54 29h1492" stroke="url(#cyan)" stroke-opacity=".75" stroke-width="2"/>
+  </g>
+  <rect x="56" y="43" width="67" height="66" rx="13" fill="#151D34" stroke="#465373"/>
+  <rect x="62" y="49" width="55" height="54" rx="10" fill="#282041"/>
+  <circle cx="89" cy="69" r="13" fill="#F0B798"/>
+  <path d="M76 66c2-13 25-18 28 1l-4-3-3-7-6 6-13 4-2-1Z" fill="#171826"/>
+  <path d="M71 100c2-13 11-20 18-20s16 7 18 20" fill="#35D7D2"/>
+  <text x="141" y="75" fill="#F1F4FF" font-family="Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="1">PLAYER ONE</text>
+  <text x="141" y="98" fill="#B77BE9" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2">NIVEL 12  ·  OPERATIVO</text>
+  <path d="M391 51v49" stroke="#39425B"/>
+  <text x="445" y="85" fill="#4AF2E4" font-family="Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="3">INICIO</text>
+  <text x="557" y="85" fill="#8A93AD" font-family="Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2">PERSONAJES</text>
+  <text x="724" y="85" fill="#8A93AD" font-family="Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2">TIENDA</text>
+  <rect x="1215" y="54" width="135" height="44" rx="11" fill="#141B30" stroke="#36425F"/>
+  <path d="m1235 69 8-7 8 7-3 16h-10l-3-16Z" fill="#F5C94C"/>
+  <circle cx="1243" cy="73" r="3" fill="#FFF2A6"/>
+  <text x="1262" y="82" fill="#F6D771" font-family="Arial, sans-serif" font-size="15" font-weight="700">2,450</text>
+  <g fill="#131A2E" stroke="#3B4762">
+    <rect x="1370" y="54" width="44" height="44" rx="11"/>
+    <rect x="1424" y="54" width="44" height="44" rx="11"/>
+    <rect x="1478" y="54" width="44" height="44" rx="11"/>
+  </g>
+  <g stroke="#AFB8D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="1392" cy="76" r="7"/><path d="m1388 63 1 4m7-4-1 4m-12 8 4 2m13-2-4 2m-9 10 2-4m8 4-2-4"/>
+    <path d="M1434 68h20v15h-20zM1434 69l10 8 10-8"/>
+    <path d="m1491 67 2-3h7l2 3 4 2v14h-19V69l4-2Z"/><circle cx="1496" cy="76" r="3"/>
+  </g>
+
+  <!-- Etiqueta de sección -->
+  <text x="55" y="166" fill="#91A0BF" font-family="Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="3">CENTRO DE JUEGO</text>
+  <text x="205" y="166" fill="#3CEADD" font-family="Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2">/  SECTOR 07</text>
+  <circle cx="1532" cy="162" r="4" fill="#40E7C7"/>
+  <text x="1518" y="166" text-anchor="end" fill="#91A0BF" font-family="Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="1.5">SERVIDORES EN LÍNEA</text>
+
+  <!-- Columna de salas públicas -->
+  <g filter="url(#shadow)">
+    <rect x="48" y="188" width="382" height="756" rx="18" fill="url(#glass)" stroke="#36415E" stroke-opacity=".9"/>
+    <path d="M49 207q0-18 18-18h344" stroke="#42E7DD" stroke-opacity=".72" stroke-width="2"/>
+  </g>
+  <rect x="68" y="213" width="4" height="21" rx="2" fill="#39E7DC"/>
+  <text x="84" y="229" fill="#F1F4FF" font-family="Arial, sans-serif" font-size="16" font-weight="800" letter-spacing="1.2">SALAS PÚBLICAS</text>
+  <rect x="323" y="209" width="85" height="27" rx="13" fill="#0E302F" stroke="#267C78"/>
+  <circle cx="337" cy="222" r="4" fill="#49E9BC"/>
+  <text x="347" y="226" fill="#6CE8CF" font-family="Arial, sans-serif" font-size="9" font-weight="800" letter-spacing=".7">08 ACTIVAS</text>
+
+  <rect x="68" y="252" width="342" height="57" rx="12" fill="url(#pink)"/>
+  <path d="M89 281h16m-8-8v16" stroke="#170D25" stroke-width="3" stroke-linecap="round"/>
+  <text x="122" y="285" fill="#160D24" font-family="Arial, sans-serif" font-size="12" font-weight="900" letter-spacing="1.4">CREAR LOBBY</text>
+  <rect x="68" y="321" width="342" height="48" rx="11" fill="#11192B" stroke="#3A4763"/>
+  <circle cx="94" cy="345" r="9" stroke="#8D9AB6" stroke-width="2"/>
+  <path d="m101 352 6 6" stroke="#8D9AB6" stroke-width="2" stroke-linecap="round"/>
+  <text x="122" y="349" fill="#CFD6E7" font-family="Arial, sans-serif" font-size="11" font-weight="800" letter-spacing="1.1">BUSCAR PARTIDA</text>
+  <text x="390" y="349" text-anchor="end" fill="#7C89A5" font-family="Arial, sans-serif" font-size="10" font-weight="700">ACTUALIZAR</text>
+
+  <text x="72" y="404" fill="#8591AB" font-family="Arial, sans-serif" font-size="10" font-weight="800" letter-spacing="1.5">DISPONIBLES PARA UNIRSE</text>
+  <path d="M68 418h342" stroke="#303B56"/>
+
+  <!-- Lobby 1 -->
+  <rect x="68" y="436" width="342" height="139" rx="13" fill="#0D1425" stroke="#303B56"/>
+  <rect x="68" y="436" width="3" height="139" rx="1.5" fill="#39DFD4"/>
+  <rect x="85" y="453" width="36" height="36" rx="9" fill="#122C37"/>
+  <path d="M93 474v-11l10-6 10 6v11l-10 6-10-6Z" stroke="#44E6D6" stroke-width="1.5"/>
+  <text x="133" y="466" fill="#F0F3FB" font-family="Arial, sans-serif" font-size="12" font-weight="800" letter-spacing=".7">NEON RUNNERS</text>
+  <text x="133" y="484" fill="#818DA7" font-family="Arial, sans-serif" font-size="9" font-weight="700" letter-spacing=".8">CÓDIGO  N7K2  ·  COMPETITIVO</text>
+  <rect x="338" y="453" width="52" height="24" rx="12" fill="#172A33"/>
+  <text x="364" y="469" text-anchor="middle" fill="#66E7D3" font-family="Arial, sans-serif" font-size="9" font-weight="800">2 / 4</text>
+  <path d="M85 503h308" stroke="#253149"/>
+  <circle cx="91" cy="532" r="4" fill="#51DCA8"/>
+  <text x="103" y="536" fill="#8F9AB2" font-family="Arial, sans-serif" font-size="9" font-weight="700">ANFITRIÓN: KAIRO</text>
+  <rect x="283" y="514" width="110" height="38" rx="9" fill="#121E32" stroke="#43DCD4"/>
+  <text x="338" y="538" text-anchor="middle" fill="#55E8DC" font-family="Arial, sans-serif" font-size="10" font-weight="900" letter-spacing="1.2">UNIRSE</text>
+
+  <!-- Lobby 2 -->
+  <rect x="68" y="591" width="342" height="139" rx="13" fill="#0D1425" stroke="#303B56"/>
+  <rect x="68" y="591" width="3" height="139" rx="1.5" fill="#B16BE8"/>
+  <rect x="85" y="608" width="36" height="36" rx="9" fill="#251A37"/>
+  <path d="m103 615 3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1 3-7Z" stroke="#C18AF1" stroke-width="1.5" stroke-linejoin="round"/>
+  <text x="133" y="621" fill="#F0F3FB" font-family="Arial, sans-serif" font-size="12" font-weight="800" letter-spacing=".7">SQUAD ALPHA</text>
+  <text x="133" y="639" fill="#818DA7" font-family="Arial, sans-serif" font-size="9" font-weight="700" letter-spacing=".6">CÓDIGO  Q4V9  ·  COOPERATIVO</text>
+  <rect x="338" y="608" width="52" height="24" rx="12" fill="#251B35"/>
+  <text x="364" y="624" text-anchor="middle" fill="#CB9AF0" font-family="Arial, sans-serif" font-size="9" font-weight="800">3 / 6</text>
+  <path d="M85 658h308" stroke="#253149"/>
+  <circle cx="91" cy="687" r="4" fill="#51DCA8"/>
+  <text x="103" y="691" fill="#8F9AB2" font-family="Arial, sans-serif" font-size="9" font-weight="700">ANFITRIÓN: LUNA</text>
+  <rect x="283" y="669" width="110" height="38" rx="9" fill="#121E32" stroke="#8E62BD"/>
+  <text x="338" y="693" text-anchor="middle" fill="#C491EB" font-family="Arial, sans-serif" font-size="10" font-weight="900" letter-spacing="1.2">UNIRSE</text>
+
+  <!-- Lobby 3 -->
+  <rect x="68" y="746" width="342" height="139" rx="13" fill="#0D1425" stroke="#303B56"/>
+  <rect x="68" y="746" width="3" height="139" rx="1.5" fill="#F0A94E"/>
+  <rect x="85" y="763" width="36" height="36" rx="9" fill="#322719"/>
+  <path d="m103 771 9 16h-18l9-16Z" stroke="#F0B85F" stroke-width="1.5" stroke-linejoin="round"/><path d="M103 777v4m0 3v.5" stroke="#F0B85F" stroke-width="1.5" stroke-linecap="round"/>
+  <text x="133" y="776" fill="#F0F3FB" font-family="Arial, sans-serif" font-size="12" font-weight="800" letter-spacing=".7">NIGHT SHIFT</text>
+  <text x="133" y="794" fill="#818DA7" font-family="Arial, sans-serif" font-size="9" font-weight="700" letter-spacing=".7">CÓDIGO  X1M8  ·  COMPETITIVO</text>
+  <rect x="338" y="763" width="52" height="24" rx="12" fill="#302519"/>
+  <text x="364" y="779" text-anchor="middle" fill="#F0BD70" font-family="Arial, sans-serif" font-size="9" font-weight="800">1 / 4</text>
+  <path d="M85 813h308" stroke="#253149"/>
+  <circle cx="91" cy="842" r="4" fill="#51DCA8"/>
+  <text x="103" y="846" fill="#8F9AB2" font-family="Arial, sans-serif" font-size="9" font-weight="700">ANFITRIÓN: VEX</text>
+  <rect x="283" y="824" width="110" height="38" rx="9" fill="#121E32" stroke="#7C6748"/>
+  <text x="338" y="848" text-anchor="middle" fill="#E7BB7A" font-family="Arial, sans-serif" font-size="10" font-weight="900" letter-spacing="1.2">UNIRSE</text>
+  <text x="68" y="918" fill="#65728D" font-family="Arial, sans-serif" font-size="9" font-weight="700" letter-spacing="1.2">MOSTRANDO 3 DE 8 SALAS</text>
+
+  <!-- Columna de lobby, misiones y acción rápida -->
+  <g filter="url(#shadow)">
+    <rect x="1110" y="188" width="442" height="339" rx="18" fill="url(#glass)" stroke="#59436A" stroke-opacity=".9"/>
+    <path d="M1111 207q0-18 18-18h405" stroke="#F34BE2" stroke-opacity=".8" stroke-width="2"/>
+  </g>
+  <rect x="1132" y="213" width="4" height="21" rx="2" fill="#F149DD"/>
+  <text x="1148" y="229" fill="#F1F4FF" font-family="Arial, sans-serif" font-size="15" font-weight="800" letter-spacing="1">MI LOBBY</text>
+  <rect x="1450" y="209" width="78" height="27" rx="13" fill="#28203A" stroke="#5B426F"/>
+  <text x="1489" y="226" text-anchor="middle" fill="#D9A1EF" font-family="Arial, sans-serif" font-size="9" font-weight="800" letter-spacing="1">N7K2</text>
+  <text x="1133" y="266" fill="#828DA8" font-family="Arial, sans-serif" font-size="9" font-weight="800" letter-spacing="1.4">ESCUADRÓN</text>
+  <text x="1528" y="266" text-anchor="end" fill="#7BE7D7" font-family="Arial, sans-serif" font-size="10" font-weight="800">2 / 4 JUGADORES</text>
+  <path d="M1132 279h396" stroke="#303B55"/>
+  <rect x="1132" y="294" width="396" height="55" rx="10" fill="#11192A" stroke="#28334A"/>
+  <rect x="1143" y="305" width="33" height="33" rx="9" fill="#21364A"/>
+  <circle cx="1159.5" cy="317" r="6" fill="#F0BE9A"/><path d="M1149 336c1-8 5-12 10-12s9 4 10 12" fill="#37D6D0"/>
+  <text x="1188" y="317" fill="#F0F3FB" font-family="Arial, sans-serif" font-size="11" font-weight="800">KAIRO</text>
+  <text x="1188" y="334" fill="#AA82D6" font-family="Arial, sans-serif" font-size="8" font-weight="800" letter-spacing="1">ANFITRIÓN</text>
+  <rect x="1440" y="310" width="72" height="23" rx="11" fill="#123029"/>
+  <circle cx="1452" cy="321.5" r="3" fill="#5AE0AE"/><text x="1461" y="325" fill="#6BE4B8" font-family="Arial, sans-serif" font-size="8" font-weight="800" letter-spacing=".8">LISTO</text>
+  <rect x="1132" y="358" width="396" height="55" rx="10" fill="#11192A" stroke="#28334A"/>
+  <rect x="1143" y="369" width="33" height="33" rx="9" fill="#3A2644"/>
+  <circle cx="1159.5" cy="381" r="6" fill="#D9A17F"/><path d="M1149 400c1-8 5-12 10-12s9 4 10 12" fill="#B66BE3"/>
+  <text x="1188" y="381" fill="#F0F3FB" font-family="Arial, sans-serif" font-size="11" font-weight="800">PLAYER ONE</text>
+  <text x="1188" y="398" fill="#7F8BA5" font-family="Arial, sans-serif" font-size="8" font-weight="800" letter-spacing="1">TÚ</text>
+  <rect x="1430" y="374" width="82" height="23" rx="11" fill="#332819"/>
+  <circle cx="1442" cy="385.5" r="3" fill="#EAC06F"/><text x="1451" y="389" fill="#E6C17B" font-family="Arial, sans-serif" font-size="8" font-weight="800" letter-spacing=".5">ESPERANDO</text>
+  <path d="M1132 429h396" stroke="#303B55"/>
+  <rect x="1132" y="445" width="188" height="48" rx="10" fill="#11182A" stroke="#7B59A7"/>
+  <text x="1226" y="474" text-anchor="middle" fill="#CE9BF0" font-family="Arial, sans-serif" font-size="10" font-weight="900" letter-spacing="1.2">MARCAR LISTO</text>
+  <rect x="1332" y="445" width="196" height="48" rx="10" fill="url(#pink)"/>
+  <text x="1430" y="474" text-anchor="middle" fill="#1A1025" font-family="Arial, sans-serif" font-size="10" font-weight="900" letter-spacing="1.2">INICIAR PARTIDA</text>
+
+  <g filter="url(#shadow)">
+    <rect x="1110" y="548" width="442" height="222" rx="18" fill="url(#glass)" stroke="#36415E" stroke-opacity=".9"/>
+    <path d="M1111 567q0-18 18-18h405" stroke="#9C65DE" stroke-opacity=".8" stroke-width="2"/>
+  </g>
+  <rect x="1132" y="573" width="4" height="21" rx="2" fill="#A869E8"/>
+  <text x="1148" y="589" fill="#F1F4FF" font-family="Arial, sans-serif" font-size="14" font-weight="800" letter-spacing="1">MISIONES DIARIAS</text>
+  <text x="1528" y="589" text-anchor="end" fill="#A98BCD" font-family="Arial, sans-serif" font-size="9" font-weight="800" letter-spacing="1">RECOMPENSAS + XP</text>
+  <path d="M1132 605h396" stroke="#303B55"/>
+  <text x="1132" y="633" fill="#BAC3D7" font-family="Arial, sans-serif" font-size="10" font-weight="700" letter-spacing=".6">JUEGA 2 PARTIDAS</text>
+  <text x="1528" y="633" text-anchor="end" fill="#8F9CB7" font-family="Arial, sans-serif" font-size="10" font-weight="800">0 / 2</text>
+  <rect x="1132" y="644" width="396" height="6" rx="3" fill="#273148"/><rect x="1132" y="644" width="62" height="6" rx="3" fill="#48DCCF"/>
+  <text x="1132" y="676" fill="#BAC3D7" font-family="Arial, sans-serif" font-size="10" font-weight="700" letter-spacing=".6">ELIMINA 10 ENEMIGOS</text>
+  <text x="1528" y="676" text-anchor="end" fill="#8F9CB7" font-family="Arial, sans-serif" font-size="10" font-weight="800">0 / 10</text>
+  <rect x="1132" y="687" width="396" height="6" rx="3" fill="#273148"/><rect x="1132" y="687" width="18" height="6" rx="3" fill="#B96FE7"/>
+  <text x="1132" y="719" fill="#BAC3D7" font-family="Arial, sans-serif" font-size="10" font-weight="700" letter-spacing=".6">GANA 1 PARTIDA</text>
+  <text x="1528" y="719" text-anchor="end" fill="#8F9CB7" font-family="Arial, sans-serif" font-size="10" font-weight="800">0 / 1</text>
+  <rect x="1132" y="730" width="396" height="6" rx="3" fill="#273148"/><rect x="1132" y="730" width="0" height="6" rx="3" fill="#B96FE7"/>
+
+  <!-- Promoción de tienda -->
+  <g filter="url(#shadow)">
+    <rect x="1110" y="791" width="442" height="124" rx="16" fill="#10172A" stroke="#39445F"/>
+  </g>
+  <rect x="1120" y="801" width="422" height="104" rx="11" fill="#151A31"/>
+  <circle cx="1454" cy="833" r="54" fill="#D739DC" fill-opacity=".22" filter="url(#glow)"/>
+  <path d="M1430 823h26l14 15-14 35h-26l-14-35 14-15Z" fill="#20294B" stroke="#43DAD9" stroke-width="2"/>
+  <path d="m1437 835 6-6 7 6-7 18-6-18Z" fill="#D549E0"/>
+  <text x="1140" y="832" fill="#A7B2CA" font-family="Arial, sans-serif" font-size="9" font-weight="800" letter-spacing="2">DESTACADO EN TIENDA</text>
+  <text x="1140" y="858" fill="#F5F4FF" font-family="Arial, sans-serif" font-size="17" font-weight="900" letter-spacing="1">NUEVO EQUIPO</text>
+  <text x="1140" y="880" fill="#8490AA" font-family="Arial, sans-serif" font-size="9" font-weight="700" letter-spacing="1">PERSONALIZA TU PRÓXIMA PARTIDA</text>
+  <circle cx="1500" cy="891" r="3" fill="#E9EAF5" fill-opacity=".65"/><circle cx="1512" cy="891" r="3" fill="#E9EAF5" fill-opacity=".3"/><circle cx="1488" cy="891" r="3" fill="#E9EAF5" fill-opacity=".3"/>
+
+  <rect x="1110" y="930" width="442" height="54" rx="13" fill="#141C31" stroke="#BE78E8" stroke-width="1.5"/>
+  <path d="m1140 950 12 7-12 7v-14Z" fill="#D7A0F2"/>
+  <text x="1335" y="963" text-anchor="middle" fill="#EADDF5" font-family="Arial, sans-serif" font-size="11" font-weight="900" letter-spacing="2">JUGAR SOLO</text>
+</svg>
