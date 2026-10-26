@@ -73,8 +73,8 @@ export const LEVEL1_CONFIG = {
 
   enemies: [
     { x: 700, y: 650, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 670, limiteDerecho: 1100 },
-    { x: 1100, y: 550, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 670, limiteDerecho: 1100 },
-    { x: 1500, y: 650, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 1600, limiteDerecho: 2100 },
+    { x: 800, y: 400, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 670, limiteDerecho: 1100 },
+    { x: 1900, y: 650, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 1600, limiteDerecho: 2100 },
   ],
 
   boxes: [

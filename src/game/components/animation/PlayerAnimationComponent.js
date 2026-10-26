@@ -5,7 +5,7 @@ export default class PlayerAnimationComponent {
   }
 
   _setupListeners() {
-    this.player.on('animationcomplete-atacar', () => {
+    const finalizarAtaqueEnSuelo = () => {
       if (this.player.attack?.repetirAnimacionCargaCosa3()) return
 
       this.player.ataque = false
@@ -14,7 +14,10 @@ export default class PlayerAnimationComponent {
         // Restablece el anclaje normal al salir del spritesheet ancho de ataque.
         this.player.alignJumpSpriteWithHitbox()
       }
-    })
+    }
+
+    this.player.on('animationcomplete-atacar', finalizarAtaqueEnSuelo)
+    this.player.on('animationcomplete-atacarQuieto', finalizarAtaqueEnSuelo)
 
     this.player.on('animationcomplete-atacarAereo', () => {
       if (this.player.attack?.repetirAnimacionCargaCosa3()) return

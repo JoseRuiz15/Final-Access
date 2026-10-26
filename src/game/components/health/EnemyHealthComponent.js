@@ -14,18 +14,19 @@ export default class EnemyHealthComponent {
       this.enemy.setVelocity(0)
       this.enemy.body.enable = false
 
-      // Play death animation if exists, otherwise direct to explosion
-      const hasDeathAnim = this.enemy.scene.anims.exists('enemyDie')
+      const scene = this.enemy.scene
+      const deathAnim = this.enemy.animDie
+      const hasDeathAnim = deathAnim && scene.anims.exists(deathAnim)
+
       if (hasDeathAnim) {
-        this.enemy.play('enemyDie')
-        this.enemy.once('animationcomplete-enemyDie', () => {
-          this.enemy.scene.mostrarExplosion(this.enemy.x, this.enemy.y)
+        this.enemy.play(deathAnim)
+        this.enemy.once(`animationcomplete-${deathAnim}`, () => {
+          scene.mostrarExplosion(this.enemy.x, this.enemy.y)
           this.gameRepository.incrementarEnemigos()
           this.enemy.destroy()
         })
       } else {
-        // Fallback: direct explosion
-        this.enemy.scene.mostrarExplosion(this.enemy.x, this.enemy.y)
+        scene.mostrarExplosion(this.enemy.x, this.enemy.y)
         this.gameRepository.incrementarEnemigos()
         this.enemy.destroy()
       }
@@ -35,7 +36,21 @@ export default class EnemyHealthComponent {
 
     this.enemy.recibiendoDano = true
     this.enemy.setVelocity(0)
-    this.enemy.play('enemyDamage')
+
+    const scene = this.enemy.scene
+    const damageAnim = this.enemy.animDamage
+    if (damageAnim && scene.anims.exists(damageAnim)) {
+      this.enemy.play(damageAnim)
+    } else {
+      // Enemigos sin animación de daño (por ejemplo, el dron) se recuperan
+      // tras un breve tiempo para evitar recibir todos los golpes seguidos.
+      scene.time.delayedCall(250, () => {
+        if (this.enemy.active && !this.enemy.muerto) {
+          this.enemy.recibiendoDano = false
+        }
+      })
+    }
+
     return false
   }
 }

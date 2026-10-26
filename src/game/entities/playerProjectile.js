@@ -16,11 +16,19 @@ export default class PlayerProjectile extends Phaser.Physics.Arcade.Sprite {
 
     this.body.setAllowGravity(false)
     // Hitbox pequeño centrado en el destello del sprite, no en todo el cuadro.
-    this.body.setSize(options.hitboxSize ?? 8, options.hitboxSize ?? 8)
-    const hitboxOffset = (32 - (options.hitboxSize ?? 8)) / 2
-    this.body.setOffset(hitboxOffset, hitboxOffset)
+    const hitboxSize = options.hitboxSize ?? 8
+    this.body.setSize(hitboxSize, hitboxSize)
+    const hitboxOffset = (32 - hitboxSize) / 2
+    this.body.setOffset(
+      options.hitboxOffsetX ?? hitboxOffset,
+      options.hitboxOffsetY ?? hitboxOffset,
+    )
 
-    this.play(options.animation ?? 'cosa3Projectile', true)
+    // `animation: null` permite usar una imagen fija, como bullet.png.
+    if (options.animation !== null) {
+      const animation = options.animation ?? 'cosa3Projectile'
+      if (scene.anims.exists(animation)) this.play(animation, true)
+    }
 
     // Evita que un disparo que no choque permanezca en el nivel indefinidamente.
     scene.time.delayedCall(options.lifetime ?? 2200, () => {

@@ -62,7 +62,12 @@ export const CHARACTERS = {
         chargeEffect: { sheet: 'character3ChargeEffect', start: 0, end: 12, frameRate: 12, repeat: 0 },
         chargedProjectile: { sheet: 'character3ChargedBullet', start: 0, end: 5, frameRate: 12, repeat: -1 },
         jumpAttack: { sheet: 'character3JumpAttack', start: 0, end: 6, frameRate: 7, repeat: 0 },
-        attack: { sheet: 'character3Attack', start: 0, end: 7, frameRate: 18, repeat: 0 },
+        // Ataque en movimiento: hoja de 8 frames.
+        attack: { sheet: 'character3RunAttack', start: 0, end: 7, frameRate: 18, repeat: 0 },
+        // Ataque quieto: hoja de 3 frames.
+        attackIdle: { sheet: 'character3Attack', start: 0, end: 2, frameRate: 6, repeat: 0 },
+        // Fogonazo del ataque tap: hoja de 5 frames.
+        attackEffect: { sheet: 'character3AttackEffect', start: 0, end: 4, frameRate: 20, repeat: 0 },
         damage: { sheet: 'character3Damage', start: 0, end: 5, frameRate: 12, repeat: 0 },
         dead:   { sheet: 'character3Dead',   start: 0, end: 5, frameRate: 12, repeat: 0 },
     },
@@ -74,12 +79,15 @@ export const CHARACTERS = {
       ['character3Projectile', '/img/animatics-player/shootAttacksEffect.png', { frameWidth: 32, frameHeight: 32 }],
       ['character3ChargeEffect', '/img/animatics-player/character3cChargeEffect.png', { frameWidth: 32, frameHeight: 32 }],
       ['character3ChargedBullet', '/img/animatics-player/chargedBullet.png', { frameWidth: 32, frameHeight: 32 }],
-      ['character3Attack', '/img/animatics-player/character3RunAttack.png', { frameWidth: 32, frameHeight: 32 }],
+      ['character3RunAttack', '/img/animatics-player/character3RunAttack.png', { frameWidth: 32, frameHeight: 32 }],
+      ['character3Attack', '/img/animatics-player/character3Attack.png', { frameWidth: 32, frameHeight: 32 }],
+      ['character3AttackEffect', '/img/animatics-player/character3AttackEffect.png', { frameWidth: 32, frameHeight: 32 }],
       ['character3Damage', '/img/animatics-player/character3Damage.png', { frameWidth: 32, frameHeight: 32 }],
       ['character3Dead', '/img/animatics-player/character3Death.png', { frameWidth: 64, frameHeight: 32 }],
     ],
     images: [
       ['cosa3', '/img/character/charcter3.png'],
+      ['character3Bullet', '/img/animatics-player/bullet.png'],
     ],
   }
 

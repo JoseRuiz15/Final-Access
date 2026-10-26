@@ -8,7 +8,11 @@ const KEY_ASSETS = KEY_SPRITESHEETS.map(({ texture, path, frameWidth, frameHeigh
 
 export default class AssetLoader {
   static COMMON_ASSETS = {
-    images: [['player', '/img/character/defaultCharacter.png']],
+    images: [
+      ['player', '/img/character/defaultCharacter.png'],
+      ['enemyDronBullet', '/img/animatics-enemy/enemyDronBullet.png'],
+      ['enemy2Bullet', '/img/animatics-enemy/enemy2bullet.png'],
+    ],
     spritesheets: [
       ...KEY_ASSETS,
       ['playerWalk', '/img/animatics-player/playerWalk.png', { frameWidth: 32, frameHeight: 32 }],
@@ -24,7 +28,7 @@ export default class AssetLoader {
         { frameWidth: 32, frameHeight: 32 },
       ],
       ['playerDead', '/img/animatics-player/playerDead.png', { frameWidth: 64, frameHeight: 32 }],
-/* 
+/*
       ['character2Walk', '/img/animatics-player/character2Walk', { frameWidth: 32, frameHeight: 32 }],
       ['character2Jump', '/img/animatics-player/character2Jump', { frameWidth: 32, frameHeight: 32 }],
       ['character2JumpAttack', '/img/animatics-player/character2JumpAttack', { frameWidth: 32, frameHeight: 32 }],
@@ -42,10 +46,22 @@ export default class AssetLoader {
  */
       ['enemyWalk', '/img/animatics-enemy/enemyWalk.png', { frameWidth: 48, frameHeight: 32 }],
       ['enemy2Attack', '/img/animatics-enemy/enemyAttack.png', { frameWidth: 48, frameHeight: 32 }],
-      ['explosion', '/img/animatics-enemy/explosion.png', { frameWidth: 48, frameHeight: 32 }],
+      ['explosion', '/img/animatics-enemy/explosion.png', { frameWidth: 32, frameHeight: 32 }],
       ['enemyDamage', '/img/animatics-enemy/enemyDamage.png', { frameWidth: 48, frameHeight: 32 }],
+      ['enemyDron', '/img/animatics-enemy/enemyDron.png', { frameWidth: 32, frameHeight: 32 }],
       [
-        'proyectile',
+        'enemyDronFlyingEffect',
+        '/img/animatics-enemy/enemyDronFlyingeffect.png',
+        { frameWidth: 32, frameHeight: 32 },
+      ],
+      [
+        'enemyDronAttack',
+        '/img/animatics-enemy/enemyDronAttack.png',
+        { frameWidth: 32, frameHeight: 32 },
+      ],
+      ['enemyDronDead', '/img/animatics-enemy/enemyDronDead.png', { frameWidth: 32, frameHeight: 32 }],
+      [
+        'enemy2AttackEffect',
         '/img/animatics-enemy/enemy2attackeffect.png',
         { frameWidth: 48, frameHeight: 32 },
       ],

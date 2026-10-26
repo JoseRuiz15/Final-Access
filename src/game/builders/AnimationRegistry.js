@@ -11,6 +11,9 @@ export default class AnimationRegistry {
       this._registerCommon(scene)
     }
 
+    // Dron: se registra sólo cuando sus texturas están cargadas.
+    this._registerDrone(scene)
+
     // Jugador “default” (cosa1) — lo que ya tenías
     if (!scene.anims.exists('caminar')) {
       this._registerPlayerDefault(scene)
@@ -102,12 +105,12 @@ export default class AnimationRegistry {
       key: 'enemyAttack',
       frames: scene.anims.generateFrameNumbers('enemy2Attack', { start: 0, end: 4 }),
       frameRate: 10,
-      repeat: -1,
+      repeat: 0,
     })
     scene.anims.create({
       key: 'enemyDamage',
       frames: scene.anims.generateFrameNumbers('enemyDamage', { start: 0, end: 4 }),
-      frameRate: 12,
+      frameRate: 18,
       repeat: 0,
     })
     scene.anims.create({
@@ -118,15 +121,37 @@ export default class AnimationRegistry {
     })
     scene.anims.create({
       key: 'explosion',
-      frames: scene.anims.generateFrameNumbers('explosion', { start: 0, end: 5 }),
+      frames: scene.anims.generateFrameNumbers('explosion', { start: 0, end: 8 }),
       frameRate: 8,
       repeat: 0,
     })
+    // Fogonazo del escarabajo: los 10 frames se reproducen una sola vez y
+    // el sprite se oculta al terminar.
     scene.anims.create({
-      key: 'proyectile',
-      frames: scene.anims.generateFrameNumbers('proyectile', { start: 0, end: 5 }),
-      frameRate: 10,
-      repeat: -1,
+      key: 'enemy2AttackEffect',
+      frames: scene.anims.generateFrameNumbers('enemy2AttackEffect', { start: 0, end: 9 }),
+      frameRate: 14,
+      repeat: 0,
+    })
+  }
+
+  _registerDrone(scene) {
+    const animations = [
+      { key: 'enemyDronWalk', texture: 'enemyDron', end: 2, frameRate: 1, repeat: -1 },
+      { key: 'enemyDronFire', texture: 'enemyDronFlyingEffect', end: 1, frameRate: 12, repeat: -1 },
+      { key: 'enemyDronAttack', texture: 'enemyDronAttack', end: 5, frameRate: 12, repeat: 0 },
+      { key: 'enemyDronDead', texture: 'enemyDronDead', end: 2, frameRate: 8, repeat: 0 },
+    ]
+
+    animations.forEach(({ key, texture, end, frameRate, repeat }) => {
+      if (!scene.textures.exists(texture) || scene.anims.exists(key)) return
+
+      scene.anims.create({
+        key,
+        frames: scene.anims.generateFrameNumbers(texture, { start: 0, end }),
+        frameRate,
+        repeat,
+      })
     })
   }
 
@@ -159,7 +184,9 @@ export default class AnimationRegistry {
         caminar: ranges.walk,
         saltar: ranges.jump,
         atacar: ranges.attack,
+        atacarQuieto: ranges.attackIdle,
         atacarAereo: ranges.jumpAttack,
+        cosa3AttackEffect: ranges.attackEffect,
         cosa3Projectile: ranges.projectile,
         cosa3ChargeEffect: ranges.chargeEffect,
         cosa3ChargedProjectile: ranges.chargedProjectile,
@@ -184,5 +211,5 @@ export default class AnimationRegistry {
     })
   })
 }
-    
+
 }

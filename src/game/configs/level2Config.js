@@ -2,6 +2,7 @@ export const LEVEL2_CONFIG = {
   vidasIniciales: 4,
   hud: {
     tiempoInicial: 240,
+    enemigosObjetivo: 4,
     imagenLlave: '/img/keys/Key10-GOLD.png',
     mision: [
       'CONSIGUE LA LLAVE DE',
@@ -60,6 +61,18 @@ export const LEVEL2_CONFIG = {
     { x: 400, y: 650, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 370, limiteDerecho: 600 },
     { x: 1250, y: 650, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 600, limiteDerecho: 1300 },
     { x: 2000, y: 650, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 1900, limiteDerecho: 2100 },
+    {
+      x: 1000,
+      y: 560,
+      texture: 'enemyDron',
+      tipo: 'dron',
+      vida: 30,
+      velocidad: 60,
+      limiteIzquierdo: 850,
+      limiteDerecho: 1150,
+      rangoDeteccion: 320,
+      dano: 20,
+    },
   ],
 
   boxes: [

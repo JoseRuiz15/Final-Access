@@ -5,9 +5,14 @@ export default class EnemyAnimationComponent {
   }
 
   _setupListeners() {
-    this.enemy.on('animationcomplete-enemyDamage', () => {
+    const damageAnim = this.enemy.animDamage
+    if (!damageAnim) return
+
+    this.enemy.on(`animationcomplete-${damageAnim}`, () => {
       this.enemy.recibiendoDano = false
-      if (!this.enemy.muerto) this.enemy.play('enemyWalk')
+      if (!this.enemy.muerto && this.enemy.animWalk) {
+        this.enemy.play(this.enemy.animWalk, true)
+      }
     })
   }
 

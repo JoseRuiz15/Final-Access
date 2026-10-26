@@ -1,5 +1,6 @@
 import Player from '../entities/player.js'
 import Enemy from '../entities/enemy.js'
+import DroneEnemy from '../entities/droneEnemy.js'
 import Box from '../entities/box.js'
 import Key from '../entities/key.js'
 import AttackHitbox from '../entities/attackHitbox.js'
@@ -36,7 +37,8 @@ export default class EntityFactory {
    * @returns {Enemy}
    */
   static createEnemy(scene, x, y, texture, config = {}, gameRepository = null) {
-    const enemy = new Enemy(scene, x, y, texture, config, gameRepository)
+    const EnemyClass = config.tipo === 'dron' ? DroneEnemy : Enemy
+    const enemy = new EnemyClass(scene, x, y, texture, config, gameRepository)
     if (config.vida != null) enemy.vida = config.vida
     if (config.velocidad != null) enemy.velocidad = config.velocidad
     if (config.limiteIzquierdo != null) {
@@ -90,10 +92,11 @@ export default class EntityFactory {
    * @param {number} x
    * @param {number} y
    * @param {string} texture
+   * @param {object} options
    * @returns {Projectile}
    */
-  static createProjectile(scene, x, y, texture) {
-    return new Projectile(scene, x, y, texture)
+  static createProjectile(scene, x, y, texture, options = {}) {
+    return new Projectile(scene, x, y, texture, options)
   }
 
   /**

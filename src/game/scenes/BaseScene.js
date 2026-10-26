@@ -206,6 +206,8 @@ export default class BaseScene extends Phaser.Scene {
 
   _defaultExplosion(x, y) {
     const explosion = this.add.sprite(x, y, 'explosion')
+    // El frame mide 32x32; escala 1.5 lo muestra en 48x48.
+    explosion.setScale(1.5)
     explosion.play('explosion')
     explosion.once('animationcomplete-explosion', () => explosion.destroy())
   }

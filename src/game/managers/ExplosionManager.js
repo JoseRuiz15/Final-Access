@@ -24,6 +24,8 @@ export default class ExplosionManager {
   create(x, y, texture = 'explosion') {
     this._ensureInit()
     const explosion = this.scene.add.sprite(x, y, texture)
+    // El frame mide 32x32; escala 1.5 lo muestra en 48x48.
+    explosion.setScale(1.5)
     explosion.play('explosion')
     explosion.once('animationcomplete-explosion', () => explosion.destroy())
     return explosion

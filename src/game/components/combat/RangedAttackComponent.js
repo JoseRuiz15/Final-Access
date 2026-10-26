@@ -10,30 +10,61 @@ export default class RangedAttackComponent {
   atacar() {
     if (this.atacando || this.enemy.muerto || this.enemy.recibiendoDano) return
     if (!this.puedeDisparar) return
+    if (!this.enemy.target?.active) return
+
+    const scene = this.enemy.scene
+    const target = this.enemy.target
 
     this.atacando = true
     this.puedeDisparar = false
-    this.enemy.play('enemyAttack')
+    this.enemy.atacando = true
 
-    const dir = this.enemy.target.x < this.enemy.x ? -1 : 1
+    const dir = target.x < this.enemy.x ? -1 : 1
     this.enemy.direccion = dir
     this.enemy.setFlipX(dir === 1)
 
-    const origenX = this.enemy.x + 18 * dir
-    const origenY = this.enemy.y + 3
+    // El enemigo base reproduce su animación de ataque; el dron usa un
+    // efecto independiente delante del cuerpo.
+    this.enemy.playAttackAnimation()
 
-    const bala = EntityFactory.createProjectile(this.enemy.scene, origenX, origenY, 'proyectile')
-    bala.disparar(dir)
+    const fire = () => {
+      if (!this.enemy.active || this.enemy.muerto || !target.active) return
 
-    this.enemy.scene.physics.add.overlap(bala, this.enemy.target, (_, player) => {
-      player.recibirDano(this.enemy.dano)
-      bala.destroy()
-    })
+      const muzzleX = this.enemy.muzzleOffsetX ?? 18
+      const muzzleY = this.enemy.muzzleOffsetY ?? 3
+      const bala = EntityFactory.createProjectile(
+        scene,
+        this.enemy.x + muzzleX * dir,
+        this.enemy.y + muzzleY,
+        this.enemy.projectileTexture ?? 'enemy2Bullet',
+        this.enemy.projectileOptions ?? {},
+      )
 
-    this.enemy.scene.time.delayedCall(800, () => {
+      if (this.enemy.aimAtTarget) {
+        bala.dispararHacia(target.x, target.y)
+      } else {
+        bala.disparar(dir)
+      }
+
+      scene.physics.add.overlap(bala, target, (_, player) => {
+        if (!player.active) return
+        player.recibirDano(this.enemy.dano)
+        bala.destroy()
+      })
+    }
+
+    const fireDelay = this.enemy.fireDelay ?? 0
+    if (fireDelay > 0) {
+      scene.time.delayedCall(fireDelay, fire)
+    } else {
+      fire()
+    }
+
+    scene.time.delayedCall(this.enemy.attackLockMs ?? 800, () => {
       this.atacando = false
+      this.enemy.atacando = false
     })
-    this.enemy.scene.time.delayedCall(1500, () => {
+    scene.time.delayedCall(this.enemy.attackCooldown ?? 1500, () => {
       this.puedeDisparar = true
     })
   }

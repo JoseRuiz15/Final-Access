@@ -52,11 +52,6 @@ export default class Level3Scene extends BaseScene {
       )
       enemy.target = this.player
       this.enemies.add(enemy)
-
-      enemy.on('animationcomplete-enemyDamage', () => {
-        enemy.recibiendoDano = false
-        if (!enemy.muerto) enemy.play('enemyWalk')
-      })
     })
   }
 
