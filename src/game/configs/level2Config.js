@@ -14,10 +14,10 @@ export const LEVEL2_CONFIG = {
   assets: {
     tilemaps: [['level2', '/maps/Mapa_level_2.json']],
     images: [
-      ['parallax2', '/img/maps/layer2-mapa2.png'],
-      ['parallax3', '/img/maps/layer3-mapa2.png'],
-      ['parallax4', '/img/maps/layer4-mapa2.png'],
-      ['parallax5', '/img/maps/layer5-mapa2.png'],
+      ['parallax2', '/img/maps/layer2-mapa2.webp'],
+      ['parallax3', '/img/maps/layer3-mapa2.webp'],
+      ['parallax4', '/img/maps/layer4-mapa2.webp'],
+      ['parallax5', '/img/maps/layer5-mapa2.webp'],
       ['ground', '/tiles/ground.png'],
       ['groundBack', '/tiles/groundBack.png'],
       ['pinchos', '/tiles/pinchos.png'],

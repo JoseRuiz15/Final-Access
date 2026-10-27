@@ -18,11 +18,11 @@ export const LEVEL3_CONFIG = {
 
     images: [
       // Mismo fondo azul del nivel 1
-      ['parallax', '/img/maps/layer1-map1.png'],
+      ['parallax', '/img/maps/layer1-map1.webp'],
       ['parallax2', '/img/maps/layer2-map1.png'],
-      ['parallax3', '/img/maps/layer3-map1.png'],
-      ['parallax4', '/img/maps/layer4-map1.png'],
-      ['parallax5', '/img/maps/layer5-map1.png'],
+      ['parallax3', '/img/maps/layer3-map1.webp'],
+      ['parallax4', '/img/maps/layer4-map1.webp'],
+      ['parallax5', '/img/maps/layer5-map1.webp'],
 
       ['ground', '/tiles/ground.png'],
       ['groundBack', '/tiles/groundBack.png'],

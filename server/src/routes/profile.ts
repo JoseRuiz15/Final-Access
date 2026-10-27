@@ -25,6 +25,7 @@ const profileRoutes: FastifyPluginAsync = async (app) => {
                 xp: { type: 'number' },
                 coins: { type: 'number' },
                 equippedCharacterId: { type: ['string', 'null'] },
+                avatarCharacterId: { type: ['string', 'null'] },
                 totalPlaytimeSec: { type: 'number' },
                 createdAt: { type: 'string' },
                 updatedAt: { type: 'string' },
@@ -102,6 +103,7 @@ const profileRoutes: FastifyPluginAsync = async (app) => {
         type: 'object',
         properties: {
           displayName: { type: 'string', minLength: 1, maxLength: 32 },
+          avatarCharacterId: { type: ['string', 'null'], minLength: 1, maxLength: 32 },
         },
       },
       response: {
@@ -118,6 +120,7 @@ const profileRoutes: FastifyPluginAsync = async (app) => {
                 xp: { type: 'number' },
                 coins: { type: 'number' },
                 equippedCharacterId: { type: ['string', 'null'] },
+                avatarCharacterId: { type: ['string', 'null'] },
                 totalPlaytimeSec: { type: 'number' },
                 createdAt: { type: 'string' },
                 updatedAt: { type: 'string' },
@@ -130,12 +133,20 @@ const profileRoutes: FastifyPluginAsync = async (app) => {
       summary: 'Actualizar nombre visible del perfil',
     },
   }, async (req, reply) => {
-    const body = z.object({ displayName: z.string().min(1).max(32).optional() }).parse(req.body);
-    if (!body.displayName) {
-      return reply.code(400).send({ error: 'Bad Request', message: 'displayName es requerido' });
+    const body = z.object({
+      displayName: z.string().trim().min(1).max(32).optional(),
+      avatarCharacterId: z.string().min(1).max(32).nullable().optional(),
+    }).parse(req.body);
+    if (!body.displayName && body.avatarCharacterId === undefined) {
+      return reply.code(400).send({ error: 'Bad Request', message: 'No hay cambios para guardar' });
     }
-    const profile = await profileService.updateDisplayName(req.authUser!.id, body.displayName);
-    return reply.code(200).send({ ok: true, profile });
+    try {
+      const profile = await profileService.updateProfile(req.authUser!.id, body);
+      return reply.code(200).send({ ok: true, profile });
+    } catch (err: any) {
+      const status = err.message.includes('desbloqueado') ? 403 : 400;
+      return reply.code(status).send({ error: status === 403 ? 'Forbidden' : 'Bad Request', message: err.message });
+    }
   });
 
   // PUT /profile/equip - Equipar personaje

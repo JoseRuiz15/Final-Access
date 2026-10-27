@@ -13,6 +13,8 @@ export default class DoorManager {
     this.doors = null
     this.doorLayerName = config.doorLayerName || 'DoorObjet'
     this._initialized = false
+    this.keyAttempts = 0
+    this.lastAttemptFrame = -1
   }
 
   init(scene) {
@@ -29,6 +31,9 @@ export default class DoorManager {
 
   create(mapResult) {
     this._ensureInit()
+    this.keyAttempts = 0
+    this.lastAttemptFrame = -1
+    this.scene.keyAttempts = 0
 
     // Cada mapa tiene una capa de puerta registrada en su propia configuración.
     // Nivel 1 conserva el nombre histórico "DoorObjet" y nivel 2 usa "DoorObject".
@@ -86,14 +91,30 @@ export default class DoorManager {
       )
       if (distancia < 80) {
         const llaveNecesaria = puerta.properties?.find((p) => p.name === 'llave_necesaria')?.value
-        const tieneLlave = player.llaves?.some((llave) => llave.texture === llaveNecesaria)
+        const llavesDelJugador = player.llaves ?? []
+        const intento = inputService.isInteracting()
 
-        if (inputService.isInteracting() && tieneLlave && !puerta.abierta) {
+        if (
+          intento &&
+          llavesDelJugador.length > 0 &&
+          !puerta.abierta &&
+          this.lastAttemptFrame !== this.scene.game.loop.frame
+        ) {
+          this.lastAttemptFrame = this.scene.game.loop.frame
+          this.keyAttempts++
+          this.scene.keyAttempts = this.keyAttempts
+
+          const tieneLlave = llavesDelJugador.some((llave) => llave.texture === llaveNecesaria)
+          if (!tieneLlave) return
+
           this.doorSprite.setTexture('greenDoor')
           puerta.abierta = true
           doorOpened = true
           console.log('✅ PUERTA ABIERTA - VERDE')
-          this.scene.game?.events?.emit('level-completed', this.scene)
+          this.scene.game?.events?.emit('level-completed', this.scene, {
+            keyAttempts: this.keyAttempts,
+            correctKeyFirstTry: this.keyAttempts === 1,
+          })
         }
       }
     })

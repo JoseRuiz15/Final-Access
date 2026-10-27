@@ -1,15 +1,11 @@
 <script setup>
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import musicLevel1 from '@/assets/music/musicLevel1.mp3'
+import { playMusicFromUserGesture } from '@/game/services/GameMusic.js'
 import { useGameStore } from '@/stores/game.js'
 
 const router = useRouter()
 const gameStore = useGameStore()
-
-const musica = new Audio(musicLevel1)
-musica.loop = true
-musica.volume = 0.1
 
 const nivelActual = computed(() => Number(gameStore.nivelActual) || 1)
 
@@ -51,7 +47,7 @@ function escribirTexto() {
 }
 
 function irAlJuego() {
-  musica.play()
+  playMusicFromUserGesture().catch(() => {})
   router.push('/game')
 }
 
@@ -63,14 +59,12 @@ watch(nivelActual, escribirTexto)
 
 onUnmounted(() => {
   clearInterval(intervalo)
-  musica.pause()
-  musica.currentTime = 0
 })
 </script>
 
 <template>
-  <section class="mission-screen fixed inset-0 overflow-hidden">
-    <img src="/img/present/loadingscene.png" alt="mission" class="absolute inset-0 w-full h-full object-cover blur-[4px] scale-105" />
+  <section class="mission-screen fixed inset-0 overflow-hidden bg-[#080e20]">
+    <img src="/img/present/loadingscene.webp" alt="mission" fetchpriority="high" decoding="async" class="absolute inset-0 w-full h-full object-cover blur-[4px] scale-105" />
     <img
       src="/img/present/tutorialPersonaje.png"
       alt="tutorial"

@@ -12,11 +12,13 @@ function irCreate() {
 }
 </script>
 <template>
-  <div class="multiplayer-screen relative min-h-screen">
+  <div class="multiplayer-screen relative isolate min-h-screen bg-[#080e20]">
     <!--fondo del multijugador-->
     <img
-      src="/img/multy-player/partida.png"
+      src="/img/multy-player/partida.webp"
       alt="imagen del multi"
+      fetchpriority="high"
+      decoding="async"
       class="h-full w-full absolute inset-0 object-cover -z-10"
     />
 

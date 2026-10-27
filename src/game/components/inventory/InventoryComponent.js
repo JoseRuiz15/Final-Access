@@ -14,6 +14,8 @@ export default class InventoryComponent {
       color: llave.color,
       efecto: llave.efecto,
       correcta: llave.correcta,
+      spawnX: llave.spawnX,
+      spawnY: llave.spawnY,
     }
 
     console.log('🔑 Llave recogida:', keyData, '| texture.key =', llave.texture.key)

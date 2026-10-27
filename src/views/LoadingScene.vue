@@ -100,10 +100,12 @@ function irExplicacionNivel() {
 </script>
 
 <template>
-  <section class="tutorial-screen fixed inset-0 overflow-hidden" @click="siguienteDialogo">
+  <section class="tutorial-screen fixed inset-0 overflow-hidden bg-[#080e20]" @click="siguienteDialogo">
     <img
-      src="/img/present/loadingscene.png"
+      src="/img/present/loadingscene.webp"
       alt="loading"
+      fetchpriority="high"
+      decoding="async"
       class="absolute inset-0 h-full w-full scale-105 object-cover blur-[4px]"
     />
     <img

@@ -4,6 +4,8 @@ class Key extends Entity {
   constructor(scene, x, y, texture, datos) {
     super(scene, x, y, texture)
 
+    this.spawnX = Number.isFinite(datos?.spawnX) ? datos.spawnX : x
+    this.spawnY = Number.isFinite(datos?.spawnY) ? datos.spawnY : y
     this.grupo = datos.grupo
     this.color = datos.color
     this.efecto = datos.efecto
@@ -12,7 +14,8 @@ class Key extends Entity {
     scene.add.existing(this)
     scene.physics.add.existing(this)
 
-    this.setCollideWorldBounds(true)
+    // Deja que la llave salga por debajo del mapa para que KeyManager detecte el vacío.
+    this.setCollideWorldBounds(false)
     this.setBounce(0.2)
 
     this.setScale(1.3)

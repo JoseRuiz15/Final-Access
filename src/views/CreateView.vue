@@ -10,11 +10,13 @@ function irMultiplayer() {
 }
 </script>
 <template>
-  <div class="create-game-screen relative min-h-screen">
+  <div class="create-game-screen relative isolate min-h-screen bg-[#080e20]">
     <!--imagen de fondo-->
     <img
-      src="/img/multy-player/partida.png"
+      src="/img/multy-player/partida.webp"
       alt="FONDO"
+      fetchpriority="high"
+      decoding="async"
       class="h-full w-full absolute inset-0 object-cover -z-10"
     />
     <!--volver-->
