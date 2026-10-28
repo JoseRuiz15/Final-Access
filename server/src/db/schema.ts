@@ -52,6 +52,7 @@ export const playerProfiles = pgTable('player_profiles', {
   xp: bigint('xp', { mode: 'number' }).notNull().default(0),
   coins: bigint('coins', { mode: 'number' }).notNull().default(0),
   equippedCharacterId: varchar('equipped_character_id', { length: 32 }),
+  avatarCharacterId: varchar('avatar_character_id', { length: 32 }),
   totalPlaytimeSec: bigint('total_playtime_sec', { mode: 'number' }).notNull().default(0),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),

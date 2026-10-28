@@ -6,7 +6,7 @@
     "node": "22"
   },
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "npm run db:migrate && tsx watch src/index.ts",
     "build": "tsc",
     "start": "npm run db:migrate:prod && node dist/index.js",
     "test": "vitest run",

@@ -53,10 +53,17 @@ export async function getProfileWithDetails(userId: number) {
   };
 }
 
-export async function updateDisplayName(userId: number, displayName: string): Promise<Profile | null> {
+export async function updateProfile(
+  userId: number,
+  data: { displayName?: string; avatarCharacterId?: string | null },
+): Promise<Profile | null> {
+  const updates: Partial<Profile> = { updatedAt: new Date() }
+  if (data.displayName !== undefined) updates.displayName = data.displayName
+  if (data.avatarCharacterId !== undefined) updates.avatarCharacterId = data.avatarCharacterId
+
   const result = await db
     .update(playerProfiles)
-    .set({ displayName, updatedAt: new Date() })
+    .set(updates)
     .where(eq(playerProfiles.userId, userId))
     .returning();
   return result[0] ?? null;

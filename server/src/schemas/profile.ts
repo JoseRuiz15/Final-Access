@@ -7,6 +7,7 @@ import { characterSchema } from '../db/schema.js';
 
 export const updateProfileBodySchema = z.object({
   displayName: z.string().min(1).max(32).optional(),
+  avatarCharacterId: z.string().min(1).max(32).nullable().optional(),
 });
 
 export const profileResponseSchema = z.object({
@@ -18,6 +19,7 @@ export const profileResponseSchema = z.object({
     xp: z.number().int().nonnegative(),
     coins: z.number().int().nonnegative(),
     equippedCharacterId: z.string().nullable(),
+    avatarCharacterId: z.string().nullable(),
     totalPlaytimeSec: z.number().int().nonnegative(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),

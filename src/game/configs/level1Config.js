@@ -13,11 +13,11 @@ export const LEVEL1_CONFIG = {
   assets: {
     tilemaps: [['level1', '/maps/Mapa_level_1.json']],
     images: [
-      ['parallax', '/img/maps/layer1-map1.png'],
+      ['parallax', '/img/maps/layer1-map1.webp'],
       ['parallax2', '/img/maps/layer2-map1.png'],
-      ['parallax3', '/img/maps/layer3-map1.png'],
-      ['parallax4', '/img/maps/layer4-map1.png'],
-      ['parallax5', '/img/maps/layer5-map1.png'],
+      ['parallax3', '/img/maps/layer3-map1.webp'],
+      ['parallax4', '/img/maps/layer4-map1.webp'],
+      ['parallax5', '/img/maps/layer5-map1.webp'],
       ['ground', '/tiles/ground.png'],
       ['decorations', '/tiles/decorations.png'],
       ['box', '/tiles/box.png'],

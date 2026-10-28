@@ -63,11 +63,13 @@ async function handleRegister() {
 </script>
 
 <template>
-  <section id="record-screen" class="relative min-h-screen overflow-hidden">
+  <section id="record-screen" class="relative min-h-screen overflow-hidden bg-[#080e20]">
     <!--fondo registro-->
     <img
-      src="/img/lobby/sesion.png"
+      src="/img/lobby/sesion.webp"
       alt="pantalla de login"
+      fetchpriority="high"
+      decoding="async"
       class="absolute inset-0 w-full h-full object-cover"
     />
     <!--cuadro registro-->

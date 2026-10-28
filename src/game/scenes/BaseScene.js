@@ -36,6 +36,15 @@ export default class BaseScene extends Phaser.Scene {
   }
 
   preload() {
+    // Mantiene una pantalla de carga visible mientras Phaser descarga el nivel.
+    if (this._onAssetLoadProgress) this.load.off('progress', this._onAssetLoadProgress)
+    this._onAssetLoadProgress = (progress) => {
+      this.game?.events?.emit('level-assets-progress', progress)
+    }
+    this.load.on('progress', this._onAssetLoadProgress)
+    this.load.once('complete', () => {
+      this.game?.events?.emit('level-assets-loaded')
+    })
 
     const id = this.gameRepository?.selectedCharacterId ?? 'cosa1'
     const character = getCharacter(id)

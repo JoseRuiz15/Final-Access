@@ -50,6 +50,21 @@ export default class KeyManager {
     this._ensureInit()
     if (!this.keysGroup || !player || !this.imgRecogerLlave) return
 
+    const limites = this.scene.physics.world.bounds
+    this.keysGroup.getChildren().forEach((llave) => {
+      const cayoAlVacio =
+        llave.y > limites.bottom + 48 ||
+        llave.x < limites.left - 48 ||
+        llave.x > limites.right + 48
+
+      if (!llave.active || !cayoAlVacio) return
+
+      // Si se tira al vacío, vuelve al punto donde apareció al romper su caja.
+      llave.body.reset(llave.spawnX, llave.spawnY)
+      llave.setVelocity(0, 0)
+      llave.setAngularVelocity(0)
+    })
+
     this.llaveCercana = null
     this.keysGroup.getChildren().forEach((llave) => {
       const distancia = Phaser.Math.Distance.Between(player.x, player.y, llave.x, llave.y)

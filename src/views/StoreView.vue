@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useCharacterStore } from '@/stores/characters'
 import { useProfileStore } from '@/stores/profile'
+import PlayerProfilePanel from '@/components/PlayerProfilePanel.vue'
 import { initFlowbite } from 'flowbite'
 
 const router = useRouter()
@@ -82,11 +83,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="store-screen relative min-h-screen">
+  <section class="store-screen relative isolate min-h-screen bg-[#080e20]">
     <!--fondo del tienda-->
     <img
-      src="/img/lobby/lobby2.png"
+      src="/img/lobby/lobby2.webp"
       alt="imagen del la tienda"
+      fetchpriority="high"
+      decoding="async"
       class="absolute inset-0 w-full h-full object-cover -z-10"
     />
     <!-- Contenido -->
@@ -95,22 +98,7 @@ onMounted(() => {
       <header
         class="app-header w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
       >
-        <!-- Usuario -->
-        <div
-          class="header-profile bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
-        >
-          <div class="w-[100px] h-[100px] border-3 border-[#444665] rounded-lg overflow-hidden">
-            <img
-              src="/img/profile/perfil.png"
-              alt="imagen de perfil"
-              class="w-full h-full object-cover"
-            />
-          </div>
-          <div class="flex flex-col ml-10">
-            <p class="text-white text-[30px] font-pixel">{{ authStore.user?.username || 'Usuario' }}</p>
-            <p class="text-[#FB00FF] text-[14px] font-pixel mt-1">Nivel {{ authStore.user?.level || 1 }}</p>
-          </div>
-        </div>
+        <PlayerProfilePanel />
 
         <!-- Menú central -->
         <nav class="header-nav flex items-center gap-20 ml-16">

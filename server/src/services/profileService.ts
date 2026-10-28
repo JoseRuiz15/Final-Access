@@ -17,6 +17,7 @@ export async function getFullProfile(userId: number) {
     xp: profile.xp,
     coins: profile.coins,
     equippedCharacterId: profile.equippedCharacterId,
+    avatarCharacterId: profile.avatarCharacterId,
     totalPlaytimeSec: profile.totalPlaytimeSec,
     createdAt: profile.createdAt.toISOString(),
     updatedAt: profile.updatedAt.toISOString(),
@@ -25,8 +26,15 @@ export async function getFullProfile(userId: number) {
   };
 }
 
-export async function updateDisplayName(userId: number, displayName: string) {
-  const profile = await queries.updateDisplayName(userId, displayName);
+export async function updateProfile(
+  userId: number,
+  data: { displayName?: string; avatarCharacterId?: string | null },
+) {
+  if (data.avatarCharacterId && !(await queries.isCharacterUnlocked(userId, data.avatarCharacterId))) {
+    throw new Error('Debes tener desbloqueado ese personaje para usar su retrato');
+  }
+
+  const profile = await queries.updateProfile(userId, data);
   if (!profile) throw new Error('Perfil no encontrado');
   return profile;
 }

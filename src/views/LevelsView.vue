@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGameStore } from '@/stores/game.js'
 import { useProgressionStore } from '@/stores/progression'
+import PixelStar from '@/components/PixelStar.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -101,8 +102,10 @@ onMounted(async () => {
     <div class="absolute inset-0 z-10">
       <div class="relative h-full w-full">
         <img
-          src="/img/map/mapa.png"
+          src="/img/map/mapa.webp"
           alt="Mapa de selección de niveles"
+          fetchpriority="high"
+          decoding="async"
           class="pointer-events-none absolute inset-0 h-full w-full select-none object-fill"
         />
       <!--Iconos de niveles-->
@@ -121,7 +124,7 @@ onMounted(async () => {
         />
         <!-- Stars indicator -->
         <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-          <span v-for="i in 3" :key="i" class="text-[10px]" :class="i <= getLevelStars(1) ? 'text-yellow-400' : 'text-gray-500'">★</span>
+          <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(1)" />
         </div>
       </button>
 
@@ -141,7 +144,7 @@ onMounted(async () => {
           class="h-full w-full object-contain"
         />
         <div v-if="isLevelUnlocked(2)" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-          <span v-for="i in 3" :key="i" class="text-[10px]" :class="i <= getLevelStars(2) ? 'text-yellow-400' : 'text-gray-500'">★</span>
+          <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(2)" />
         </div>
       </button>
 
@@ -161,7 +164,7 @@ onMounted(async () => {
           class="h-full w-full object-contain"
         />
         <div v-if="isLevelUnlocked(3)" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-          <span v-for="i in 3" :key="i" class="text-[10px]" :class="i <= getLevelStars(3) ? 'text-yellow-400' : 'text-gray-500'">★</span>
+          <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(3)" />
         </div>
       </button>
 
@@ -181,7 +184,7 @@ onMounted(async () => {
           class="h-full w-full object-contain"
         />
         <div v-if="isLevelUnlocked(4)" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-          <span v-for="i in 3" :key="i" class="text-[10px]" :class="i <= getLevelStars(4) ? 'text-yellow-400' : 'text-gray-500'">★</span>
+          <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(4)" />
         </div>
       </button>
 
@@ -201,7 +204,7 @@ onMounted(async () => {
           class="h-full w-full object-contain"
         />
         <div v-if="isLevelUnlocked(5)" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-          <span v-for="i in 3" :key="i" class="text-[10px]" :class="i <= getLevelStars(5) ? 'text-yellow-400' : 'text-gray-500'">★</span>
+          <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(5)" />
         </div>
       </button>
 
@@ -288,7 +291,14 @@ onMounted(async () => {
 
       <!-- Stars -->
       <div class="text-center my-3">
-        <span v-for="i in 3" :key="i" class="text-xl" :class="i <= getLevelStars(nivelSeleccionado) ? 'text-yellow-400' : 'text-gray-500'">★</span>
+        <div class="inline-flex items-center gap-1">
+          <PixelStar
+            v-for="i in 3"
+            :key="i"
+            class="h-5 w-5"
+            :active="i <= getLevelStars(nivelSeleccionado)"
+          />
+        </div>
         <span v-if="getBestTime(nivelSeleccionado)" class="ml-4 text-[#00FFEA] font-pixel text-sm">Mejor tiempo: {{ getBestTime(nivelSeleccionado) }}</span>
       </div>
 

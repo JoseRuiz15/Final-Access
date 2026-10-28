@@ -25,11 +25,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <section id="home-screen" class="min-h-screen overflow-hidden">
+  <section id="home-screen" class="min-h-screen overflow-hidden bg-[#080e20]">
     <!-- Fondo -->
     <img
-      src="/img/lobby/fondoinicio.png"
+      src="/img/lobby/fondoinicio.webp"
       alt="Fondo Final-Acces"
+      fetchpriority="high"
+      decoding="async"
       class="absolute inset-0 w-full h-full object-cover"
     />
 

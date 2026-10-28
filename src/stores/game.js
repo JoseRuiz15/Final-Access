@@ -23,6 +23,7 @@ export const useGameStore = defineStore('game', {
     selectedCharacterId: getSavedCharacterId(),
     nivelActual: 1,
     tutorialNivel1Visto: false,
+    levelSummary: null,
   }),
 
   actions: {
@@ -37,6 +38,12 @@ export const useGameStore = defineStore('game', {
       } catch {
         // La selección sigue funcionando durante esta sesión aunque no se pueda guardar.
       }
+    },
+    setLevelSummary(summary) {
+      this.levelSummary = summary
+    },
+    clearLevelSummary() {
+      this.levelSummary = null
     },
   },
 })

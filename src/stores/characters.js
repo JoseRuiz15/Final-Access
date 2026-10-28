@@ -21,13 +21,13 @@ export const useCharacterStore = defineStore('characters', () => {
 
   // Mapear campos del backend a los que espera el frontend
   function mapCharacter(char) {
-    // Los archivos de perfil usan CapitalCase: Cosa1_perfil.png
+    // Los retratos del perfil usan CapitalCase: Cosa1_perfil.webp
     const perfilName = char.id.charAt(0).toUpperCase() + char.id.slice(1)
     return {
       id: char.id,
       nombre: char.name,
       imagen: char.textureKey ? `/img/characters/${char.textureKey}.png` : `/img/characters/${char.id}.png`,
-      perfil: `/img/profile/${perfilName}_perfil.png`,
+      perfil: `/img/profile/${perfilName}_perfil.webp`,
       habilidad: char.abilityName || 'Habilidad desconocida',
       descripcion: char.abilityDesc || 'Sin descripción disponible',
       unlockCost: char.unlockCost || 0,

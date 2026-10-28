@@ -11,6 +11,11 @@ import { LEVEL4_CONFIG } from '@/game/configs/level4Config.js'
 
 const gameStore = useGameStore()
 const router = useRouter()
+const props = defineProps({
+  paused: { type: Boolean, default: false },
+  started: { type: Boolean, default: false },
+})
+const emit = defineEmits(['retry-level', 'drop-key', 'time-over'])
 const nivelActual = computed(() => Number(gameStore.nivelActual) || 1)
 const hudConfig = computed(() => {
   if (nivelActual.value === 1) return LEVEL1_CONFIG.hud
@@ -19,6 +24,7 @@ const hudConfig = computed(() => {
   return LEVEL2_CONFIG.hud
 })
 const tiempo = ref(hudConfig.value.tiempoInicial)
+const tiempoAgotado = ref(false)
 
 const tiempoFormateado = computed(() => {
   const minutos = Math.floor(tiempo.value / 60)
@@ -31,19 +37,32 @@ let intervalo
 
 function iniciarTemporizador() {
   clearInterval(intervalo)
+  if (!props.started || tiempoAgotado.value) return
+
   intervalo = setInterval(() => {
-    if (tiempo.value > 0) {
-      tiempo.value--
-    } else {
+    if (props.paused || tiempoAgotado.value) return
+
+    if (tiempo.value <= 1) {
+      tiempo.value = 0
+      tiempoAgotado.value = true
       clearInterval(intervalo)
       intervalo = undefined
-      console.log('¡Tiempo terminado!')
+      emit('time-over')
+      return
     }
+
+    tiempo.value--
   }, 1000)
 }
 
-onMounted(() => {
+function resetTimer() {
+  tiempo.value = hudConfig.value.tiempoInicial
+  tiempoAgotado.value = false
   iniciarTemporizador()
+}
+
+onMounted(() => {
+  if (props.started) iniciarTemporizador()
 })
 
 onUnmounted(() => {
@@ -64,20 +83,28 @@ const enemigos = computed(() => gameStore.enemigos)
 
 watch(
   () => hudConfig.value.tiempoInicial,
-  (tiempoInicial) => {
-    tiempo.value = tiempoInicial
-    iniciarTemporizador()
+  resetTimer,
+)
+
+watch(
+  () => props.started,
+  (started) => {
+    if (started) iniciarTemporizador()
+    else clearInterval(intervalo)
   },
 )
 
-const emit = defineEmits(['retry-level', 'drop-key'])
-
 function restartLevel() {
-  tiempo.value = hudConfig.value.tiempoInicial
-  iniciarTemporizador()
+  resetTimer()
   // GameView tiene acceso a la escena Phaser y ejecutará el reinicio.
   emit('retry-level')
 }
+
+function getElapsedSeconds() {
+  return Math.max(0, hudConfig.value.tiempoInicial - tiempo.value)
+}
+
+defineExpose({ resetTimer, getElapsedSeconds })
 
 function volverASeleccionDeNivel() {
   router.push('/levels')
@@ -85,6 +112,7 @@ function volverASeleccionDeNivel() {
 </script>
 <template>
   <div
+    id="game-hud"
     class="game-hud absolute top-5 left-0 w-full flex justify-center items-center gap-12"
   >
     <div class="relative">
@@ -182,7 +210,7 @@ function volverASeleccionDeNivel() {
     </div>
     <!-- Pantalla de Game Over -->
 <div
-  v-if="vidas <= 0"
+  v-if="vidas <= 0 || tiempoAgotado"
   class="fixed inset-0 z-50 flex items-center justify-center bg-[#050711]/90"
 >
   <div
@@ -192,11 +220,11 @@ function volverASeleccionDeNivel() {
            rounded-lg px-8 py-10"
   >
     <p class="font-pixel text-[#FF365E] text-4xl mb-4">
-      GAME OVER
+      {{ tiempoAgotado && vidas > 0 ? 'TIEMPO AGOTADO' : 'GAME OVER' }}
     </p>
 
     <p class="font-pixel text-gray-300 text-sm mb-10">
-      HAS FALLADO LA MISIÓN
+      {{ tiempoAgotado && vidas > 0 ? 'EL TIEMPO DE LA MISIÓN SE ACABÓ' : 'HAS FALLADO LA MISIÓN' }}
     </p>
 
     <div class="flex flex-col sm:flex-row gap-5">

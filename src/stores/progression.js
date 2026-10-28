@@ -13,6 +13,47 @@ export const useProgressionStore = defineStore('progression', () => {
   const currentLevel = computed(() => gameProgress.value?.currentLevel || 1)
   const coins = computed(() => gameProgress.value?.coins || 0)
 
+  function mergeLevelProgress(previous, incoming) {
+    if (!previous) return incoming
+    if (!incoming) return previous
+
+    const bestTimes = [previous.bestTimeSec, incoming.bestTimeSec]
+      .map(Number)
+      .filter((time) => Number.isFinite(time) && time > 0)
+
+    return {
+      ...previous,
+      ...incoming,
+      completed: Boolean(previous.completed || incoming.completed),
+      stars: Math.max(Number(previous.stars) || 0, Number(incoming.stars) || 0),
+      bestTimeSec: bestTimes.length ? Math.min(...bestTimes) : null,
+    }
+  }
+
+  function upsertLevelProgress(progress) {
+    const index = levelProgress.value.findIndex((item) => item.levelId === progress.levelId)
+    if (index === -1) {
+      levelProgress.value.push(progress)
+      return
+    }
+
+    levelProgress.value[index] = mergeLevelProgress(levelProgress.value[index], progress)
+  }
+
+  function mergeProgressList(incoming = []) {
+    const serverIds = new Set(incoming.map((item) => item.levelId))
+    const merged = incoming.map((item) => {
+      const previous = levelProgress.value.find((progress) => progress.levelId === item.levelId)
+      return mergeLevelProgress(previous, item)
+    })
+
+    levelProgress.value
+      .filter((item) => !serverIds.has(item.levelId))
+      .forEach((item) => merged.push(item))
+
+    levelProgress.value = merged
+  }
+
   const isLevelCompleted = (levelId) => {
     const progress = levelProgress.value.find((p) => p.levelId === levelId)
     return progress?.completed || false
@@ -35,7 +76,7 @@ export const useProgressionStore = defineStore('progression', () => {
       const response = await progressionApi.getProgress()
       if (response.data.ok) {
         gameProgress.value = response.data.gameProgress
-        levelProgress.value = response.data.levelProgress || []
+        mergeProgressList(response.data.levelProgress || [])
       }
       return response.data
     } catch (err) {
@@ -49,17 +90,24 @@ export const useProgressionStore = defineStore('progression', () => {
   async function completeLevel(levelId, data) {
     isLoading.value = true
     error.value = null
+
+    // Refleja el mejor resultado inmediatamente para que el mapa no muestre una
+    // puntuación antigua mientras termina la petición de guardado.
+    const previous = levelProgress.value.find((item) => item.levelId === levelId)
+    upsertLevelProgress(
+      mergeLevelProgress(previous, {
+        levelId,
+        completed: true,
+        stars: data.stars,
+        bestTimeSec: data.timeSec,
+      }),
+    )
+
     try {
       const response = await progressionApi.completeLevel(levelId, data)
       if (response.data.ok) {
         gameProgress.value = response.data.gameProgress
-        // Update or add level progress
-        const index = levelProgress.value.findIndex((p) => p.levelId === levelId)
-        if (index >= 0) {
-          levelProgress.value[index] = response.data.levelProgress
-        } else {
-          levelProgress.value.push(response.data.levelProgress)
-        }
+        upsertLevelProgress(response.data.levelProgress)
       }
       return response.data
     } catch (err) {
@@ -76,7 +124,7 @@ export const useProgressionStore = defineStore('progression', () => {
 
   function setProgress(data) {
     gameProgress.value = data.gameProgress
-    levelProgress.value = data.levelProgress || []
+    mergeProgressList(data.levelProgress || [])
   }
 
   return {

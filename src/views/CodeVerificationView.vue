@@ -176,11 +176,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section id="code-screen" class="relative min-h-screen overflow-hidden">
+  <section id="code-screen" class="relative min-h-screen overflow-hidden bg-[#080e20]">
     <!--fondo codigo-->
     <img
-      src="/img/lobby/sesion.png"
+      src="/img/lobby/sesion.webp"
       alt="pantalla de login"
+      fetchpriority="high"
+      decoding="async"
       class="absolute inset-0 w-full h-full object-cover"
     />
     <!--cuadro de verificacion de codigo-->

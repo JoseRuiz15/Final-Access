@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useCharacterStore } from '@/stores/characters'
 import { useGameStore } from '@/stores/game'
 import { useProfileStore } from '@/stores/profile'
+import PlayerProfilePanel from '@/components/PlayerProfilePanel.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -107,10 +108,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <section id="lobby-screen" class="relative min-h-screen overflow-hidden">
+  <section id="lobby-screen" class="relative isolate min-h-screen overflow-hidden bg-[#080e20]">
     <img
-      src="/img/lobby/lobby2.png"
+      src="/img/lobby/lobby2.webp"
       alt="imagen del la tienda"
+      fetchpriority="high"
+      decoding="async"
       class="absolute inset-0 w-full h-full object-cover -z-10"
     />
 
@@ -118,22 +121,7 @@ onMounted(() => {
       <header
         class="app-header w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
       >
-        <!-- Usuario -->
-        <div
-          class="header-profile bg-[#050711] w-[450px] h-[110px] border-4 border-[#2D2F4B] rounded-lg flex items-center"
-        >
-          <div class="w-[100px] h-[100px] border-3 border-[#444665] rounded-lg overflow-hidden">
-            <img
-              src="/img/profile/perfil.png"
-              alt="imagen de perfil"
-              class="w-full h-full object-cover"
-            />
-          </div>
-          <div class="flex flex-col ml-10">
-            <p class="text-white text-[30px] font-pixel">{{ authStore.user?.username || 'Usuario' }}</p>
-            <p class="text-[#FB00FF] text-[14px] font-pixel mt-1">Nivel {{ authStore.user?.level || 1 }}</p>
-          </div>
-        </div>
+        <PlayerProfilePanel />
 
         <!-- Menú central -->
         <nav class="header-nav flex items-center gap-20 ml-16">
@@ -248,7 +236,7 @@ onMounted(() => {
                   class="h-[130px] w-[130px] border-4 border-[#FF00D9] rounded-lg overflow-hidden shadow-[0_0_25px_#FF00D9]"
                 >
                   <img
-                    :src="personajes[personajeSeleccionado]?.perfil || `/img/profile/${personajes[personajeSeleccionado]?.id}_perfil.png`"
+                    :src="personajes[personajeSeleccionado]?.perfil || `/img/profile/${personajes[personajeSeleccionado]?.id}_perfil.webp`"
                     :alt="personajes[personajeSeleccionado]?.nombre"
                     class="h-full w-full object-cover"
                   />
