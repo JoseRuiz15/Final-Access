@@ -51,6 +51,7 @@ async function initializeGame() {
     1: () => SceneFactory.createLevel1Scene(),
     2: () => SceneFactory.createLevel2Scene(),
     3: () => SceneFactory.createLevel3Scene(),
+    4: () => SceneFactory.createLevel4Scene(),
   }
   const crearEscena = sceneFactories[Number(gameStore.nivelActual)] ?? sceneFactories[2]
   levelScene = crearEscena()

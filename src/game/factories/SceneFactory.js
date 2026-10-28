@@ -10,9 +10,11 @@ import CollisionSetup from '../builders/CollisionSetup.js'
 import DoorManager from '../managers/DoorManager.js'
 import KeyManager from '../managers/KeyManager.js'
 import ExplosionManager from '../managers/ExplosionManager.js'
+import MovingPlatformManager from '../managers/MovingPlatformManager.js'
 import Level1Scene from '../scenes/Level1Scene.js'
 import Level2Scene from '../scenes/Level2Scene.js'
 import Level3Scene from '../scenes/Level3Scene.js'
+import Level4Scene from '../scenes/Level4Scene.js'
 
 function createDependencies() {
   return {
@@ -28,6 +30,7 @@ function createDependencies() {
     doorManager: new DoorManager({ doorLayerName: 'DoorObject' }),
     keyManager: new KeyManager(),
     explosionManager: new ExplosionManager(),
+    movingPlatformManager: new MovingPlatformManager(),
   }
 }
 
@@ -47,6 +50,12 @@ export class SceneFactory {
   static createLevel3Scene() {
     const deps = createDependencies()
     const scene = new Level3Scene(deps)
+    return scene
+  }
+
+  static createLevel4Scene() {
+    const deps = createDependencies()
+    const scene = new Level4Scene(deps)
     return scene
   }
 }

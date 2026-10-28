@@ -20,6 +20,7 @@ export default class BaseScene extends Phaser.Scene {
     this.doorManager = dependencies.doorManager
     this.keyManager = dependencies.keyManager
     this.explosionManager = dependencies.explosionManager
+    this.movingPlatformManager = dependencies.movingPlatformManager
 
     // Estado común
     this.player = null
@@ -61,6 +62,7 @@ export default class BaseScene extends Phaser.Scene {
     this.keyManager?.init(this)
     this.doorManager?.init(this)
     this.explosionManager?.init(this)
+    this.movingPlatformManager?.init(this)
 
     // Servicios ya inyectados, solo configurar bounds si es necesario
     if (this.config.physics) {
@@ -86,6 +88,11 @@ export default class BaseScene extends Phaser.Scene {
     // === MAPA ===
     if (this.mapBuilder && this.config.map) {
       this.mapResult = this.mapBuilder.create(this, this.config.map, this.physicsService)
+    }
+
+    // === PLATAFORMAS MÓVILES ===
+    if (this.mapResult) {
+      this.movingPlatformManager?.create(this.mapResult)
     }
 
     // === TUTORIAL UI ===
@@ -135,6 +142,7 @@ export default class BaseScene extends Phaser.Scene {
           groundLayer: this.mapResult.layers['Ground'],
           proyectiles: this.proyectiles,
           spikesObjects: this.mapResult.objectLayers['PinchosDanger'],
+          movingPlatforms: this.movingPlatformManager?.getPlatforms() ?? [],
         },
         this.config,
       )
@@ -194,6 +202,7 @@ export default class BaseScene extends Phaser.Scene {
     }
 
     // Managers update
+    this.movingPlatformManager?.update()
     this.keyManager?.update(this.player, this.inputService)
     this.doorManager?.checkProximity(this.player, this.inputService)
   }

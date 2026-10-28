@@ -25,7 +25,7 @@ async function irLoadingScene() {
   isLoading.value = true
   try {
     // Check if level is unlocked (completed previous level or is level 1)
-    if (nivel > 1 && !progressionStore.isLevelCompleted(nivel - 1)) {
+    if (nivel > 1 && !isLevelUnlocked(nivel)) {
       alert('Completa el nivel anterior para desbloquear este')
       return
     }
@@ -57,15 +57,16 @@ function obtenerDescripcion() {
     case 3:
       return 'Consigue la llave plateada Key 13, abre la compuerta al final de la ciudad y escapa.'
     case 4:
-      return 'Desactiva la bomba y derrota al jefe final.'
+      return 'Cruza las plataformas móviles y llega hasta la puerta al final de la ciudad.'
     default:
       return 'Descripción no disponible.'
   }
 }
 
 function isLevelUnlocked(level) {
-  // Solo existen escenas jugables para los niveles 1, 2 y 3.
-  if (level > 3) return false
+  // Nivel 4 desbloqueado temporalmente para probar el mapa y las plataformas.
+  if (level === 4) return true
+  if (level > 4) return false
   if (level === 1) return true
   return progressionStore.isLevelCompleted(level - 1)
 }

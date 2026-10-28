@@ -6,6 +6,7 @@ import PlayerBoxRule from './PlayerBoxRule.js'
 import KeyGroundRule from './KeyGroundRule.js'
 import ProjectilePlayerRule from './ProjectilePlayerRule.js'
 import PlayerSpikesRule from './PlayerSpikesRule.js'
+import MovingPlatformRule from './MovingPlatformRule.js'
 
 export const COLLISION_RULES = {
   PlayerGroundRule,
@@ -16,6 +17,7 @@ export const COLLISION_RULES = {
   KeyGroundRule,
   ProjectilePlayerRule,
   PlayerSpikesRule,
+  MovingPlatformRule,
 }
 
 export function getRulesByNames(names) {

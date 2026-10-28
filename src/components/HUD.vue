@@ -7,6 +7,7 @@ import { useRouter } from 'vue-router'
 import { LEVEL1_CONFIG } from '@/game/configs/level1Config.js'
 import { LEVEL2_CONFIG } from '@/game/configs/level2Config.js'
 import { LEVEL3_CONFIG } from '@/game/configs/level3Config.js'
+import { LEVEL4_CONFIG } from '@/game/configs/level4Config.js'
 
 const gameStore = useGameStore()
 const router = useRouter()
@@ -14,6 +15,7 @@ const nivelActual = computed(() => Number(gameStore.nivelActual) || 1)
 const hudConfig = computed(() => {
   if (nivelActual.value === 1) return LEVEL1_CONFIG.hud
   if (nivelActual.value === 3) return LEVEL3_CONFIG.hud
+  if (nivelActual.value === 4) return LEVEL4_CONFIG.hud
   return LEVEL2_CONFIG.hud
 })
 const tiempo = ref(hudConfig.value.tiempoInicial)
@@ -104,6 +106,7 @@ function volverASeleccionDeNivel() {
       <img src="/img/hud/hudObjetivo.png" class="w-72" />
 
       <img
+        v-if="hudConfig.imagenLlave"
         :src="hudConfig.imagenLlave"
         class="absolute w-[18.64px] h-[31.75px] mt-[-70px] ml-[190px] rotate-40"
       />
@@ -121,31 +124,34 @@ function volverASeleccionDeNivel() {
       >
         {{ linea }}
       </p>
-      <p
-        class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold ml-[150px] mt-[-50px] text-[#00D9FF] text-shadow-[0_0_40px_#00D9FF]"
-      >
-        LLAVES
-      </p>
-      <p
-        class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold ml-[190px] mt-[10px] text-white text-shadow-[0_0_40px_#00D9FF]"
-      >
-        {{ llaves }}/1
-      </p>
-      <button
-        type="button"
-        :disabled="llaves <= 0"
-        aria-label="Soltar una llave"
-        class="font-pixel absolute top-full left-1/2 z-20 mt-1 -translate-x-1/2 whitespace-nowrap rounded border border-[#00D9FF] bg-[#0B1020]/90 px-3 py-2 text-[8px] text-[#00D9FF] transition-colors hover:bg-[#00D9FF] hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
-        @click.stop="emit('drop-key')"
-      >
-        SOLTAR LLAVE [K]
-      </button>
+      <template v-if="hudConfig.imagenLlave">
+        <p
+          class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold ml-[150px] mt-[-50px] text-[#00D9FF] text-shadow-[0_0_40px_#00D9FF]"
+        >
+          LLAVES
+        </p>
+        <p
+          class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold ml-[190px] mt-[10px] text-white text-shadow-[0_0_40px_#00D9FF]"
+        >
+          {{ llaves }}/1
+        </p>
+        <button
+          type="button"
+          :disabled="llaves <= 0"
+          aria-label="Soltar una llave"
+          class="font-pixel absolute top-full left-1/2 z-20 mt-1 -translate-x-1/2 whitespace-nowrap rounded border border-[#00D9FF] bg-[#0B1020]/90 px-3 py-2 text-[8px] text-[#00D9FF] transition-colors hover:bg-[#00D9FF] hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
+          @click.stop="emit('drop-key')"
+        >
+          SOLTAR LLAVE [K]
+        </button>
+      </template>
     </div>
 
     <div class="relative">
       <img src="/img/hud/hudTiempo.png" class="w-64" />
 
       <img
+        v-if="hudConfig.mostrarEnemigos !== false"
         src="/img/level-icons/calavera.png"
         class="absolute w-[30px] h-[13] mt-[-50px] ml-[120px]"
       />
@@ -161,16 +167,18 @@ function volverASeleccionDeNivel() {
         {{ tiempoFormateado }}
       </p>
 
-      <p
-        class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold mt-[50px] ml-[-120px] text-[#00D9FF] text-shadow-[0_0_40px_#00D9FF]"
-      >
-        ENEMIGOS
-      </p>
-      <p
-        class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold mt-[50px] ml-[80px] text-white text-shadow-[0_0_40px_#00D9FF]"
-      >
-        {{ enemigos }}/{{ hudConfig.enemigosObjetivo ?? 3 }}
-      </p>
+      <template v-if="hudConfig.mostrarEnemigos !== false">
+        <p
+          class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold mt-[50px] ml-[-120px] text-[#00D9FF] text-shadow-[0_0_40px_#00D9FF]"
+        >
+          ENEMIGOS
+        </p>
+        <p
+          class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold mt-[50px] ml-[80px] text-white text-shadow-[0_0_40px_#00D9FF]"
+        >
+          {{ enemigos }}/{{ hudConfig.enemigosObjetivo ?? 3 }}
+        </p>
+      </template>
     </div>
     <!-- Pantalla de Game Over -->
 <div
