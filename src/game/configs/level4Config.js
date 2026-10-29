@@ -1,5 +1,7 @@
 export const LEVEL4_CONFIG = {
   vidasIniciales: 3,
+  // 720 / 0.8 = 900 px, la altura completa del mapa en Tiled.
+  zoom: 0.8,
 
   hud: {
     tiempoInicial: 240,
@@ -30,11 +32,12 @@ export const LEVEL4_CONFIG = {
     ],
   },
 
+  // Usa el mismo encuadre y movimiento de parallax que los niveles 1 y 3.
   parallax: [
     { key: 'map3Layer1', speed: 0.08, depth: -5 },
-    { key: 'map3Layer2', speed: 0.15, depth: -4 },
-    { key: 'map3Layer3', speed: 0.25, depth: -3 },
-    { key: 'map3Layer4', speed: 0.4, depth: -2 },
+    { key: 'map3Layer2', speed: 0.15, depth: -4, tileScale: { x: 1, y: 1.2 } },
+    { key: 'map3Layer3', speed: 0.25, depth: -3, tileScale: { x: 1, y: 1.2 }, offsetY: 110 },
+    { key: 'map3Layer4', speed: 0.4, depth: -2, tileScale: { x: 1, y: 1.2 }, offsetY: 150 },
   ],
 
   map: {
@@ -60,7 +63,11 @@ export const LEVEL4_CONFIG = {
   enemies: [],
   boxes: [],
 
-  player: { x: 80, y: 736 },
+  // Coordenadas originales del spawn, para restaurar después de las pruebas:
+  // player: { x: 80, y: 736 },
+
+  // Spawn temporal sobre la plataforma 5 (centro x≈2896, superficie y=768).
+  player: { x: 2896, y: 736 },
 
   collisionRules: [
     'PlayerGroundRule',

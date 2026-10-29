@@ -88,7 +88,10 @@ async function initializeGame() {
     },
 
     scale: {
-      mode: Phaser.Scale.ENVELOP,
+      // El nivel 4 necesita conservar toda su altura en pantallas panorámicas;
+      // EXPAND añade vista horizontal en lugar de recortar arriba y abajo.
+      mode:
+        Number(gameStore.nivelActual) === 4 ? Phaser.Scale.EXPAND : Phaser.Scale.ENVELOP,
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
 

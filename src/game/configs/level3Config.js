@@ -31,10 +31,17 @@ export const LEVEL3_CONFIG = {
       ['redDoor', '/img/door/redDoor.png'],
       ['greenDoor', '/img/door/greenDoor.png'],
       ['imgRecogerLlave', '/img/instruction/imgRecogerLlave.png'],
+      ['enemyTrap', '/img/animatics-enemy/enemyTrap.png'],
+      ['enemyBulletTrap', '/img/animatics-enemy/enemyBulletTrap.png'],
     ],
 
     spritesheets: [
       ['crateBreak', '/img/box/crateBreak.png', { frameWidth: 32, frameHeight: 32 }],
+      [
+        'enemyTrapAnimation',
+        '/img/animatics-enemy/enemyTrapAnimation.png',
+        { frameWidth: 32, frameHeight: 32 },
+      ],
     ],
   },
 
@@ -72,9 +79,8 @@ export const LEVEL3_CONFIG = {
     { x: 2350, y: 640, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 2300, limiteDerecho: 2430 },
     { x: 2700, y: 700, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 2656, limiteDerecho: 2848 },
     { x: 3350, y: 700, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 3230, limiteDerecho: 3480 },
-    {
-      x: 1100,
-      y: 520,
+    { x: 1100,
+      y: 550,
       texture: 'enemyDron',
       tipo: 'dron',
       vida: 30,
@@ -86,7 +92,7 @@ export const LEVEL3_CONFIG = {
     },
     {
       x: 2300,
-      y: 500,
+      y: 530,
       texture: 'enemyDron',
       tipo: 'dron',
       vida: 30,
@@ -98,7 +104,7 @@ export const LEVEL3_CONFIG = {
     },
     {
       x: 3200,
-      y: 540,
+      y: 580,
       texture: 'enemyDron',
       tipo: 'dron',
       vida: 30,
@@ -108,6 +114,13 @@ export const LEVEL3_CONFIG = {
       rangoDeteccion: 320,
       dano: 20,
     },
+  ],
+
+  enemyTraps: [
+    { x: 300, y: 515, detectionRange: 280, attackCooldown: 1200, damage: 20 },
+    { x: 500, y: 515, detectionRange: 280, attackCooldown: 1200, damage: 20 },
+    { x: 1300, y: 610, detectionRange: 280, attackCooldown: 1200, damage: 20 },
+    { x: 1940, y: 580, detectionRange: 280, attackCooldown: 1200, damage: 20 }
   ],
 
   boxes: [
@@ -126,7 +139,7 @@ export const LEVEL3_CONFIG = {
     { x: 1620, y: 688 },
   ],
 
-  player: { x: 230, y: 740 },
+  player: { x: 100, y: 600 },
 
   collisionRules: [
     'PlayerGroundRule',

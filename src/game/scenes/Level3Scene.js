@@ -1,4 +1,5 @@
 import EntityFactory from '../factories/EntityFactory.js'
+import EnemyTrap from '../entities/enemyTrap.js'
 import PlayerController from '../controllers/PlayerController.js'
 import Key from '../entities/key.js'
 import { LEVEL3_CONFIG } from '../configs/level3Config.js'
@@ -53,6 +54,27 @@ export default class Level3Scene extends BaseScene {
       enemy.target = this.player
       this.enemies.add(enemy)
     })
+
+    this._createEnemyTraps()
+  }
+
+  _createEnemyTraps() {
+    const attackAnimation = 'enemyTrapAttack'
+    if (!this.anims.exists(attackAnimation)) {
+      this.anims.create({
+        key: attackAnimation,
+        frames: this.anims.generateFrameNumbers('enemyTrapAnimation', { start: 0, end: 8 }),
+        frameRate: 12,
+        repeat: 0,
+      })
+    }
+
+    this.traps = this.add.group()
+    this.config.enemyTraps?.forEach((config) => {
+      const trap = new EnemyTrap(this, config.x, config.y, config)
+      trap.target = this.player
+      this.traps.add(trap)
+    })
   }
 
   _createBoxes() {
@@ -66,5 +88,13 @@ export default class Level3Scene extends BaseScene {
 
   _getKeyClass() {
     return Key
+  }
+
+  update() {
+    super.update()
+
+    this.traps?.getChildren().forEach((trap) => {
+      if (trap.active) trap.update()
+    })
   }
 }
