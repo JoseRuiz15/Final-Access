@@ -167,7 +167,7 @@ function volverASeleccionDeNivel() {
           type="button"
           :disabled="llaves <= 0"
           aria-label="Soltar una llave"
-          class="font-pixel absolute top-full left-1/2 z-20 mt-1 -translate-x-1/2 whitespace-nowrap rounded border border-[#00D9FF] bg-[#0B1020]/90 px-3 py-2 text-[8px] text-[#00D9FF] transition-colors hover:bg-[#00D9FF] hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
+          class="hud-drop-key font-pixel absolute top-full left-1/2 z-20 mt-1 -translate-x-1/2 whitespace-nowrap rounded border border-[#00D9FF] bg-[#0B1020]/90 px-3 py-2 text-[8px] text-[#00D9FF] transition-colors hover:bg-[#00D9FF] hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
           @click.stop="emit('drop-key')"
         >
           SOLTAR LLAVE [K]

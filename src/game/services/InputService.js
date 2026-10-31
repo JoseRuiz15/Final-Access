@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import { consumeTouchActionPress, isTouchActionDown } from './TouchControls.js'
 
 /**
  * Encapsula toda la entrada de teclado.
@@ -70,17 +71,17 @@ export default class InputService {
     // Un salto por pulsación: mantener SPACE o W no provoca otro salto al aterrizar.
     const spacePressed = Phaser.Input.Keyboard.JustDown(this._keys.SPACE)
     const wPressed = Phaser.Input.Keyboard.JustDown(this._keys.W)
-    return spacePressed || wPressed
+    return spacePressed || wPressed || consumeTouchActionPress('jump')
   }
 
   isAttacking() {
     this._ensureInit()
-    return Phaser.Input.Keyboard.JustDown(this._keys.L)
+    return Phaser.Input.Keyboard.JustDown(this._keys.L) || consumeTouchActionPress('attack')
   }
 
   isAttackDown() {
     this._ensureInit()
-    return this._keys.L.isDown
+    return this._keys.L.isDown || isTouchActionDown('attack')
   }
 
   isInteracting() {
@@ -89,7 +90,8 @@ export default class InputService {
         // 👇 DEBUG + CACHE por frame (evita doble consumo de JustDown)
         const currentFrame = this.scene.game.loop.frame
         if (currentFrame !== this._lastFrame) {
-          this._interactingThisFrame = Phaser.Input.Keyboard.JustDown(this._keys.G)
+          this._interactingThisFrame =
+            Phaser.Input.Keyboard.JustDown(this._keys.G) || consumeTouchActionPress('interact')
           this._lastFrame = currentFrame
         }
         
@@ -98,7 +100,7 @@ export default class InputService {
 
   isDroppingKey() {
     this._ensureInit()
-    return Phaser.Input.Keyboard.JustDown(this._keys.K)
+    return Phaser.Input.Keyboard.JustDown(this._keys.K) || consumeTouchActionPress('dropKey')
   }
 
   getKey(keyCode) {

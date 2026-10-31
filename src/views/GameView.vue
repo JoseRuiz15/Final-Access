@@ -14,6 +14,8 @@ import {
   clearTouchControls,
   pressTouchDirection,
   releaseTouchDirection,
+  pressTouchAction,
+  releaseTouchAction,
 } from '@/game/services/TouchControls.js'
 
 let game
@@ -36,6 +38,13 @@ const assetsReady = ref(false)
 const assetsProgress = ref(0)
 const isTouchDevice = ref(false)
 let isUnmounted = false
+
+const touchActions = [
+  { id: 'jump', icon: '↑', shortLabel: 'SALTO', label: 'Saltar' },
+  { id: 'attack', icon: '✦', shortLabel: 'ATACAR', label: 'Atacar' },
+  { id: 'interact', icon: 'G', shortLabel: 'USAR', label: 'Recoger llave o abrir puerta' },
+  { id: 'dropKey', icon: 'K', shortLabel: 'SOLTAR', label: 'Soltar llave' },
+]
 
 watch(volumenMusica, setMusicVolume, { flush: 'sync' })
 
@@ -286,6 +295,16 @@ function endTouchMove(direction, event) {
   releaseTouchDirection(direction, event.pointerId)
 }
 
+function beginTouchAction(action, event) {
+  event.preventDefault()
+  event.currentTarget.setPointerCapture?.(event.pointerId)
+  pressTouchAction(action, event.pointerId)
+}
+
+function endTouchAction(action, event) {
+  releaseTouchAction(action, event.pointerId)
+}
+
 function resumeGame() {
   pausaAbierta.value = false
   levelScene?.scene.resume()
@@ -385,9 +404,30 @@ function enfocarCanvasDelJuego() {
       >
         ▶
       </button>
-      <span class="mb-1 ml-1 max-w-20 font-pixel text-[7px] leading-relaxed text-white/65">
+      <span class="touch-dash-hint mb-1 ml-1 max-w-20 font-pixel text-[7px] leading-relaxed text-white/65">
         DOBLE TOQUE: DASH
       </span>
+    </div>
+
+    <div
+      v-if="isTouchDevice && gameStarted && !pausaAbierta && !tiempoFinalizado && gameStore.vidas > 0"
+      class="touch-action-pad fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] right-[calc(env(safe-area-inset-right)+1rem)] z-30 grid grid-cols-2 gap-2 select-none"
+      aria-label="Controles táctiles de acciones"
+    >
+      <button
+        v-for="action in touchActions"
+        :key="action.id"
+        type="button"
+        class="touch-action-button"
+        :aria-label="action.label"
+        @pointerdown="beginTouchAction(action.id, $event)"
+        @pointerup="endTouchAction(action.id, $event)"
+        @pointercancel="endTouchAction(action.id, $event)"
+        @lostpointercapture="endTouchAction(action.id, $event)"
+      >
+        {{ action.icon }}
+        <span>{{ action.shortLabel }}</span>
+      </button>
     </div>
 
     <button
@@ -518,6 +558,37 @@ function enfocarCanvasDelJuego() {
   box-shadow: 0 0 18px rgb(0 217 255 / 24%);
 }
 
+.touch-action-button {
+  display: flex;
+  width: 62px;
+  height: 62px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border: 2px solid rgb(255 0 217 / 68%);
+  border-radius: 12px;
+  background: rgb(7 10 24 / 82%);
+  color: #fff;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 16px;
+  box-shadow: 0 0 16px rgb(255 0 217 / 20%);
+}
+
+.touch-action-button span {
+  font-size: 6px;
+  color: #ffc9f4;
+}
+
+.touch-action-button:active {
+  background: rgb(255 0 217 / 38%);
+  transform: scale(0.94);
+}
+
 .touch-move-button:active {
   background: rgb(0 217 255 / 35%);
   transform: scale(0.94);
@@ -525,8 +596,35 @@ function enfocarCanvasDelJuego() {
 
 @media (max-width: 420px) {
   .touch-move-button {
+    width: 60px;
+    height: 60px;
+  }
+
+  .touch-action-button {
     width: 56px;
     height: 56px;
+  }
+}
+
+@media (max-width: 480px) {
+  .touch-dash-hint {
+    display: none;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .touch-move-button {
+    width: 50px;
+    height: 50px;
+  }
+
+  .touch-action-button {
+    width: 48px;
+    height: 48px;
+  }
+
+  .touch-action-pad {
+    gap: 4px;
   }
 }
 </style>
