@@ -29,6 +29,17 @@ export const LEVEL4_CONFIG = {
       ['redDoor', '/img/door/redDoor.png'],
       ['greenDoor', '/img/door/greenDoor.png'],
       ['imgRecogerLlave', '/img/instruction/imgRecogerLlave.png'],
+      ['enemyTrap', '/img/animatics-enemy/enemyTrap.png'],
+      ['enemyBulletTrap', '/img/animatics-enemy/enemyBulletTrap.png'],
+    ],
+
+    spritesheets: [
+      ['crateBreak', '/img/box/crateBreak.png', { frameWidth: 32, frameHeight: 32 }],
+      [
+        'enemyTrapAnimation',
+        '/img/animatics-enemy/enemyTrapAnimation.png',
+        { frameWidth: 32, frameHeight: 32 },
+      ],
     ],
   },
 
@@ -59,15 +70,27 @@ export const LEVEL4_CONFIG = {
 
   tutorial: [],
 
-  // Todavía sin enemigos ni cajas: se agregarán más adelante.
-  enemies: [],
+ 
+  enemies: [
+    { x: 800, y: 700, texture: 'enemyWalk', vida: 20, rangoDeteccion: 400,  rangoAtaque: 400,},
+    { x: 1030, y: 400, texture: 'enemyWalk', vida: 20, rangoDeteccion: 400,  rangoAtaque: 400},
+    { x: 1000, y: 800, texture: 'enemyWalk', vida: 20, rangoDeteccion: 800,  rangoAtaque: 800},
+    { x: 1500, y: 580, texture: 'enemyDron', tipo: 'dron', vida: 30, velocidad: 60, limiteIzquierdo: 1150, limiteDerecho: 1800, rangoDeteccion: 320, dano: 20}
+  ],
+
+  enemyTraps: [
+    { x: 738, y: 515, detectionRange: 280, attackCooldown: 1200, damage: 20 },
+    { x: 1075, y: 640, detectionRange: 280, attackCooldown: 1200, damage: 20 },
+    { x: 915, y: 640, detectionRange: 280, attackCooldown: 1200, damage: 20 },
+    { x: 2258, y: 417, detectionRange: 280, attackCooldown: 1200, damage: 20 },
+    { x: 2354, y: 417, detectionRange: 280, attackCooldown: 1200, damage: 20 },
+    
+  ],
+
   boxes: [],
 
-  // Coordenadas originales del spawn, para restaurar después de las pruebas:
-  // player: { x: 80, y: 736 },
-
-  // Spawn temporal sobre la plataforma 5 (centro x≈2896, superficie y=768).
-  player: { x: 150, y: 650 },
+ 
+  player: { x: 150, y: 500 },
 
   collisionRules: [
     'PlayerGroundRule',

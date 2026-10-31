@@ -1,6 +1,7 @@
 import EntityFactory from '../factories/EntityFactory.js'
 import PlayerController from '../controllers/PlayerController.js'
 import Key from '../entities/key.js'
+import EnemyTrap from '../entities/enemyTrap.js'
 import { LEVEL4_CONFIG } from '../configs/level4Config.js'
 import BaseScene from './BaseScene.js'
 
@@ -38,9 +39,47 @@ export default class Level4Scene extends BaseScene {
     })
   }
 
-  _createEnemies() {
-    // El nivel 4 todavía no tiene enemigos.
-    this.enemies = this.add.group()
+_createEnemies() {
+  this.enemies = this.add.group()
+
+  this.config.enemies.forEach((config) => {
+    const enemy = EntityFactory.createEnemy(
+      this,
+      config.x,
+      config.y,
+      config.texture,
+      config,
+      this.gameRepository,
+    )
+    enemy.target = this.player
+    this.enemies.add(enemy)
+  })
+  this._createEnemyTraps()
+}
+
+  _createEnemyTraps() {
+    const attackAnimation = 'enemyTrapAttack'
+    const trapAnimKey = 'enemyTrapAnimation'
+
+    // Verificar si la animación ya fue creada (para evitar error "already in use")
+    if (!this.anims.exists(attackAnimation)) {
+      // Verificar que la textura esté disponible
+      if (this.textures.exists(trapAnimKey)) {
+        this.anims.create({
+          key: attackAnimation,
+          frames: this.anims.generateFrameNumbers(trapAnimKey, { start: 0, end: 8 }),
+          frameRate: 12,
+          repeat: 0,
+        })
+      }
+    }
+
+    this.traps = this.add.group()
+    this.config.enemyTraps?.forEach((config) => {
+      const trap = new EnemyTrap(this, config.x, config.y, config)
+      trap.target = this.player
+      this.traps.add(trap)
+    })
   }
 
   _createBoxes() {
@@ -50,5 +89,13 @@ export default class Level4Scene extends BaseScene {
 
   _getKeyClass() {
     return Key
+  }
+
+  update() {
+    super.update()
+
+    this.traps?.getChildren().forEach((trap) => {
+      if (trap.active) trap.update()
+    })
   }
 }

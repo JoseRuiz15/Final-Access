@@ -56,6 +56,7 @@ export default class Enemy extends Entity {
     // El dron desactiva esta regla porque apunta hacia arriba/abajo.
     this.fireOnlySameLevel = config.fireOnlySameLevel ?? true
     this.sameLevelTolerance = config.sameLevelTolerance ?? 32
+    this.aimAtTarget = config.aimAtTarget ?? true
 
     // Fogonazo del disparo: capa visual independiente del cuerpo. El arte
     // ya está alineado con la boca, así que se coloca en la misma posición.
