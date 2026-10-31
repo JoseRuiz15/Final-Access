@@ -57,17 +57,13 @@ function obtenerDescripcion() {
       return 'Debes rescatar a los rehenes antes de que se acabe el tiempo.'
     case 3:
       return 'Consigue la llave plateada Key 13, abre la compuerta al final de la ciudad y escapa.'
-    case 4:
-      return 'Cruza las plataformas móviles y llega hasta la puerta al final de la ciudad.'
     default:
       return 'Descripción no disponible.'
   }
 }
 
 function isLevelUnlocked(level) {
-  // Nivel 4 desbloqueado temporalmente para probar el mapa y las plataformas.
-  if (level === 4) return true
-  if (level > 4) return false
+  if (level > 3) return false
   if (level === 1) return true
   return progressionStore.isLevelCompleted(level - 1)
 }
@@ -272,6 +268,7 @@ onMounted(async () => {
           class="h-full w-full object-contain"
         />
       </button>
+
       </div>
     </div>
   </section>

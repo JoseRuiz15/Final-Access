@@ -1,4 +1,5 @@
 import IController from '../interfaces/IController.js'
+import { consumeTouchDash, isTouchDirectionDown } from '../services/TouchControls.js'
 
 /**
  * Controlador del jugador.
@@ -16,6 +17,7 @@ export default class PlayerController extends IController {
     this.entity = entity
     this.inputService = inputService
     this.attackWasDown = false
+    this.lastDashTapAt = { left: Number.NEGATIVE_INFINITY, right: Number.NEGATIVE_INFINITY }
   }
 
   /**
@@ -25,21 +27,27 @@ export default class PlayerController extends IController {
   handleInput(_delta) {
     if (!this.entity.isAlive()) {
       this.attackWasDown = false
+      this.entity.movement?.cancelDash()
       this.entity.cancelarCargaAtaque?.()
       return
     }
     this.entity.movement?.update()
     if (this.entity.recibiendoDano) {
       this.attackWasDown = false
+      this.entity.movement?.cancelDash()
       this.entity.cancelarCargaAtaque?.()
       return
     }
 
+    if (this.entity.idleTexture === 'cosa3') {
+      this._handleDashInput()
+    }
+
     // La dirección se actualiza incluso durante el ataque; así se puede atacar
     // caminando y cambiar hacia dónde mira el personaje sin cortar la animación.
-    if (this.inputService.isMovingLeft()) {
+    if (this.inputService.isMovingLeft() || isTouchDirectionDown('left')) {
       this.entity.moverIzquierda()
-    } else if (this.inputService.isMovingRight()) {
+    } else if (this.inputService.isMovingRight() || isTouchDirectionDown('right')) {
       this.entity.moverDerecha()
     } else {
       this.entity.detenerMovimiento()
@@ -71,6 +79,35 @@ export default class PlayerController extends IController {
 
     // Alinea el cuadro de salto de Cosa 2 sin cambiar su escala ni el tamaño del hitbox.
     this.entity.alignJumpSpriteWithHitbox?.()
+  }
+
+  _handleDashInput() {
+    const leftPressed = this.inputService.isMovingLeftJustDown()
+    const rightPressed = this.inputService.isMovingRightJustDown()
+    const now = this.entity.scene.time.now
+    const doubleTapWindow = 300
+
+    if (leftPressed) {
+      this._registerDashTap('left', -1, now, doubleTapWindow)
+    } else if (rightPressed) {
+      this._registerDashTap('right', 1, now, doubleTapWindow)
+    }
+
+    if (consumeTouchDash('left')) this.entity.movement?.startDash(-1)
+    else if (consumeTouchDash('right')) this.entity.movement?.startDash(1)
+  }
+
+  _registerDashTap(directionKey, direction, now, doubleTapWindow) {
+    const lastTapAt = this.lastDashTapAt[directionKey]
+    const isDoubleTap = now - lastTapAt <= doubleTapWindow
+
+    if (isDoubleTap) {
+      this.entity.movement?.startDash(direction)
+      this.lastDashTapAt[directionKey] = Number.NEGATIVE_INFINITY
+      return
+    }
+
+    this.lastDashTapAt[directionKey] = now
   }
 
   reset() {

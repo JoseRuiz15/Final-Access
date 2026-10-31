@@ -55,11 +55,12 @@ export async function getProfileWithDetails(userId: number) {
 
 export async function updateProfile(
   userId: number,
-  data: { displayName?: string; avatarCharacterId?: string | null },
+  data: { displayName?: string; avatarCharacterId?: string | null; avatarImageData?: string | null },
 ): Promise<Profile | null> {
   const updates: Partial<Profile> = { updatedAt: new Date() }
   if (data.displayName !== undefined) updates.displayName = data.displayName
   if (data.avatarCharacterId !== undefined) updates.avatarCharacterId = data.avatarCharacterId
+  if (data.avatarImageData !== undefined) updates.avatarImageData = data.avatarImageData
 
   const result = await db
     .update(playerProfiles)

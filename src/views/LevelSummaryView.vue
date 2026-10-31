@@ -143,6 +143,29 @@ function backToLevelMap() {
           </p>
         </div>
 
+        <section class="my-4 border border-amber-200/25 bg-amber-950/20 px-4 py-4 sm:px-6" aria-live="polite">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="font-mono text-[9px] uppercase tracking-[0.3em] text-amber-100/65">Monedas obtenidas</p>
+              <p class="mt-2 font-pixel text-2xl text-amber-100">{{ summary.coinsSaved === false ? '—' : `+${summary.coinGain ?? '...'}` }}</p>
+            </div>
+            <p v-if="summary.coinsBalance !== undefined" class="font-mono text-[10px] text-white/60">
+              Saldo guardado: {{ summary.coinsBalance }}
+            </p>
+            <p v-else-if="summary.coinsSaved === false" class="font-mono text-[9px] text-rose-200">
+              No se pudo confirmar el guardado. Revisa tu conexión.
+            </p>
+            <p v-else class="font-mono text-[9px] text-white/45">Guardando recompensa...</p>
+          </div>
+          <div v-if="summary.coinBreakdown" class="mt-3 grid grid-cols-2 gap-x-5 gap-y-2 border-t border-amber-100/10 pt-3 font-mono text-[9px] text-white/55 sm:grid-cols-5">
+            <span>Completar +{{ summary.coinBreakdown.completion }}</span>
+            <span>Estrellas +{{ summary.coinBreakdown.stars }}</span>
+            <span>Rapidez +{{ summary.coinBreakdown.speed }}</span>
+            <span>Enemigos +{{ summary.coinBreakdown.enemies }}</span>
+            <span>Llaves correctas +{{ summary.coinBreakdown.correctKeys }}</span>
+          </div>
+        </section>
+
         <footer class="mt-6 flex flex-col-reverse justify-center gap-3 sm:flex-row">
           <button
             type="button"

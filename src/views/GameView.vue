@@ -7,8 +7,14 @@ import SceneFactory from '@/game/factories/SceneFactory.js'
 import { useCharacterStore } from '@/stores/characters'
 import { useGameStore } from '@/stores/game.js'
 import { useProfileStore } from '@/stores/profile'
+import { useAuthStore } from '@/stores/auth'
 import { useProgressionStore } from '@/stores/progression'
 import { getMusicVolume, setMusicVolume } from '@/game/services/GameMusic.js'
+import {
+  clearTouchControls,
+  pressTouchDirection,
+  releaseTouchDirection,
+} from '@/game/services/TouchControls.js'
 
 let game
 let levelScene
@@ -17,6 +23,7 @@ let levelTransitionStarted = false
 const gameStore = useGameStore()
 const characterStore = useCharacterStore()
 const profileStore = useProfileStore()
+const authStore = useAuthStore()
 const progressionStore = useProgressionStore()
 const router = useRouter()
 const hudRef = ref(null)
@@ -27,11 +34,14 @@ const pauseButtonY = ref(72)
 const gameStarted = ref(false)
 const assetsReady = ref(false)
 const assetsProgress = ref(0)
+const isTouchDevice = ref(false)
 let isUnmounted = false
 
 watch(volumenMusica, setMusicVolume, { flush: 'sync' })
 
 onMounted(() => {
+  isTouchDevice.value =
+    'ontouchstart' in window || (navigator.maxTouchPoints || 0) > 0
   initializeGame()
 })
 
@@ -91,7 +101,11 @@ async function initializeGame() {
       // El nivel 4 necesita conservar toda su altura en pantallas panorámicas;
       // EXPAND añade vista horizontal en lugar de recortar arriba y abajo.
       mode:
-        Number(gameStore.nivelActual) === 4 ? Phaser.Scale.EXPAND : Phaser.Scale.ENVELOP,
+        isTouchDevice.value
+          ? Phaser.Scale.FIT
+          : Number(gameStore.nivelActual) === 4
+            ? Phaser.Scale.EXPAND
+            : Phaser.Scale.ENVELOP,
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
 
@@ -129,6 +143,7 @@ async function initializeGame() {
 
 onBeforeUnmount(() => {
   isUnmounted = true
+  clearTouchControls()
   window.removeEventListener('keydown', handlePauseKey)
   window.removeEventListener('resize', updatePauseButtonPosition)
   hudResizeObserver?.disconnect()
@@ -187,6 +202,7 @@ async function handleLevelCompleted(sceneCompletada, stats) {
     stars,
     deaths,
     keys: stats?.keys ?? gameStore.llaves,
+    correctKeys: stats?.correctKeys ?? 0,
     kills,
   }
 
@@ -202,8 +218,21 @@ async function handleLevelCompleted(sceneCompletada, stats) {
     nextLevelId,
   })
 
-  progressionStore.completeLevel(levelId, completionData).catch((err) => {
+  progressionStore.completeLevel(levelId, completionData).then((result) => {
+    if (result?.coinsBalance !== undefined) {
+      profileStore.profile && (profileStore.profile.coins = result.coinsBalance)
+      authStore.user && (authStore.user.coins = result.coinsBalance)
+    }
+    gameStore.setLevelSummary({
+      ...gameStore.levelSummary,
+      coinGain: result?.coinGain ?? 0,
+      coinsBalance: result?.coinsBalance,
+      coinBreakdown: result?.coinBreakdown,
+      coinsSaved: true,
+    })
+  }).catch((err) => {
     console.error('Error saving progress:', err)
+    gameStore.setLevelSummary({ ...gameStore.levelSummary, coinsSaved: false })
   })
   router.push({ name: 'level-summary' })
 }
@@ -222,6 +251,7 @@ function restartLevel() {
 }
 
 function pauseLevelForTimeout() {
+  clearTouchControls()
   tiempoFinalizado.value = true
   pausaAbierta.value = false
   levelScene?.scene.pause()
@@ -242,7 +272,18 @@ function togglePause() {
   }
 
   levelScene.scene.pause()
+  clearTouchControls()
   pausaAbierta.value = true
+}
+
+function beginTouchMove(direction, event) {
+  event.preventDefault()
+  event.currentTarget.setPointerCapture?.(event.pointerId)
+  pressTouchDirection(direction, event.pointerId)
+}
+
+function endTouchMove(direction, event) {
+  releaseTouchDirection(direction, event.pointerId)
 }
 
 function resumeGame() {
@@ -284,7 +325,7 @@ function enfocarCanvasDelJuego() {
 </script>
 
 <template>
-  <div class="relative" style="width: 100vw; height: 100vh; overflow: hidden">
+  <div class="game-viewport">
     <!-- Phaser -->
     <div id="game-container" style="width: 100%; height: 100%"></div>
 
@@ -317,13 +358,45 @@ function enfocarCanvasDelJuego() {
       @time-over="pauseLevelForTimeout"
     />
 
+    <div
+      v-if="isTouchDevice && gameStarted && !pausaAbierta && !tiempoFinalizado && gameStore.vidas > 0"
+      class="fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] left-[calc(env(safe-area-inset-left)+1.25rem)] z-30 flex items-end gap-3 select-none"
+      aria-label="Controles táctiles de movimiento"
+    >
+      <button
+        type="button"
+        aria-label="Mover a la izquierda; pulsa dos veces para dash"
+        class="touch-move-button"
+        @pointerdown="beginTouchMove('left', $event)"
+        @pointerup="endTouchMove('left', $event)"
+        @pointercancel="endTouchMove('left', $event)"
+        @lostpointercapture="endTouchMove('left', $event)"
+      >
+        ◀
+      </button>
+      <button
+        type="button"
+        aria-label="Mover a la derecha; pulsa dos veces para dash"
+        class="touch-move-button"
+        @pointerdown="beginTouchMove('right', $event)"
+        @pointerup="endTouchMove('right', $event)"
+        @pointercancel="endTouchMove('right', $event)"
+        @lostpointercapture="endTouchMove('right', $event)"
+      >
+        ▶
+      </button>
+      <span class="mb-1 ml-1 max-w-20 font-pixel text-[7px] leading-relaxed text-white/65">
+        DOBLE TOQUE: DASH
+      </span>
+    </div>
+
     <button
       v-if="!tiempoFinalizado && gameStore.vidas > 0"
       type="button"
       aria-label="Pausar partida"
       :aria-expanded="pausaAbierta"
       :style="{ top: `${pauseButtonY}px` }"
-      class="fixed right-4 z-30 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-md border-2 border-[#00D9FF] bg-[#081322]/95 font-pixel text-xl text-[#00D9FF] shadow-[0_0_20px_#00D9FF55] transition hover:bg-[#00D9FF] hover:text-[#050711] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+      class="fixed right-[calc(env(safe-area-inset-right)+1rem)] z-30 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-md border-2 border-[#00D9FF] bg-[#081322]/95 font-pixel text-xl text-[#00D9FF] shadow-[0_0_20px_#00D9FF55] transition hover:bg-[#00D9FF] hover:text-[#050711] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
       @click="togglePause"
     >
       {{ pausaAbierta ? '▶' : 'Ⅱ' }}
@@ -417,3 +490,43 @@ function enfocarCanvasDelJuego() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.game-viewport {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: #050711;
+}
+
+.touch-move-button {
+  width: 64px;
+  height: 64px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border: 2px solid rgb(0 217 255 / 70%);
+  border-radius: 12px;
+  background: rgb(5 12 25 / 72%);
+  color: #00d9ff;
+  font-size: 22px;
+  font-weight: 700;
+  box-shadow: 0 0 18px rgb(0 217 255 / 24%);
+}
+
+.touch-move-button:active {
+  background: rgb(0 217 255 / 35%);
+  transform: scale(0.94);
+}
+
+@media (max-width: 420px) {
+  .touch-move-button {
+    width: 56px;
+    height: 56px;
+  }
+}
+</style>

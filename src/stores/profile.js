@@ -2,6 +2,31 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { profileApi } from '@/api/client'
 
+function avatarCacheKey(userId) {
+  return userId ? `final-access:avatar:${userId}` : null
+}
+
+export function getCachedAvatarImage(userId) {
+  const key = avatarCacheKey(userId)
+  if (!key || typeof window === 'undefined') return ''
+  try {
+    return window.localStorage.getItem(key) || ''
+  } catch {
+    return ''
+  }
+}
+
+function syncAvatarCache(userId, imageData) {
+  const key = avatarCacheKey(userId)
+  if (!key || typeof window === 'undefined') return
+  try {
+    if (imageData) window.localStorage.setItem(key, imageData)
+    else window.localStorage.removeItem(key)
+  } catch {
+    // La foto sigue guardada en la cuenta aunque el navegador no permita caché local.
+  }
+}
+
 export const useProfileStore = defineStore('profile', () => {
   const profile = ref(null)
   const isLoading = ref(false)
@@ -23,6 +48,7 @@ export const useProfileStore = defineStore('profile', () => {
           characterId: data.characterId || data.equippedCharacterId || null,
           unlockedCharacters: response.data.unlockedCharacters || data.unlockedCharacters || [],
         }
+        syncAvatarCache(profile.value.userId, profile.value.avatarImageData)
       }
       return response.data
     } catch (err) {
@@ -40,6 +66,7 @@ export const useProfileStore = defineStore('profile', () => {
       const response = await profileApi.update(data)
       if (response.data.ok) {
         profile.value = { ...profile.value, ...response.data.profile }
+        syncAvatarCache(profile.value?.userId, profile.value?.avatarImageData)
       }
       return response.data
     } catch (err) {

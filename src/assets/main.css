@@ -41,6 +41,18 @@ body {
   overflow-x: hidden;
 }
 
+button,
+a,
+[role='button'],
+label[for] {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled='true'] {
+  cursor: not-allowed;
+}
+
 @supports (min-height: 100svh) {
   #home-screen,
   #login-screen,

@@ -401,7 +401,7 @@ onUnmounted(() => {
           <!-- Botón jugar (para modo single player) -->
           <button
             v-if="!lobbyStore.isInLobby"
-            class="bg-[#000000]/50 backdrop-blur-sm  h-15 w-80 text-white font-pixel rounded-lg border-4 border-[#00F0FF] shadow-[0_0_10px_#00F0FF] transition-all duration-300 hover:bg-fuchsia-500 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
+            class="cursor-pointer select-none bg-[#000000]/50 backdrop-blur-sm  h-15 w-80 text-white font-pixel rounded-lg border-4 border-[#00F0FF] shadow-[0_0_10px_#00F0FF] transition-all duration-300 hover:bg-fuchsia-500 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
             @click="irGameMode"
           >
             JUGAR

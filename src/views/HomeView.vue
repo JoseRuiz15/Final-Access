@@ -45,7 +45,7 @@ onMounted(() => {
       <!-- Botón iniciar -->
       <button
         @click="() => router.push('/login')"
-        class="font-pixel text-[12px] relative z-20 bg-[#9747FF] text-black py-3 px-8 rounded-lg mb-24 transition-all duration-300 hover:text-white hover:shadow-[0_0_25px_#9747FF] hover:scale-105"
+        class="cursor-pointer select-none font-pixel text-[12px] relative z-20 bg-[#9747FF] text-black py-3 px-8 rounded-lg mb-24 transition-all duration-300 hover:text-white hover:shadow-[0_0_25px_#9747FF] hover:scale-105"
       >
         INICIAR
       </button>

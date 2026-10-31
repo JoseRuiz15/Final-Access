@@ -8,6 +8,7 @@ import { characterSchema } from '../db/schema.js';
 export const updateProfileBodySchema = z.object({
   displayName: z.string().min(1).max(32).optional(),
   avatarCharacterId: z.string().min(1).max(32).nullable().optional(),
+  avatarImageData: z.string().max(400_000).regex(/^data:image\/(?:jpeg|png|webp);base64,/).nullable().optional(),
 });
 
 export const profileResponseSchema = z.object({
@@ -20,6 +21,7 @@ export const profileResponseSchema = z.object({
     coins: z.number().int().nonnegative(),
     equippedCharacterId: z.string().nullable(),
     avatarCharacterId: z.string().nullable(),
+    avatarImageData: z.string().nullable(),
     totalPlaytimeSec: z.number().int().nonnegative(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),

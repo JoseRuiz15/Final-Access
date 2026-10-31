@@ -3,6 +3,13 @@ export default class MovementComponent {
     this.player = player
     this.velocidad = 160
     this.jumpAnimationPlayed = false
+    this.dashActivo = false
+    this.direccionDash = 0
+    this.dashTerminaEn = 0
+    this.dashDisponibleEn = 0
+    this.velocidadDash = 288
+    this.duracionDash = 292
+    this.recargaDash = 650
   }
 
   isGrounded() {
@@ -17,6 +24,7 @@ export default class MovementComponent {
   }
 
   moveLeft() {
+    if (this.dashActivo) return
     this.player.setVelocityX(-this.velocidad)
     this.player.setFlipX(true)
     // Mantiene el desplazamiento, pero no sustituye la animación de ataque.
@@ -26,6 +34,7 @@ export default class MovementComponent {
   }
 
   moveRight() {
+    if (this.dashActivo) return
     this.player.setVelocityX(this.velocidad)
     this.player.setFlipX(false)
     // Mantiene el desplazamiento, pero no sustituye la animación de ataque.
@@ -35,6 +44,7 @@ export default class MovementComponent {
   }
 
   stop() {
+    if (this.dashActivo) return
     this.player.setVelocityX(0)
     if (this.isGrounded() && !this.player.ataque && !this.player.muerto) {
       if (this.player.anims.currentAnim?.key === 'saltar') {
@@ -42,6 +52,38 @@ export default class MovementComponent {
       }
       this.player.setTexture(this.player.idleTexture)
     }
+  }
+
+  startDash(direction) {
+    const ahora = this.player.scene.time.now
+    if (
+      this.player.idleTexture !== 'cosa3' ||
+      ![-1, 1].includes(direction) ||
+      ahora < this.dashDisponibleEn ||
+      this.player.ataque ||
+      this.player.recibiendoDano ||
+      this.player.muerto ||
+      !this.player.active
+    ) {
+      return false
+    }
+
+    this.dashActivo = true
+    this.direccionDash = direction
+    this.dashTerminaEn = ahora + this.duracionDash
+    this.dashDisponibleEn = ahora + this.recargaDash
+    this.player.setFlipX(direction < 0)
+    this.player.setVelocityX(direction * this.velocidadDash)
+
+    this.player.play('cosa3Dash', true)
+
+    return true
+  }
+
+  cancelDash() {
+    this.dashActivo = false
+    this.direccionDash = 0
+    this.dashTerminaEn = 0
   }
 
   jump() {
@@ -53,6 +95,10 @@ export default class MovementComponent {
   }
 
   update() {
+    if (this.dashActivo && this.player.scene.time.now >= this.dashTerminaEn) {
+      this.cancelDash()
+    }
+
     if (this.isGrounded()) {
       // Se permite reproducir la animación otra vez en el próximo salto.
       this.jumpAnimationPlayed = false

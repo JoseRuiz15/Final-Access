@@ -189,6 +189,7 @@ export default class AnimationRegistry {
         cosa3AttackEffect: ranges.attackEffect,
         cosa3Projectile: ranges.projectile,
         cosa3ChargeEffect: ranges.chargeEffect,
+        cosa3Dash: ranges.dash,
         cosa3ChargedProjectile: ranges.chargedProjectile,
         playerDamage: ranges.damage,
         playerDead: ranges.dead,

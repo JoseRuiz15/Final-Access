@@ -2,8 +2,14 @@ export default class IInputService {
   isMovingLeft() {
     throw new Error('Method "isMovingLeft()" must be implemented.')
   }
+  isMovingLeftJustDown() {
+    throw new Error('Method "isMovingLeftJustDown()" must be implemented.')
+  }
   isMovingRight() {
     throw new Error('Method "isMovingRight()" must be implemented.')
+  }
+  isMovingRightJustDown() {
+    throw new Error('Method "isMovingRightJustDown()" must be implemented.')
   }
   isJumping() {
     throw new Error('Method "isJumping()" must be implemented.')

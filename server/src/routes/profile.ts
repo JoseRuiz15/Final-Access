@@ -26,6 +26,7 @@ const profileRoutes: FastifyPluginAsync = async (app) => {
                 coins: { type: 'number' },
                 equippedCharacterId: { type: ['string', 'null'] },
                 avatarCharacterId: { type: ['string', 'null'] },
+                avatarImageData: { type: ['string', 'null'] },
                 totalPlaytimeSec: { type: 'number' },
                 createdAt: { type: 'string' },
                 updatedAt: { type: 'string' },
@@ -104,6 +105,7 @@ const profileRoutes: FastifyPluginAsync = async (app) => {
         properties: {
           displayName: { type: 'string', minLength: 1, maxLength: 32 },
           avatarCharacterId: { type: ['string', 'null'], minLength: 1, maxLength: 32 },
+          avatarImageData: { type: ['string', 'null'], maxLength: 400000 },
         },
       },
       response: {
@@ -121,6 +123,7 @@ const profileRoutes: FastifyPluginAsync = async (app) => {
                 coins: { type: 'number' },
                 equippedCharacterId: { type: ['string', 'null'] },
                 avatarCharacterId: { type: ['string', 'null'] },
+                avatarImageData: { type: ['string', 'null'] },
                 totalPlaytimeSec: { type: 'number' },
                 createdAt: { type: 'string' },
                 updatedAt: { type: 'string' },
@@ -136,8 +139,9 @@ const profileRoutes: FastifyPluginAsync = async (app) => {
     const body = z.object({
       displayName: z.string().trim().min(1).max(32).optional(),
       avatarCharacterId: z.string().min(1).max(32).nullable().optional(),
+      avatarImageData: z.string().max(400_000).regex(/^data:image\/(?:jpeg|png|webp);base64,/).nullable().optional(),
     }).parse(req.body);
-    if (!body.displayName && body.avatarCharacterId === undefined) {
+    if (!body.displayName && body.avatarCharacterId === undefined && body.avatarImageData === undefined) {
       return reply.code(400).send({ error: 'Bad Request', message: 'No hay cambios para guardar' });
     }
     try {

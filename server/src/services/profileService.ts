@@ -1,5 +1,6 @@
 import * as queries from '../db/queries/profile.js';
 import type { Character } from '../db/schema.js';
+import { MAX_PLAYABLE_LEVEL_ID } from '../config/gameProgression.js';
 
 // ============================================
 // PROFILE SERVICE
@@ -13,11 +14,12 @@ export async function getFullProfile(userId: number) {
   return {
     userId: profile.userId,
     displayName: profile.displayName,
-    level: profile.level,
+    level: Math.min(profile.level, MAX_PLAYABLE_LEVEL_ID),
     xp: profile.xp,
     coins: profile.coins,
     equippedCharacterId: profile.equippedCharacterId,
     avatarCharacterId: profile.avatarCharacterId,
+    avatarImageData: profile.avatarImageData,
     totalPlaytimeSec: profile.totalPlaytimeSec,
     createdAt: profile.createdAt.toISOString(),
     updatedAt: profile.updatedAt.toISOString(),
@@ -28,7 +30,7 @@ export async function getFullProfile(userId: number) {
 
 export async function updateProfile(
   userId: number,
-  data: { displayName?: string; avatarCharacterId?: string | null },
+  data: { displayName?: string; avatarCharacterId?: string | null; avatarImageData?: string | null },
 ) {
   if (data.avatarCharacterId && !(await queries.isCharacterUnlocked(userId, data.avatarCharacterId))) {
     throw new Error('Debes tener desbloqueado ese personaje para usar su retrato');
@@ -36,7 +38,7 @@ export async function updateProfile(
 
   const profile = await queries.updateProfile(userId, data);
   if (!profile) throw new Error('Perfil no encontrado');
-  return profile;
+  return { ...profile, level: Math.min(profile.level, MAX_PLAYABLE_LEVEL_ID) };
 }
 
 // ============================================

@@ -16,6 +16,8 @@ export default class PlayerHealthComponent {
   takeDamage(amount) {
     if (this.muerto || this.recibiendoDano) return false
 
+    this.player.movement?.cancelDash()
+
     this.vida -= amount
     if (this.vida <= 0) {
       this.vida = 0
@@ -34,6 +36,8 @@ export default class PlayerHealthComponent {
 
   recibirDano(dano) {
     if (this.muerto || this.recibiendoDano) return
+
+    this.player.movement?.cancelDash()
 
     this.player.ataque = false
     this.vida -= dano
@@ -61,6 +65,7 @@ export default class PlayerHealthComponent {
   }
 
   respawn() {
+    this.player.movement?.cancelDash()
     this.vida = this.maxVida
     this.player.setPosition(this.player.spawnX, this.player.spawnY)
     this.player.setVelocity(0, 0)

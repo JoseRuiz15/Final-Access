@@ -65,7 +65,7 @@ const progressionRoutes: FastifyPluginAsync = async (app) => {
         type: 'object',
         required: ['levelId'],
         properties: {
-          levelId: { type: 'number', minimum: 1 },
+          levelId: { type: 'number', minimum: 1, maximum: 3 },
         },
       },
       body: {
@@ -76,6 +76,7 @@ const progressionRoutes: FastifyPluginAsync = async (app) => {
           stars: { type: 'number', minimum: 0, maximum: 3 },
           deaths: { type: 'number', minimum: 0 },
           keys: { type: 'number', minimum: 0 },
+          correctKeys: { type: 'number', minimum: 0 },
           kills: { type: 'number', minimum: 0 },
         },
       },
@@ -112,6 +113,17 @@ const progressionRoutes: FastifyPluginAsync = async (app) => {
             },
             xpGain: { type: 'number' },
             coinGain: { type: 'number' },
+            coinBreakdown: {
+              type: 'object',
+              properties: {
+                completion: { type: 'number' },
+                stars: { type: 'number' },
+                speed: { type: 'number' },
+                enemies: { type: 'number' },
+                correctKeys: { type: 'number' },
+              },
+            },
+            coinsBalance: { type: 'number' },
             newLevel: { type: ['number', 'null'] },
             unlockedCharacters: { type: 'array', items: { type: 'string' } },
             missionRewards: {
@@ -134,12 +146,13 @@ const progressionRoutes: FastifyPluginAsync = async (app) => {
       summary: 'Completar nivel - otorga XP, coins, actualiza misiones',
     },
   }, async (req, reply) => {
-    const params = z.object({ levelId: z.number().int().positive() }).parse(req.params);
+    const params = z.object({ levelId: z.number().int().min(1).max(3) }).parse(req.params);
     const body = z.object({
       timeSec: z.number().int().positive(),
       stars: z.number().int().min(0).max(3),
       deaths: z.number().int().nonnegative(),
       keys: z.number().int().nonnegative(),
+      correctKeys: z.number().int().nonnegative().default(0),
       kills: z.number().int().nonnegative(),
     }).parse(req.body);
 

@@ -114,6 +114,7 @@ export default class DoorManager {
           this.scene.game?.events?.emit('level-completed', this.scene, {
             keyAttempts: this.keyAttempts,
             correctKeyFirstTry: this.keyAttempts === 1,
+            correctKeys: 1,
           })
         }
       }

@@ -2,6 +2,7 @@ import { db } from '../pool.js';
 import { levelProgress, gameProgress, levels, playerProfiles, playerCharacters, characters } from '../schema.js';
 import { eq, and, sql } from 'drizzle-orm';
 import type { LevelProgress, GameProgress, Level } from '../schema.js';
+import { MAX_PLAYABLE_LEVEL_ID } from '../../config/gameProgression.js';
 
 // ============================================
 // PROGRESSION QUERIES
@@ -13,9 +14,19 @@ export async function getFullProgress(userId: number) {
     db.select().from(levelProgress).where(eq(levelProgress.userId, userId)).orderBy(levelProgress.levelId),
   ]);
 
+  let savedGameProgress = gameProgResult[0] ?? null;
+  if (savedGameProgress && savedGameProgress.currentLevelId > MAX_PLAYABLE_LEVEL_ID) {
+    const [normalized] = await db
+      .update(gameProgress)
+      .set({ currentLevelId: MAX_PLAYABLE_LEVEL_ID, updatedAt: new Date() })
+      .where(eq(gameProgress.userId, userId))
+      .returning();
+    savedGameProgress = normalized;
+  }
+
   return {
-    gameProgress: gameProgResult[0] ?? null,
-    levelProgress: levelProgResult,
+    gameProgress: savedGameProgress,
+    levelProgress: levelProgResult.filter((progress) => progress.levelId <= MAX_PLAYABLE_LEVEL_ID),
   };
 }
 
@@ -41,12 +52,14 @@ export async function getLevelById(levelId: number): Promise<Level | null> {
 export async function completeLevel(
   userId: number,
   levelId: number,
-  data: { timeSec: number; stars: number; deaths: number; keys: number; kills: number }
+  data: { timeSec: number; stars: number; deaths: number; keys: number; kills: number; correctKeys?: number; parTimeSec?: number; awardXp?: boolean }
 ): Promise<{
   levelProgress: LevelProgress;
   gameProgress: GameProgress;
   xpGain: number;
   coinGain: number;
+  coinBreakdown: { completion: number; stars: number; speed: number; enemies: number; correctKeys: number };
+  coinsBalance: number;
   newLevel?: number;
   unlockedCharacters: string[];
   missionRewards: Array<{ missionId: number; rewardCoins: number; rewardXp: number }>;
@@ -94,8 +107,8 @@ export async function completeLevel(
       .update(gameProgress)
       .set({
         currentLevelId: sql`CASE 
-          WHEN ${gameProgress.currentLevelId} = ${levelId} AND ${gameProgress.currentLevelId} < (SELECT MAX(id) FROM ${levels})
-          THEN ${levelId + 1}
+          WHEN ${gameProgress.currentLevelId} = ${levelId} AND ${gameProgress.currentLevelId} < ${MAX_PLAYABLE_LEVEL_ID}
+          THEN LEAST(${MAX_PLAYABLE_LEVEL_ID}, ${levelId + 1})
           ELSE ${gameProgress.currentLevelId}
         END`,
         keysCollected: sql`${gameProgress.keysCollected} + ${data.keys}`,
@@ -111,7 +124,7 @@ export async function completeLevel(
       // Create if doesn't exist
       const created = await tx.insert(gameProgress).values({
         userId,
-        currentLevelId: levelId + 1,
+        currentLevelId: Math.min(levelId + 1, MAX_PLAYABLE_LEVEL_ID),
         keysCollected: data.keys,
         enemiesKilled: data.kills,
         totalPlaytimeSec: data.timeSec,
@@ -120,8 +133,16 @@ export async function completeLevel(
     }
 
     // 3. Calculate XP and Coins gain
-    const xpGain = 100 * data.stars + 50 * data.keys + 10 * data.kills;
-    const coinGain = 50 * data.stars + 20 * data.keys;
+    const xpGain = data.awardXp === false ? 0 : 100 * data.stars + 50 * data.keys + 10 * data.kills;
+    const speedBonus = Math.min(100, Math.max(0, Math.floor(((data.parTimeSec ?? 180) - data.timeSec) / 3)));
+    const coinBreakdown = {
+      completion: 25,
+      stars: 15 * data.stars,
+      speed: speedBonus,
+      enemies: 10 * data.kills,
+      correctKeys: 25 * (data.correctKeys ?? 0),
+    };
+    const coinGain = Object.values(coinBreakdown).reduce((total, amount) => total + amount, 0);
 
     // 4. Update profile (XP, coins, totalPlaytimeSec)
     const profileResult = await tx
@@ -182,6 +203,8 @@ export async function completeLevel(
       gameProgress: gameProgResult[0],
       xpGain,
       coinGain,
+      coinBreakdown,
+      coinsBalance: profile.coins,
       newLevel,
       unlockedCharacters,
       missionRewards: [], // Filled by service

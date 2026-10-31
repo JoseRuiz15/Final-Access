@@ -9,6 +9,7 @@ export const completeLevelBodySchema = z.object({
   stars: z.number().int().min(0).max(3),
   deaths: z.number().int().nonnegative(),
   keys: z.number().int().nonnegative(),
+  correctKeys: z.number().int().nonnegative().default(0),
   kills: z.number().int().nonnegative(),
 });
 
@@ -40,6 +41,14 @@ export const completeLevelResponseSchema = z.object({
   gameProgress: gameProgressResponseSchema,
   xpGain: z.number().int().nonnegative(),
   coinGain: z.number().int().nonnegative(),
+  coinBreakdown: z.object({
+    completion: z.number().int().nonnegative(),
+    stars: z.number().int().nonnegative(),
+    speed: z.number().int().nonnegative(),
+    enemies: z.number().int().nonnegative(),
+    correctKeys: z.number().int().nonnegative(),
+  }),
+  coinsBalance: z.number().int().nonnegative(),
   newLevel: z.number().int().positive().optional(),
   unlockedCharacters: z.array(z.string()).optional(),
   missionRewards: z.array(z.object({

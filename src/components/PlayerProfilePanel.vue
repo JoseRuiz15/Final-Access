@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useCharacterStore } from '@/stores/characters'
-import { useProfileStore } from '@/stores/profile'
+import { getCachedAvatarImage, useProfileStore } from '@/stores/profile'
 import { useProgressionStore } from '@/stores/progression'
 
 const props = defineProps({ compact: { type: Boolean, default: false } })
@@ -17,6 +17,8 @@ const isSaving = ref(false)
 const nameDraft = ref('')
 const errorMessage = ref('')
 const successMessage = ref('')
+const avatarInput = ref(null)
+const avatarPreview = ref('')
 
 const playerName = computed(
   () => profileStore.profile?.displayName || authStore.user?.username || 'Jugador',
@@ -27,11 +29,21 @@ function avatarFor(characterId) {
   return characterStore.getCharacterById(characterId)?.perfil || '/img/profile/perfil.webp'
 }
 
-const avatarUrl = computed(() => avatarFor(profileStore.profile?.avatarCharacterId))
+const cachedAvatar = computed(() =>
+  getCachedAvatarImage(profileStore.profile?.userId || authStore.user?.id),
+)
+const avatarUrl = computed(
+  () =>
+    avatarPreview.value ||
+    profileStore.profile?.avatarImageData ||
+    cachedAvatar.value ||
+    avatarFor(profileStore.profile?.avatarCharacterId),
+)
 const avatarChoices = computed(() =>
   characterStore.unlockedCharacters
     .map((id) => characterStore.getCharacterById(id))
-    .filter(Boolean),
+    // Cosa 1 repite exactamente la imagen predeterminada.
+    .filter((character) => character && character.id !== 'cosa1'),
 )
 
 const completedLevels = computed(() =>
@@ -82,6 +94,7 @@ async function openProfile() {
   errorMessage.value = ''
   successMessage.value = ''
   nameDraft.value = playerName.value
+  avatarPreview.value = ''
   isLoading.value = true
 
   try {
@@ -134,11 +147,72 @@ async function saveAvatar(characterId) {
   errorMessage.value = ''
   successMessage.value = ''
   try {
-    await profileStore.updateProfile({ avatarCharacterId: characterId })
+    await profileStore.updateProfile({ avatarCharacterId: characterId, avatarImageData: null })
+    avatarPreview.value = ''
     successMessage.value = 'Foto de perfil guardada.'
   } catch (error) {
     errorMessage.value =
       error.response?.data?.message || error.response?.data?.error || 'No se pudo guardar la foto.'
+  } finally {
+    isSaving.value = false
+  }
+}
+
+function openAvatarPicker() {
+  avatarInput.value?.click()
+}
+
+function resizeAvatar(file) {
+  return new Promise((resolve, reject) => {
+    const image = new Image()
+    const objectUrl = URL.createObjectURL(file)
+    image.onload = () => {
+      const canvas = document.createElement('canvas')
+      const scale = Math.min(1, 512 / Math.max(image.naturalWidth, image.naturalHeight))
+      canvas.width = Math.max(1, Math.round(image.naturalWidth * scale))
+      canvas.height = Math.max(1, Math.round(image.naturalHeight * scale))
+      canvas.getContext('2d')?.drawImage(image, 0, 0, canvas.width, canvas.height)
+      URL.revokeObjectURL(objectUrl)
+      const webp = canvas.toDataURL('image/webp', 0.82)
+      resolve(webp.startsWith('data:image/webp') ? webp : canvas.toDataURL('image/jpeg', 0.82))
+    }
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl)
+      reject(new Error('No se pudo abrir la imagen seleccionada.'))
+    }
+    image.src = objectUrl
+  })
+}
+
+async function handleAvatarFile(event) {
+  const input = event.target
+  const file = input.files?.[0]
+  input.value = ''
+  if (!file) return
+  if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
+    errorMessage.value = 'Selecciona una imagen JPG, PNG, WEBP o GIF.'
+    return
+  }
+  if (file.size > 15 * 1024 * 1024) {
+    errorMessage.value = 'La imagen debe ocupar menos de 15 MB.'
+    return
+  }
+
+  isSaving.value = true
+  errorMessage.value = ''
+  successMessage.value = ''
+  try {
+    const avatarImageData = await resizeAvatar(file)
+    if (avatarImageData.length > 400_000) {
+      throw new Error('La imagen no se pudo reducir lo suficiente. Prueba con otra foto.')
+    }
+    avatarPreview.value = avatarImageData
+    await profileStore.updateProfile({ avatarCharacterId: null, avatarImageData })
+    successMessage.value = 'Foto de perfil guardada en tu cuenta.'
+  } catch (error) {
+    avatarPreview.value = ''
+    errorMessage.value =
+      error.response?.data?.message || error.response?.data?.error || error.message || 'No se pudo guardar la foto.'
   } finally {
     isSaving.value = false
   }
@@ -166,7 +240,7 @@ async function saveAvatar(characterId) {
           {{ playerName }}
         </span>
         <span class="mt-2 font-pixel text-[12px] text-[#FB00FF]">
-          Nivel {{ profileStore.profile?.level || authStore.user?.level || 1 }} · VER PERFIL
+          Nivel {{ profileStore.profile?.level || authStore.user?.level || 1 }}
         </span>
       </div>
   </button>
@@ -209,6 +283,80 @@ async function saveAvatar(characterId) {
             </div>
 
             <template v-else>
+              <section class="mb-7 flex flex-col items-center border-b border-cyan-100/15 pb-6 text-center">
+                <button
+                  type="button"
+                  class="group relative mb-4 h-32 w-32 overflow-hidden rounded-full border-2 border-cyan-200/80 bg-[#030915] shadow-[0_0_24px_#00d9ff33] transition hover:border-fuchsia-300 hover:shadow-[0_0_28px_#fb00ff55] disabled:opacity-60"
+                  :disabled="isSaving"
+                  :aria-label="isSaving ? 'Guardando foto de perfil' : 'Elegir foto desde el dispositivo'"
+                  @click="openAvatarPicker"
+                >
+                  <img :src="avatarUrl" :alt="`Foto de ${playerName}`" class="h-full w-full object-cover" />
+                  <span class="absolute inset-x-0 bottom-0 bg-black/75 py-2 font-mono text-[8px] uppercase tracking-wider text-cyan-50 opacity-0 transition group-hover:opacity-100">
+                    Cambiar foto
+                  </span>
+                </button>
+                <input
+                  ref="avatarInput"
+                  class="hidden"
+                  type="file"
+                  accept="image/*"
+                  aria-label="Seleccionar foto de perfil"
+                  @change="handleAvatarFile"
+                />
+                <p class="font-mono text-[9px] uppercase tracking-[0.2em] text-cyan-100/55">
+                  Foto de perfil · pulsa para elegir una imagen del dispositivo
+                </p>
+
+                <form class="mt-5 w-full max-w-md" @submit.prevent="saveName">
+                  <label for="profile-display-name" class="font-mono text-[10px] uppercase tracking-wider text-cyan-100/70">
+                    Cambiar nombre visible
+                  </label>
+                  <div class="mt-3 flex gap-2">
+                    <input
+                      id="profile-display-name"
+                      v-model="nameDraft"
+                      type="text"
+                      maxlength="32"
+                      autocomplete="nickname"
+                      class="min-w-0 flex-1 border border-cyan-100/20 bg-[#030915] px-3 py-3 font-mono text-sm text-white outline-none focus:border-cyan-200"
+                    />
+                    <button
+                      type="submit"
+                      :disabled="isSaving"
+                      class="border border-cyan-100 bg-cyan-100 px-4 font-pixel text-[8px] text-[#07101f] disabled:opacity-50"
+                    >
+                      {{ isSaving ? '...' : 'GUARDAR' }}
+                    </button>
+                  </div>
+                </form>
+
+                <div class="mt-5 flex flex-wrap justify-center gap-3">
+                  <button
+                    type="button"
+                    aria-label="Usar foto predeterminada"
+                    class="h-12 w-12 overflow-hidden rounded-full border-2 transition"
+                    :class="!profileStore.profile?.avatarCharacterId && !profileStore.profile?.avatarImageData ? 'border-cyan-200 shadow-[0_0_12px_#00d9ff77]' : 'border-white/20 hover:border-cyan-100'"
+                    :disabled="isSaving"
+                    @click="saveAvatar(null)"
+                  >
+                    <img src="/img/profile/perfil.webp" alt="Predeterminada" class="h-full w-full object-cover" />
+                  </button>
+                  <button
+                    v-for="character in avatarChoices"
+                    :key="character.id"
+                    type="button"
+                    :aria-label="`Usar retrato de ${character.nombre}`"
+                    class="h-12 w-12 overflow-hidden rounded-full border-2 transition"
+                    :class="profileStore.profile?.avatarCharacterId === character.id && !profileStore.profile?.avatarImageData ? 'border-cyan-200 shadow-[0_0_12px_#00d9ff77]' : 'border-white/20 hover:border-cyan-100'"
+                    :disabled="isSaving"
+                    @click="saveAvatar(character.id)"
+                  >
+                    <img :src="character.perfil" :alt="character.nombre" class="h-full w-full object-cover" />
+                  </button>
+                </div>
+              </section>
+
               <div class="grid grid-cols-2 gap-3 md:grid-cols-3">
                 <article class="border-l-2 border-cyan-300 bg-cyan-950/25 p-4">
                   <p class="font-mono text-[9px] uppercase tracking-wider text-cyan-100/55">Nivel más alto superado</p>
@@ -244,63 +392,9 @@ async function saveAvatar(characterId) {
                 </article>
               </div>
 
-              <div class="mt-5 grid gap-5 md:grid-cols-2">
-                <form class="border border-white/10 bg-black/20 p-4" @submit.prevent="saveName">
-                  <label for="profile-display-name" class="font-mono text-[10px] uppercase tracking-wider text-cyan-100/70">
-                    Cambiar nombre visible
-                  </label>
-                  <div class="mt-3 flex gap-2">
-                    <input
-                      id="profile-display-name"
-                      v-model="nameDraft"
-                      type="text"
-                      maxlength="32"
-                      autocomplete="nickname"
-                      class="min-w-0 flex-1 border border-cyan-100/20 bg-[#030915] px-3 py-3 font-mono text-sm text-white outline-none focus:border-cyan-200"
-                    />
-                    <button
-                      type="submit"
-                      :disabled="isSaving"
-                      class="border border-cyan-100 bg-cyan-100 px-3 font-pixel text-[8px] text-[#07101f] disabled:opacity-50"
-                    >
-                      {{ isSaving ? '...' : 'GUARDAR' }}
-                    </button>
-                  </div>
-                </form>
-
-                <div class="border border-white/10 bg-black/20 p-4">
-                  <p class="font-mono text-[10px] uppercase tracking-wider text-cyan-100/70">
-                    Cambiar foto de perfil
-                  </p>
-                  <div class="mt-3 flex flex-wrap gap-3">
-                    <button
-                      type="button"
-                      aria-label="Usar foto predeterminada"
-                      class="h-14 w-14 overflow-hidden border-2 transition"
-                      :class="!profileStore.profile?.avatarCharacterId ? 'border-cyan-200 shadow-[0_0_12px_#00d9ff77]' : 'border-white/20 hover:border-cyan-100'"
-                      :disabled="isSaving"
-                      @click="saveAvatar(null)"
-                    >
-                      <img src="/img/profile/perfil.webp" alt="Predeterminada" class="h-full w-full object-cover" />
-                    </button>
-                    <button
-                      v-for="character in avatarChoices"
-                      :key="character.id"
-                      type="button"
-                      :aria-label="`Usar retrato de ${character.nombre}`"
-                      class="h-14 w-14 overflow-hidden border-2 transition"
-                      :class="profileStore.profile?.avatarCharacterId === character.id ? 'border-cyan-200 shadow-[0_0_12px_#00d9ff77]' : 'border-white/20 hover:border-cyan-100'"
-                      :disabled="isSaving"
-                      @click="saveAvatar(character.id)"
-                    >
-                      <img :src="character.perfil" :alt="character.nombre" class="h-full w-full object-cover" />
-                    </button>
-                  </div>
-                  <p v-if="!avatarChoices.length" class="mt-2 font-mono text-[9px] text-white/40">
-                    No hay retratos desbloqueados todavía.
-                  </p>
-                </div>
-              </div>
+              <p v-if="!avatarChoices.length" class="mt-3 text-center font-mono text-[9px] text-white/40">
+                No hay más retratos desbloqueados todavía.
+              </p>
 
               <p v-if="errorMessage" role="alert" class="mt-4 border border-rose-300/30 bg-rose-950/40 px-4 py-3 font-mono text-xs text-rose-100">
                 {{ errorMessage }}

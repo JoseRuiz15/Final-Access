@@ -50,9 +50,19 @@ export default class InputService {
     return this._keys.A.isDown
   }
 
+  isMovingLeftJustDown() {
+    this._ensureInit()
+    return Phaser.Input.Keyboard.JustDown(this._keys.A)
+  }
+
   isMovingRight() {
     this._ensureInit()
     return this._keys.D.isDown
+  }
+
+  isMovingRightJustDown() {
+    this._ensureInit()
+    return Phaser.Input.Keyboard.JustDown(this._keys.D)
   }
 
   isJumping() {

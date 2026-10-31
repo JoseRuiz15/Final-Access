@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { progressionApi } from '@/api/client'
 
+const MAX_PLAYABLE_LEVEL_ID = 3
+
 export const useProgressionStore = defineStore('progression', () => {
   const gameProgress = ref(null)
   const levelProgress = ref([])
@@ -41,14 +43,15 @@ export const useProgressionStore = defineStore('progression', () => {
   }
 
   function mergeProgressList(incoming = []) {
-    const serverIds = new Set(incoming.map((item) => item.levelId))
-    const merged = incoming.map((item) => {
+    const playableIncoming = incoming.filter((item) => item.levelId <= MAX_PLAYABLE_LEVEL_ID)
+    const serverIds = new Set(playableIncoming.map((item) => item.levelId))
+    const merged = playableIncoming.map((item) => {
       const previous = levelProgress.value.find((progress) => progress.levelId === item.levelId)
       return mergeLevelProgress(previous, item)
     })
 
     levelProgress.value
-      .filter((item) => !serverIds.has(item.levelId))
+      .filter((item) => item.levelId <= MAX_PLAYABLE_LEVEL_ID && !serverIds.has(item.levelId))
       .forEach((item) => merged.push(item))
 
     levelProgress.value = merged
