@@ -67,7 +67,7 @@ export const LEVEL4_CONFIG = {
   // player: { x: 80, y: 736 },
 
   // Spawn temporal sobre la plataforma 5 (centro x≈2896, superficie y=768).
-  player: { x: 2896, y: 736 },
+  player: { x: 150, y: 650 },
 
   collisionRules: [
     'PlayerGroundRule',
