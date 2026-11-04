@@ -22,6 +22,7 @@ export const LEVEL4_CONFIG = {
       ['map3Layer3', '/img/maps/map3-layer3.png'],
       ['map3Layer4', '/img/maps/map3-layer4.png'],
 
+      ['box', '/tiles/box.png'],
       ['ground', '/tiles/ground.png'],
       ['groundBack', '/tiles/groundBack.png'],
       ['pinchos', '/tiles/pinchos.png'],
