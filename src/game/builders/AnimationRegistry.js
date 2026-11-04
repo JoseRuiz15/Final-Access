@@ -75,10 +75,10 @@ export default class AnimationRegistry {
     })
 
     // Estas llaves se cargan en la configuración de su nivel (key2 en el 1,
-    // key10 en el 2), así que aquí solo se animan cuando la textura existe.
+    // key4Gold en el 2), así que aquí solo se animan cuando la textura existe.
     const levelKeys = [
       { texture: 'key2', frames: 12 },
-      { texture: 'key10', frames: 25 },
+      { texture: 'key4Gold', frames: 5 },
     ]
 
     levelKeys.forEach(({ texture, frames }) => {

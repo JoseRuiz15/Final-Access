@@ -173,6 +173,12 @@
                  "id":19,
                  "name":"",
                  "opacity":1,
+                 "properties":[
+                        {
+                         "name":"llave_necesaria",
+                         "type":"string",
+                         "value":"key13Silver,key15Bronze,key11Gold"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

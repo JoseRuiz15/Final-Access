@@ -8,6 +8,7 @@ import { LEVEL1_CONFIG } from '@/game/configs/level1Config.js'
 import { LEVEL2_CONFIG } from '@/game/configs/level2Config.js'
 import { LEVEL3_CONFIG } from '@/game/configs/level3Config.js'
 import { LEVEL4_CONFIG } from '@/game/configs/level4Config.js'
+import { LEVEL5_CONFIG } from '@/game/configs/level5Config.js'
 
 const gameStore = useGameStore()
 const router = useRouter()
@@ -21,6 +22,7 @@ const hudConfig = computed(() => {
   if (nivelActual.value === 1) return LEVEL1_CONFIG.hud
   if (nivelActual.value === 3) return LEVEL3_CONFIG.hud
   if (nivelActual.value === 4) return LEVEL4_CONFIG.hud
+  if (nivelActual.value === 5) return LEVEL5_CONFIG.hud
   return LEVEL2_CONFIG.hud
 })
 const tiempo = ref(hudConfig.value.tiempoInicial)
@@ -76,6 +78,8 @@ const vidas = computed(() => gameStore.vidas)
 //llaves
 
 const llaves = computed(() => gameStore.llaves)
+const llavesCorrectas = computed(() => Number(gameStore.llavesCorrectas) || 0)
+const llavesObjetivo = computed(() => Number(hudConfig.value.llavesObjetivo) || 0)
 
 //enemigos
 
@@ -133,11 +137,6 @@ function volverASeleccionDeNivel() {
     <div class="relative">
       <img src="/img/hud/hudObjetivo.png" class="w-72" />
 
-      <img
-        v-if="hudConfig.imagenLlave"
-        :src="hudConfig.imagenLlave"
-        class="absolute w-[18.64px] h-[31.75px] mt-[-70px] ml-[190px] rotate-40"
-      />
       <!-- Aquí irá la misión -->
       <p
         class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold ml-[-150px] mt-[-50px] text-[#00D9FF] text-shadow-[0_0_40px_#00D9FF]"
@@ -145,14 +144,11 @@ function volverASeleccionDeNivel() {
         OBJETIVO
       </p>
       <p
-        v-for="(linea, indice) in hudConfig.mision"
-        :key="linea"
-        class="font-pixel absolute inset-0 flex text-[8px] font-bold ml-[20px] text-white text-shadow-[0_0_40px_#CF56D2]"
-        :style="{ marginTop: `${50 + indice * 10}px` }"
+        class="font-pixel absolute top-[58px] left-[20px] right-[60px] text-[7px] leading-[9px] font-bold text-white text-shadow-[0_0_40px_#CF56D2]"
       >
-        {{ linea }}
+        {{ hudConfig.pista }}
       </p>
-      <template v-if="hudConfig.imagenLlave">
+      <template v-if="llavesObjetivo > 0">
         <p
           class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold ml-[150px] mt-[-50px] text-[#00D9FF] text-shadow-[0_0_40px_#00D9FF]"
         >
@@ -161,7 +157,7 @@ function volverASeleccionDeNivel() {
         <p
           class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold ml-[190px] mt-[10px] text-white text-shadow-[0_0_40px_#00D9FF]"
         >
-          {{ llaves }}/1
+          {{ llavesCorrectas }}/{{ llavesObjetivo }}
         </p>
         <button
           type="button"

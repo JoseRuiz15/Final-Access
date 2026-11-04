@@ -91,30 +91,43 @@ export default class DoorManager {
       )
       if (distancia < 80) {
         const llaveNecesaria = puerta.properties?.find((p) => p.name === 'llave_necesaria')?.value
+        // La puerta puede exigir varias llaves separadas por coma.
+        const llavesRequeridas = String(llaveNecesaria || '')
+          .split(',')
+          .map((textura) => textura.trim())
+          .filter(Boolean)
         const llavesDelJugador = player.llaves ?? []
         const intento = inputService.isInteracting()
+        // Si la puerta no declara una llave necesaria, se abre directamente.
+        const requiereLlave = llavesRequeridas.length > 0
+        const puedeIntentar = !requiereLlave || llavesDelJugador.length > 0
 
         if (
           intento &&
-          llavesDelJugador.length > 0 &&
+          puedeIntentar &&
           !puerta.abierta &&
           this.lastAttemptFrame !== this.scene.game.loop.frame
         ) {
           this.lastAttemptFrame = this.scene.game.loop.frame
-          this.keyAttempts++
-          this.scene.keyAttempts = this.keyAttempts
 
-          const tieneLlave = llavesDelJugador.some((llave) => llave.texture === llaveNecesaria)
-          if (!tieneLlave) return
+          if (requiereLlave) {
+            this.keyAttempts++
+            this.scene.keyAttempts = this.keyAttempts
+
+            const tieneTodas = llavesRequeridas.every((textura) =>
+              llavesDelJugador.some((llave) => llave.texture === textura),
+            )
+            if (!tieneTodas) return
+          }
 
           this.doorSprite.setTexture('greenDoor')
           puerta.abierta = true
           doorOpened = true
           console.log('✅ PUERTA ABIERTA - VERDE')
           this.scene.game?.events?.emit('level-completed', this.scene, {
-            keyAttempts: this.keyAttempts,
-            correctKeyFirstTry: this.keyAttempts === 1,
-            correctKeys: 1,
+            keyAttempts: requiereLlave ? this.keyAttempts : 0,
+            correctKeyFirstTry: requiereLlave && this.keyAttempts === 1,
+            correctKeys: llavesRequeridas.length,
           })
         }
       }

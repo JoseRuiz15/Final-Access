@@ -21,10 +21,15 @@ export default class InventoryComponent {
     console.log('🔑 Llave recogida:', keyData, '| texture.key =', llave.texture.key)
 
     this.llaves.push(keyData)
+    this._syncRepository()
 
-    this.gameRepository.llaves = this.llaves.length
     console.log('Inventario:', this.llaves)
     llave.destroy()
+  }
+
+  _syncRepository() {
+    this.gameRepository.llaves = this.llaves.length
+    this.gameRepository.llavesCorrectas = this.llaves.filter((llave) => llave.correcta).length
   }
 
   devolverUltimaLlaveAlMapa(x, y, velocidadX = 0, velocidadY = 0) {
@@ -40,7 +45,7 @@ export default class InventoryComponent {
     llave.setVelocity(velocidadX, velocidadY)
 
     this.llaves.pop()
-    this.gameRepository.llaves = this.llaves.length
+    this._syncRepository()
     return true
   }
 

@@ -83,8 +83,12 @@ _createEnemies() {
   }
 
   _createBoxes() {
-    // El nivel 4 todavía no tiene cajas ni llaves.
     this.boxes = this.add.group()
+
+    this.config.boxes.forEach(({ x, y, keyData }) => {
+      const box = EntityFactory.createBox(this, x, y, keyData)
+      this.boxes.add(box)
+    })
   }
 
   _getKeyClass() {

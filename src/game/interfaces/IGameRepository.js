@@ -20,6 +20,13 @@ export default class IGameRepository {
     throw new Error('Setter "llaves" must be implemented.')
   }
 
+  get llavesCorrectas() {
+    throw new Error('Getter "llavesCorrectas" must be implemented.')
+  }
+  set llavesCorrectas(value) {
+    throw new Error('Setter "llavesCorrectas" must be implemented.')
+  }
+
   get enemigos() {
     throw new Error('Getter "enemigos" must be implemented.')
   }

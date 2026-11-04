@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 import ParallaxBuilder from '../builders/ParallaxBuilder.js'
-import {getCharacter} from '../configs/characters.js'
+import { getCharacter } from '../configs/characters.js'
 
 export default class BaseScene extends Phaser.Scene {
   constructor(key, config, dependencies = {}) {
@@ -57,7 +57,7 @@ export default class BaseScene extends Phaser.Scene {
   create(data = {}) {
     this._deathHandled = false // Limpia la protección al iniciar o reintentar el nivel.
     this.levelStartTime = Date.now() // Base para calcular el tiempo del nivel al completarlo.
-    
+
     console.log(`${this.scene.key} iniciado`)
     const vidasIniciales =
       data.vidas ?? this.config.vidasIniciales ?? this.gameRepository.vidas ?? 5
@@ -81,7 +81,8 @@ export default class BaseScene extends Phaser.Scene {
       )
     }
 
-    const character = this.characterConfig ?? getCharacter(this.gameRepository?.selectedCharacterId ?? 'cosa1')
+    const character =
+      this.characterConfig ?? getCharacter(this.gameRepository?.selectedCharacterId ?? 'cosa1')
     this.characterConfig = character
     this.animationRegistry?.registerAll(this, character)
 
@@ -101,7 +102,7 @@ export default class BaseScene extends Phaser.Scene {
 
     // === PLATAFORMAS MÓVILES ===
     if (this.mapResult) {
-      this.movingPlatformManager?.create(this.mapResult)
+      this.movingPlatformManager?.create(this.mapResult, this.config)
     }
 
     // === TUTORIAL UI ===
@@ -195,6 +196,7 @@ export default class BaseScene extends Phaser.Scene {
 
     // Game over por caída
     if (this.player?.active && !this.player.muerto && this.player.y > 900) {
+      this.movingPlatformManager?.resetCaedizas()
       this.player.recibirDano(9999)
     }
 
@@ -236,23 +238,25 @@ export default class BaseScene extends Phaser.Scene {
   }*/
 
   onPlayerDeath() {
-  // Evita programar una segunda reaparición por el mismo fallecimiento.
-  if (!this.player || this._deathHandled) return
-  this._deathHandled = true
+    // Evita programar una segunda reaparición por el mismo fallecimiento.
+    if (!this.player || this._deathHandled) return
+    this._deathHandled = true
 
-  if (this.gameRepository.vidas <= 0) {
-    this.events.emit('game-over')
-    return
+    if (this.gameRepository.vidas <= 0) {
+      this.events.emit('game-over')
+      return
+    }
+
+    this.time.delayedCall(300, () => {
+      if (!this.player?.active) return
+
+      // Recupera al jugador; conserva cajas, llave, enemigos e inventario.
+      this.player.respawn()
+      // Restaura las plataformas caedivas para que el tramo no quede roto.
+      this.movingPlatformManager?.resetCaedizas()
+      this._deathHandled = false
+    })
   }
-
-  this.time.delayedCall(300, () => {
-    if (!this.player?.active) return
-
-    // Recupera al jugador; conserva cajas, llave, enemigos e inventario.
-    this.player.respawn()
-    this._deathHandled = false
-  })
-}
 
   onEnemyDied() {
     console.log('Enemigo derrotado')

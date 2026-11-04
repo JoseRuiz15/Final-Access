@@ -19,6 +19,7 @@ export const useGameStore = defineStore('game', {
   state: () => ({
     vidas: 5,
     llaves: 0,
+    llavesCorrectas: 0,
     enemigos: 0,
     selectedCharacterId: getSavedCharacterId(),
     nivelActual: 1,

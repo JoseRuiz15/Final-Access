@@ -7,11 +7,23 @@
  * - velocidad: píxeles por segundo
  * - recorrido: tiles que avanza desde la posición inicial
  * - direccion: "derecha" o "izquierda"
+ *
+ * Plataformas caedivas (opt-in desde la escena):
+ * - config.plataformasCaedizas: array con los nombres de plataforma que caen
+ * - config.retrasoCaida: ms que espera tras pisarla antes de caer (default 3000)
+ *
+ * Estados de una plataforma caediva:
+ *   normal   → se mueve como cualquier plataforma móvil
+ *   temblando → el jugador la pisó; aviso visual durante retrasoCaida
+ *   cayendo   → se desactiva el movimiento horizontal, cae con gravedad
+ *   destruida → salió del mapa; cuerpo desactivado y visual oculto
  */
 export default class MovingPlatformManager {
   constructor() {
     this.scene = null
     this.platforms = []
+    this.plataformasCaedizas = []
+    this.retrasoCaida = 3000
     this._initialized = false
   }
 
@@ -27,9 +39,11 @@ export default class MovingPlatformManager {
     }
   }
 
-  create(mapResult) {
+  create(mapResult, config = {}) {
     this._ensureInit()
     this.platforms = []
+    this.plataformasCaedizas = config.plataformasCaedizas || []
+    this.retrasoCaida = config.retrasoCaida ?? 3000
 
     const objectLayer = mapResult?.objectLayers?.MovingPlatforms
     const tileLayer = mapResult?.layers?.MovingPlatformTiles
@@ -73,8 +87,6 @@ export default class MovingPlatformManager {
         const textureKey = tile.tileset?.image || tile.tileset?.name
         if (!textureKey) continue
 
-        // La textura del tileset es una sola imagen; hay que registrar el
-        // recorte de este gid como frame para poder dibujarlo por separado.
         const frameName = this._getTileFrame(textureKey, tile)
         if (!frameName) continue
 
@@ -121,12 +133,13 @@ export default class MovingPlatformManager {
     const speed = Number.isFinite(rawSpeed) ? Math.abs(rawSpeed) : 60
     const travelTiles = Math.max(0, Math.round(Number(properties.recorrido ?? 0) || 0))
     const travel = travelTiles * tileWidth
-    // "izquierda" significa que el recorrido se extiende hacia la izquierda.
     const direction = properties.direccion === 'izquierda' ? -1 : 1
     const minLeft = direction === 1 ? left : left - travel
     const maxLeft = direction === 1 ? left + travel : left
 
     body.setVelocityX(direction * speed)
+
+    const esCaediza = this.plataformasCaedizas.includes(object.name)
 
     return {
       name: object.name || `plataforma${index + 1}`,
@@ -139,6 +152,12 @@ export default class MovingPlatformManager {
       maxLeft,
       width,
       height,
+      caediza: esCaediza,
+      estado: esCaediza ? 'normal' : null,
+      xInicial: body.x,
+      yInicial: body.y,
+      velocidadXInicial: body.velocity.x,
+      tiempoInicioTemblor: null,
     }
   }
 
@@ -174,24 +193,117 @@ export default class MovingPlatformManager {
   update() {
     if (!this.scene || !this.platforms.length) return
 
+    const player = this.scene.player
+    const retrasoCaida = this.retrasoCaida
+    const ahora = this.scene.time.now
+    const mapHeight = this.scene.mapResult?.map?.heightInPixels ?? this.scene.scale.height
+
     this.platforms.forEach((platform) => {
       const body = platform.bodyObject?.body
       if (!body) return
 
-      if (platform.travel > 0) {
-        if (body.velocity.x < 0 && body.x <= platform.minLeft) {
-          body.x = platform.minLeft
-          body.updateCenter()
-          body.setVelocityX(platform.speed)
-        } else if (body.velocity.x > 0 && body.x >= platform.maxLeft) {
-          body.x = platform.maxLeft
-          body.updateCenter()
-          body.setVelocityX(-platform.speed)
-        }
-      } else {
-        body.setVelocityX(0)
+      // --- Caediza: detectar que el jugador pisa la plataforma ---
+      if (
+        platform.caediza &&
+        platform.estado === 'normal' &&
+        player &&
+        player.body &&
+        player.body.blocked.down &&
+        player.body.touching.down &&
+        player.x > body.x &&
+        player.x < body.x + body.width &&
+        player.y < body.y + body.height / 2
+      ) {
+        platform.estado = 'temblando'
+        platform.tiempoInicioTemblor = ahora
       }
 
+      // --- Estado: temblando (aviso visual antes de caer) ---
+      if (platform.caediza && platform.estado === 'temblando') {
+        const transcurrido = ahora - platform.tiempoInicioTemblor
+        const temblorX = Math.sin(ahora / 40) * 3
+
+        // Durante el aviso la plataforma sigue moviéndose normalmente.
+        if (platform.travel > 0) {
+          if (body.velocity.x < 0 && body.x <= platform.minLeft) {
+            body.x = platform.minLeft
+            body.updateCenter()
+            body.setVelocityX(platform.speed)
+          } else if (body.velocity.x > 0 && body.x >= platform.maxLeft) {
+            body.x = platform.maxLeft
+            body.updateCenter()
+            body.setVelocityX(-platform.speed)
+          }
+        } else {
+          body.setVelocityX(0)
+        }
+
+        platform.visual.setPosition(body.center.x + temblorX, body.center.y)
+
+        if (transcurrido >= retrasoCaida) {
+          platform.estado = 'cayendo'
+          body.setAllowGravity(true)
+          body.setVelocityY(150)
+          body.setVelocityX(0)
+          platform.visual.setPosition(body.center.x, body.center.y)
+        }
+        return
+      }
+
+      // --- Estado: cayendo (gravedad hasta salir del mapa) ---
+      if (platform.caediza && platform.estado === 'cayendo') {
+        platform.visual.setPosition(body.center.x, body.center.y)
+        if (body.y > mapHeight + 200) {
+          body.enable = false
+          platform.estado = 'destruida'
+          platform.visual.setVisible(false)
+        }
+        return
+      }
+
+      // --- Estado: destruida (sin movimiento) ---
+      if (platform.caediza && platform.estado === 'destruida') return
+
+      // --- Movimiento normal (plataformas no caedivas o caediva en estado normal) ---
+      if (!platform.caediza || platform.estado === 'normal') {
+        if (platform.travel > 0) {
+          if (body.velocity.x < 0 && body.x <= platform.minLeft) {
+            body.x = platform.minLeft
+            body.updateCenter()
+            body.setVelocityX(platform.speed)
+          } else if (body.velocity.x > 0 && body.x >= platform.maxLeft) {
+            body.x = platform.maxLeft
+            body.updateCenter()
+            body.setVelocityX(-platform.speed)
+          }
+        } else {
+          body.setVelocityX(0)
+        }
+
+        platform.visual.setPosition(body.center.x, body.center.y)
+      }
+    })
+  }
+
+  /** Restaura todas las plataformas caedivas a su estado inicial (se usa al perder una vida). */
+  resetCaedizas() {
+    this.platforms.forEach((platform) => {
+      if (!platform.caediza) return
+      const body = platform.bodyObject?.body
+      if (!body) return
+
+      body.enable = true
+      body.setAllowGravity(false)
+      body.setVelocity(0, 0)
+      // Restaura la posición inicial del objeto Tiled (borde izquierdo), no del centro del body.
+      body.x = platform.left + platform.width / 2
+      body.y = platform.top + platform.height / 2
+      body.updateCenter()
+      body.setVelocityX(platform.velocidadXInicial)
+
+      platform.estado = 'normal'
+      platform.tiempoInicioTemblor = null
+      platform.visual.setVisible(true)
       platform.visual.setPosition(body.center.x, body.center.y)
     })
   }
