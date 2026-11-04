@@ -35,7 +35,12 @@ async function handleLogin() {
     const redirect = route.query.redirect || '/lobby'
     router.push(redirect)
   } catch (err) {
-    error.value = err.response?.data?.message || err.response?.data?.error || 'Error al iniciar sesión'
+    error.value =
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      (err.code === 'ERR_NETWORK'
+        ? 'No se pudo conectar con el servidor. Comprueba que esté iniciado y que el celular use la misma red Wi-Fi.'
+        : 'Error al iniciar sesión')
   } finally {
     isLoading.value = false
   }
@@ -54,9 +59,9 @@ async function handleLogin() {
     />
     <!--cuadro-->
     <div class="relative z-10 flex items-center justify-center min-h-screen">
-      <div class="auth-panel relative w-[510px] h-[560px] bg-black/50 rounded-3xl backdrop-blur-sm">
+      <div class="auth-panel login-panel relative w-[510px] h-[560px] bg-black/50 rounded-3xl backdrop-blur-sm">
         <!--texto-->
-        <h2 class="font-pixel text-4xl text-[#E41F1F] text-center mt-[50px]">INICIO DE SESION</h2>
+        <h2 class="login-title font-pixel text-4xl text-[#E41F1F] text-center mt-[50px]">INICIO DE SESION</h2>
 
         <!-- Error message -->
         <div
@@ -70,11 +75,11 @@ async function handleLogin() {
 
         <!--USUARIO-->
         <div
-          class="bg-black/30 w-[150px] rounded ml-10 mt-10 w-[151px] h-[21px] flex items-center justify-center"
+          class="login-field-label bg-black/30 w-[150px] rounded ml-10 mt-10 w-[151px] h-[21px] flex items-center justify-center"
         >
           <label for="email-input" class="font-pixel text-white text-[10px]">EMAIL:</label>
         </div>
-        <div class="mt-[20px] flex items-center justify-center">
+        <div class="login-input-wrap mt-[20px] flex items-center justify-center">
           <input
             type="email"
             id="email-input"
@@ -88,11 +93,11 @@ async function handleLogin() {
 
         <!--CONTRASEÑA-->
         <div
-          class="bg-black/30 w-[150px] rounded ml-10 mt-10 w-[151px] h-[21px] flex items-center justify-center"
+          class="login-field-label bg-black/30 w-[150px] rounded ml-10 mt-10 w-[151px] h-[21px] flex items-center justify-center"
         >
           <label for="password" class="font-pixel text-white text-[10px]">CONTRASEÑA:</label>
         </div>
-        <div class="mt-[20px] flex items-center justify-center">
+        <div class="login-input-wrap mt-[20px] flex items-center justify-center">
           <input
             type="password"
             id="password"
@@ -105,7 +110,7 @@ async function handleLogin() {
         </div>
 
         <!--boton inicio de sesion-->
-        <div class="flex justify-center items-center">
+        <div class="login-submit-row flex justify-center items-center">
           <button
             @click="handleLogin"
             :disabled="isLoading"
@@ -117,11 +122,11 @@ async function handleLogin() {
         </div>
 
         <!--registro de cuenta-->
-        <div class="flex justify-center items-center mt-[10px]">
+        <div class="login-register-prompt flex justify-center items-center mt-[10px]">
           <p class="font-pixel text-white text-[15px]">¿No tienes una cuenta?</p>
         </div>
         <!--registrarse-->
-        <div class="flex justify-center items-center">
+        <div class="login-register-row flex justify-center items-center">
           <button
             @click="irRegister"
             id="record-button"

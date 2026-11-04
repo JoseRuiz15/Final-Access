@@ -88,7 +88,7 @@ onMounted(async () => {
 <template>
   <section class="fixed inset-0 overflow-hidden bg-[#08071B]">
     <button
-      class="absolute top-6 left-6 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9] transition-all duration-300"
+      class="levels-back-button absolute top-6 left-6 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9] transition-all duration-300"
       @click="volverASeleccionarModo"
     >
       &lt;- VOLVER AL MENU

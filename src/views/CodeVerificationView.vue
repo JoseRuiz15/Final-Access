@@ -187,11 +187,11 @@ onUnmounted(() => {
     />
     <!--cuadro de verificacion de codigo-->
     <div class="relative z-10 flex items-center justify-center min-h-screen">
-      <div class="auth-panel relative w-[550px] h-[550px] rounded-3xl bg-[#14172C] border-4 border-[#68699E]">
+      <div class="auth-panel verification-panel relative w-[550px] h-[550px] rounded-3xl bg-[#14172C] border-4 border-[#68699E]">
         <!--textos-->
-        <p class="text-[#A55CCF] font-pixel text-3xl text-center mt-10">VERIFICACION DE CORREO</p>
+        <p class="verification-title text-[#A55CCF] font-pixel text-3xl text-center mt-10">VERIFICACION DE CORREO</p>
 
-        <p v-if="!devCode" class="text-[15px] text-white font-pixel text-center">
+        <p v-if="!devCode" class="verification-intro text-[15px] text-white font-pixel text-center">
           Hemos enviado un código de verificación a tu correo electrónico
         </p>
 
@@ -202,7 +202,7 @@ onUnmounted(() => {
 
         <!--revision del correo-->
         <div
-          class="bg-[#2D304B] flex items-center justify-center mt-5 w-[500px] h-[40px] rounded-lg ml-[20px]"
+          class="verification-email-row bg-[#2D304B] flex items-center justify-center mt-5 w-[500px] h-[40px] rounded-lg ml-[20px]"
         >
           <p class="text-white text-[12px]">{{ maskedEmail }}</p>
           <!--boton que regresa la inicio-->
@@ -246,7 +246,7 @@ onUnmounted(() => {
         <p class="text-white text-1xl font-pixel text-center mt-[20px]">Introduce el código</p>
 
         <!--donde colocar el codigo-->
-        <div class="flex items-center justify-center gap-4 mt-5">
+        <div class="verification-digits flex items-center justify-center gap-4 mt-5">
           <!--cajas donde se colocan los numeros-->
           <input
             v-for="i in 6"
@@ -264,7 +264,7 @@ onUnmounted(() => {
         </div>
 
         <!--boton de verificacion-->
-        <div class="flex items-center justify-center mt-[20px] gap-[80px]">
+        <div class="verification-actions flex items-center justify-center mt-[20px] gap-[80px]">
           <div
             class="flex items-center justify-center border border-4 border-[#DCF284] w-[180px] rounded-lg bg-[#67AC57] hover:border-[#c8ff00]"
           >
@@ -291,7 +291,7 @@ onUnmounted(() => {
         </div>
 
         <!--cronometro-->
-        <div class="mt-5 text-center">
+        <div class="verification-timer mt-5 text-center">
           <p class="text-white font-pixel">Reenviar código en <span class="text-[#A55CCF]">{{ formatTime(countdown) }}</span></p>
         </div>
       </div>

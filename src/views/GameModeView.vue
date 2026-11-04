@@ -15,7 +15,7 @@ function irLobby() {
 }
 </script>
 <template>
-  <section class="relative isolate min-h-screen overflow-hidden bg-[#080e20]">
+  <section id="game-mode-screen" class="relative isolate min-h-screen overflow-hidden bg-[#080e20]">
     <img
       src="/img/lobby/a.webp"
       alt=""
@@ -25,7 +25,7 @@ function irLobby() {
     />
 
     <button
-      class="absolute top-6 left-6 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9] transition-all duration-300"
+      class="game-mode-back absolute top-6 left-6 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9] transition-all duration-300"
       @click="irLobby"
     >
       &lt;- VOLVER AL MENU

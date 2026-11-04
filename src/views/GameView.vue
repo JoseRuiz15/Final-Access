@@ -444,13 +444,13 @@ function enfocarCanvasDelJuego() {
 
     <div
       v-if="pausaAbierta"
-      class="fixed inset-0 z-40 flex items-center justify-center bg-[#02050c]/80 px-4 backdrop-blur-sm"
+      class="game-pause-backdrop fixed inset-0 z-40 flex items-center justify-center bg-[#02050c]/80 px-4 backdrop-blur-sm"
     >
       <section
         role="dialog"
         aria-labelledby="pause-title"
         aria-modal="true"
-        class="relative w-full max-w-lg overflow-hidden border border-[#00D9FF]/70 bg-[#07101f] px-7 py-8 text-white shadow-[0_0_60px_#00D9FF33] sm:px-10"
+        class="pause-panel relative w-full max-w-lg overflow-hidden border border-[#00D9FF]/70 bg-[#07101f] px-7 py-8 text-white shadow-[0_0_60px_#00D9FF33] sm:px-10"
       >
         <div class="pointer-events-none absolute inset-2 border border-[#00D9FF]/15"></div>
         <div class="relative">

@@ -21,7 +21,7 @@ function irMultiplayer() {
     />
     <!--volver-->
     <button
-      class="absolute top-15 left-10 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9] transition-all duration-300"
+      class="create-game-back absolute top-15 left-10 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9] transition-all duration-300"
       @click="irMultiplayer"
     >
       &lt;- VOLVER

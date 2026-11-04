@@ -262,7 +262,10 @@ onUnmounted(() => {
         </section>
 
         <!-- Lado derecho -->
-        <section class="lobby-widgets flex flex-col items-center gap-20">
+        <section
+          class="lobby-widgets flex flex-col items-center gap-20"
+          :class="{ 'is-in-lobby': lobbyStore.isInLobby }"
+        >
           <!-- Mi Lobby Actual -->
           <div v-if="lobbyStore.isInLobby" class="bg-[#000208] w-80 border-3 border-[#FF00D9] rounded-lg p-5">
             <div class="border-b-[3px] border-[#FF00D9] py-2 px-5 mb-4">

@@ -209,12 +209,12 @@ function volverASeleccionDeNivel() {
       </template>
     </div>
     <!-- Pantalla de Game Over -->
-<div
+  <div
   v-if="vidas <= 0 || tiempoAgotado"
   class="fixed inset-0 z-50 flex items-center justify-center bg-[#050711]/90"
 >
   <div
-    class="flex flex-col items-center justify-center
+    class="game-over-panel flex flex-col items-center justify-center
            w-[90%] max-w-[650px] min-h-[350px]
            bg-[#0B1020] border-2 border-[#00D9FF]
            rounded-lg px-8 py-10"

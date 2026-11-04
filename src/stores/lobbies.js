@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { lobbyApi } from '@/api/client'
+import { API_BASE_URL, lobbyApi } from '@/api/client'
 
 // Jugadores mínimos para poder iniciar una partida (debe coincidir con el backend).
 const MIN_PLAYERS_TO_START = 2
@@ -175,11 +175,10 @@ export const useLobbyStore = defineStore('lobbies', () => {
   }
 
   function connectWebSocket(code) {
-    // Si no se define VITE_WS_URL se deriva de VITE_API_URL (http -> ws,
-    // https -> wss) para no tener que configurarlo aparte en Vercel.
+    // Si no se define VITE_WS_URL se deriva de la URL de API detectada (http -> ws,
+    // https -> wss), incluido el host LAN al probar desde un dispositivo móvil.
     const WS_BASE_URL =
-      import.meta.env.VITE_WS_URL ||
-      (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/^http/, 'ws')
+      import.meta.env.VITE_WS_URL || API_BASE_URL.replace(/^http/, 'ws')
     const wsUrl = `${WS_BASE_URL}/ws/lobby/${code}`
 
     if (ws.value) {

@@ -74,9 +74,9 @@ async function handleRegister() {
     />
     <!--cuadro registro-->
     <div class="relative z-10 flex items-center justify-center min-h-screen">
-      <div class="auth-panel relative w-[510px] h-[700px] bg-black/50 rounded-3xl backdrop-blur-sm">
+      <div class="auth-panel register-panel relative w-[510px] h-[700px] bg-black/50 rounded-3xl backdrop-blur-sm">
         <!--texto-->
-        <h2 class="font-pixel text-4xl text-[#E41F1F] text-center mt-[50px]">REGISTRO</h2>
+        <h2 class="register-title font-pixel text-4xl text-[#E41F1F] text-center mt-[50px]">REGISTRO</h2>
 
         <!-- Error message -->
         <div
@@ -90,11 +90,11 @@ async function handleRegister() {
 
         <!--USUARIO-->
         <div
-          class="bg-black/30 w-[150px] rounded ml-10 mt-10 w-[151px] h-[21px] flex items-center justify-center"
+          class="register-field-label bg-black/30 w-[150px] rounded ml-10 mt-10 w-[151px] h-[21px] flex items-center justify-center"
         >
           <label for="username-input" class="font-pixel text-white text-[10px]">USUARIO:</label>
         </div>
-        <div class="mt-[20px] flex items-center justify-center">
+        <div class="register-input-wrap mt-[20px] flex items-center justify-center">
           <input
             type="text"
             id="username-input"
@@ -108,11 +108,11 @@ async function handleRegister() {
 
         <!--email-->
         <div
-          class="bg-black/30 w-[150px] rounded ml-10 mt-10 w-[151px] h-[21px] flex items-center justify-center"
+          class="register-field-label bg-black/30 w-[150px] rounded ml-10 mt-10 w-[151px] h-[21px] flex items-center justify-center"
         >
           <label for="email-input" class="font-pixel text-white text-[10px]">EMAIL:</label>
         </div>
-        <div class="mt-[20px] flex items-center justify-center">
+        <div class="register-input-wrap mt-[20px] flex items-center justify-center">
           <input
             type="email"
             id="email-input"
@@ -126,11 +126,11 @@ async function handleRegister() {
 
         <!--contraseña-->
         <div
-          class="bg-black/30 rounded ml-10 mt-10 w-[151px] h-[21px] flex items-center justify-center"
+          class="register-field-label bg-black/30 rounded ml-10 mt-10 w-[151px] h-[21px] flex items-center justify-center"
         >
           <label for="password" class="font-pixel text-white text-[10px]">CONTRASEÑA:</label>
         </div>
-        <div class="mt-[20px] flex items-center justify-center">
+        <div class="register-input-wrap mt-[20px] flex items-center justify-center">
           <input
             type="password"
             id="password"
@@ -144,13 +144,13 @@ async function handleRegister() {
 
         <!--confirmar contraseña-->
         <div
-          class="bg-black/30 w-[200px] h-[30px] rounded ml-10 mt-10 flex items-center justify-center"
+          class="register-field-label bg-black/30 w-[200px] h-[30px] rounded ml-10 mt-10 flex items-center justify-center"
         >
           <label for="confirmPassword" class="font-pixel text-white text-[9px]"
             >CONFIRMAR CONTRASEÑA:</label
           >
         </div>
-        <div class="mt-[20px] flex items-center justify-center">
+        <div class="register-input-wrap mt-[20px] flex items-center justify-center">
           <input
             type="password"
             id="confirmPassword"
@@ -163,7 +163,7 @@ async function handleRegister() {
         </div>
 
         <!--boton de registro-->
-        <div class="flex justify-center items-center">
+        <div class="register-submit-row flex justify-center items-center">
           <button
             @click="handleRegister"
             :disabled="isLoading"
@@ -175,10 +175,10 @@ async function handleRegister() {
         </div>
 
         <!-- Volver a login -->
-        <div class="flex justify-center items-center mt-[10px]">
+        <div class="register-prompt flex justify-center items-center mt-[10px]">
           <p class="font-pixel text-white text-[15px]">¿Ya tienes una cuenta?</p>
         </div>
-        <div class="flex justify-center items-center">
+        <div class="register-footer flex justify-center items-center">
           <button
             @click="irLogin"
             class="font-pixel text-[#1FD0E4] text-[15px] transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_40px_#00AAFF]"

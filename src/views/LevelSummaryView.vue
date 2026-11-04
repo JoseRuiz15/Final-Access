@@ -59,7 +59,7 @@ function backToLevelMap() {
     <div class="summary-scrim absolute inset-0"></div>
     <div class="summary-scanlines pointer-events-none absolute inset-0"></div>
 
-    <div class="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8 sm:py-8">
+    <div class="summary-content relative mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8 sm:py-8">
       <header class="flex items-start justify-between gap-4 border-b border-cyan-200/20 pb-4">
         <div>
           <p class="font-mono text-[10px] uppercase tracking-[0.42em] text-cyan-100/65">
