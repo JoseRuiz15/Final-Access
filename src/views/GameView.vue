@@ -1,8 +1,9 @@
 <script setup>
-import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
+import { onMounted, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Phaser from 'phaser'
 import Hud from '@/components/HUD.vue'
+import Level1TutorialOverlay from '@/components/Level1TutorialOverlay.vue'
 import SceneFactory from '@/game/factories/SceneFactory.js'
 import { useCharacterStore } from '@/stores/characters'
 import { useGameStore } from '@/stores/game.js'
@@ -21,6 +22,8 @@ import {
 let game
 let levelScene
 let hudResizeObserver
+const activeScene = shallowRef(null)
+const phaserGame = shallowRef(null)
 let levelTransitionStarted = false
 const gameStore = useGameStore()
 const characterStore = useCharacterStore()
@@ -49,8 +52,7 @@ const touchActions = [
 watch(volumenMusica, setMusicVolume, { flush: 'sync' })
 
 onMounted(() => {
-  isTouchDevice.value =
-    'ontouchstart' in window || (navigator.maxTouchPoints || 0) > 0
+  isTouchDevice.value = 'ontouchstart' in window || (navigator.maxTouchPoints || 0) > 0
   initializeGame()
 })
 
@@ -112,12 +114,11 @@ async function initializeGame() {
       // Los niveles 4 y 5 necesitan conservar toda su altura en pantallas
       // panorámicas; EXPAND añade vista horizontal en lugar de recortar
       // arriba y abajo.
-      mode:
-        isTouchDevice.value
-          ? Phaser.Scale.FIT
-          : [4, 5].includes(Number(gameStore.nivelActual))
-            ? Phaser.Scale.EXPAND
-            : Phaser.Scale.ENVELOP,
+      mode: isTouchDevice.value
+        ? Phaser.Scale.FIT
+        : [4, 5].includes(Number(gameStore.nivelActual))
+          ? Phaser.Scale.EXPAND
+          : Phaser.Scale.ENVELOP,
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
 
@@ -136,6 +137,8 @@ async function initializeGame() {
   }
 
   game = new Phaser.Game(config)
+  phaserGame.value = game
+  activeScene.value = levelScene
   game.events.on('level-completed', handleLevelCompleted)
   game.events.on('level-assets-progress', handleAssetsProgress)
   game.events.once('level-assets-loaded', handleAssetsLoaded)
@@ -163,6 +166,8 @@ onBeforeUnmount(() => {
   game?.events.off('level-assets-progress', handleAssetsProgress)
   game?.events.off('level-assets-loaded', handleAssetsLoaded)
   game?.destroy(true)
+  phaserGame.value = null
+  activeScene.value = null
 })
 
 function handleAssetsProgress(progress) {
@@ -193,15 +198,9 @@ async function handleLevelCompleted(sceneCompletada, stats) {
   const kills = Math.max(0, stats?.kills ?? gameStore.enemigos)
   const enemigosTotales = levelScene?.config?.enemies?.length ?? 0
   const tiempoMaximo = levelScene?.config?.hud?.tiempoInicial ?? 0
-  const proporcionTiempo = tiempoMaximo > 0
-    ? Math.max(0, 1 - tiempoTranscurrido / tiempoMaximo)
-    : 0
-  const proporcionVidas = vidasIniciales > 0
-    ? Math.min(1, vidasRestantes / vidasIniciales)
-    : 0
-  const proporcionEnemigos = enemigosTotales > 0
-    ? Math.min(1, kills / enemigosTotales)
-    : 1
+  const proporcionTiempo = tiempoMaximo > 0 ? Math.max(0, 1 - tiempoTranscurrido / tiempoMaximo) : 0
+  const proporcionVidas = vidasIniciales > 0 ? Math.min(1, vidasRestantes / vidasIniciales) : 0
+  const proporcionEnemigos = enemigosTotales > 0 ? Math.min(1, kills / enemigosTotales) : 1
   // La rapidez pesa la mitad de la nota; conservar vidas y derrotar enemigos
   // aportan un cuarto cada uno. Completar siempre concede la primera estrella.
   const rendimiento = proporcionTiempo * 50 + proporcionVidas * 25 + proporcionEnemigos * 25
@@ -231,22 +230,25 @@ async function handleLevelCompleted(sceneCompletada, stats) {
     nextLevelId,
   })
 
-  progressionStore.completeLevel(levelId, completionData).then((result) => {
-    if (result?.coinsBalance !== undefined) {
-      profileStore.profile && (profileStore.profile.coins = result.coinsBalance)
-      authStore.user && (authStore.user.coins = result.coinsBalance)
-    }
-    gameStore.setLevelSummary({
-      ...gameStore.levelSummary,
-      coinGain: result?.coinGain ?? 0,
-      coinsBalance: result?.coinsBalance,
-      coinBreakdown: result?.coinBreakdown,
-      coinsSaved: true,
+  progressionStore
+    .completeLevel(levelId, completionData)
+    .then((result) => {
+      if (result?.coinsBalance !== undefined) {
+        profileStore.profile && (profileStore.profile.coins = result.coinsBalance)
+        authStore.user && (authStore.user.coins = result.coinsBalance)
+      }
+      gameStore.setLevelSummary({
+        ...gameStore.levelSummary,
+        coinGain: result?.coinGain ?? 0,
+        coinsBalance: result?.coinsBalance,
+        coinBreakdown: result?.coinBreakdown,
+        coinsSaved: true,
+      })
     })
-  }).catch((err) => {
-    console.error('Error saving progress:', err)
-    gameStore.setLevelSummary({ ...gameStore.levelSummary, coinsSaved: false })
-  })
+    .catch((err) => {
+      console.error('Error saving progress:', err)
+      gameStore.setLevelSummary({ ...gameStore.levelSummary, coinsSaved: false })
+    })
   router.push({ name: 'level-summary' })
 }
 
@@ -353,13 +355,22 @@ function enfocarCanvasDelJuego() {
     <!-- Phaser -->
     <div id="game-container" style="width: 100%; height: 100%"></div>
 
+    <Level1TutorialOverlay
+      v-if="activeScene && gameStarted && Number(gameStore.nivelActual) === 1"
+      :scene="activeScene"
+      :game="phaserGame"
+      :items="activeScene.config.tutorialOverlays"
+    />
+
     <div
       v-if="!assetsReady"
       class="fixed inset-0 z-20 flex items-center justify-center bg-[#070b19] text-white"
       role="status"
       aria-live="polite"
     >
-      <div class="w-[min(82vw,360px)] border border-[#00D9FF]/60 bg-[#07101f]/95 p-6 text-center shadow-[0_0_40px_#00D9FF22]">
+      <div
+        class="w-[min(82vw,360px)] border border-[#00D9FF]/60 bg-[#07101f]/95 p-6 text-center shadow-[0_0_40px_#00D9FF22]"
+      >
         <p class="font-pixel text-xs tracking-[0.2em] text-[#00D9FF]">CARGANDO MISIÓN</p>
         <div class="mt-5 h-2 overflow-hidden bg-white/10">
           <div
@@ -383,7 +394,9 @@ function enfocarCanvasDelJuego() {
     />
 
     <div
-      v-if="isTouchDevice && gameStarted && !pausaAbierta && !tiempoFinalizado && gameStore.vidas > 0"
+      v-if="
+        isTouchDevice && gameStarted && !pausaAbierta && !tiempoFinalizado && gameStore.vidas > 0
+      "
       class="fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] left-[calc(env(safe-area-inset-left)+1.25rem)] z-30 flex items-end gap-3 select-none"
       aria-label="Controles táctiles de movimiento"
     >
@@ -409,13 +422,17 @@ function enfocarCanvasDelJuego() {
       >
         ▶
       </button>
-      <span class="touch-dash-hint mb-1 ml-1 max-w-20 font-pixel text-[7px] leading-relaxed text-white/65">
+      <span
+        class="touch-dash-hint mb-1 ml-1 max-w-20 font-pixel text-[7px] leading-relaxed text-white/65"
+      >
         DOBLE TOQUE: DASH
       </span>
     </div>
 
     <div
-      v-if="isTouchDevice && gameStarted && !pausaAbierta && !tiempoFinalizado && gameStore.vidas > 0"
+      v-if="
+        isTouchDevice && gameStarted && !pausaAbierta && !tiempoFinalizado && gameStore.vidas > 0
+      "
       class="touch-action-pad fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] right-[calc(env(safe-area-inset-right)+1rem)] z-30 grid grid-cols-2 gap-2 select-none"
       aria-label="Controles táctiles de acciones"
     >

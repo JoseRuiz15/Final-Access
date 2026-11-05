@@ -26,7 +26,9 @@ export const useCharacterStore = defineStore('characters', () => {
     return {
       id: char.id,
       nombre: char.name,
-      imagen: char.textureKey ? `/img/characters/${char.textureKey}.png` : `/img/characters/${char.id}.png`,
+      imagen: char.textureKey
+        ? `/img/characters/${char.textureKey}.png`
+        : `/img/characters/${char.id}.png`,
       perfil: `/img/profile/${perfilName}_perfil.webp`,
       habilidad: char.abilityName || 'Habilidad desconocida',
       descripcion: char.abilityDesc || 'Sin descripción disponible',
@@ -64,7 +66,7 @@ export const useCharacterStore = defineStore('characters', () => {
       const unlocked = data.unlockedCharacters || profile.unlockedCharacters || []
       unlockedCharacters.value = unlocked
         .map((item) =>
-          typeof item === 'string' ? item : item.characterId || item.id || item.character?.id
+          typeof item === 'string' ? item : item.characterId || item.id || item.character?.id,
         )
         .filter(Boolean)
       equippedCharacterId.value =
@@ -82,7 +84,9 @@ export const useCharacterStore = defineStore('characters', () => {
   }
 
   async function autoUnlockFreeCharacters() {
-    const freeChars = catalog.value.filter(c => c.unlockCost === 0 && !unlockedCharacters.value.includes(c.id))
+    const freeChars = catalog.value.filter(
+      (c) => c.unlockCost === 0 && !unlockedCharacters.value.includes(c.id),
+    )
     for (const char of freeChars) {
       try {
         await unlockCharacter(char.id)
@@ -96,7 +100,7 @@ export const useCharacterStore = defineStore('characters', () => {
           if (!unlockedCharacters.value.includes(char.id)) {
             unlockedCharacters.value.push(char.id)
           }
-          const c = catalog.value.find(ch => ch.id === char.id)
+          const c = catalog.value.find((ch) => ch.id === char.id)
           if (c) c.isUnlocked = true
         } else {
           console.warn(`No se pudo desbloquear ${char.id}:`, err)

@@ -74,9 +74,13 @@ async function handleRegister() {
     />
     <!--cuadro registro-->
     <div class="relative z-10 flex items-center justify-center min-h-screen">
-      <div class="auth-panel register-panel relative w-[510px] h-[700px] bg-black/50 rounded-3xl backdrop-blur-sm">
+      <div
+        class="auth-panel register-panel relative w-[510px] h-[700px] bg-black/50 rounded-3xl backdrop-blur-sm"
+      >
         <!--texto-->
-        <h2 class="register-title font-pixel text-4xl text-[#E41F1F] text-center mt-[50px]">REGISTRO</h2>
+        <h2 class="register-title font-pixel text-4xl text-[#E41F1F] text-center mt-[50px]">
+          REGISTRO
+        </h2>
 
         <!-- Error message -->
         <div

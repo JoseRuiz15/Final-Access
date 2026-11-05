@@ -7,7 +7,7 @@ export default class InventoryComponent {
     this.llaves = []
   }
 
-  pickUp(llave)  {
+  pickUp(llave) {
     const keyData = {
       texture: llave.texture.key,
       grupo: llave.grupo,

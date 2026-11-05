@@ -3,8 +3,7 @@ export const LEVEL1_CONFIG = {
   hud: {
     tiempoInicial: 300,
     llavesObjetivo: 1,
-    pista:
-      'Consigue una llave plateada con brillo rojo para avanzar de nivel.',
+    pista: 'Consigue una llave plateada con brillo rojo para avanzar de nivel.',
   },
   assets: {
     tilemaps: [['level1', '/maps/Mapa_level_1.json']],
@@ -18,13 +17,7 @@ export const LEVEL1_CONFIG = {
       ['decorations', '/tiles/decorations.png'],
       ['box', '/tiles/box.png'],
       ['walls', '/tiles/walls.png'],
-      ['imgSaltar', '/img/instruction/imgSaltar.png'],
-      ['imgDerecha', '/img/instruction/imgDerecha.png'],
-      ['imgIzquierda', '/img/instruction/imgIzquierda.png'],
-      ['imgAtacar', '/img/instruction/imgAtacar.png'],
-      ['imgInsertarLlave', '/img/instruction/imgInsertarLlave.png'],
       ['key1', '/img/keys/Key1-SILVER.png'],
-      ['imgRecogerLlave', '/img/instruction/imgRecogerLlave.png'],
       ['greenDoor', '/img/door/greenDoor.png'],
       ['redDoor', '/img/door/redDoor.png'],
     ],
@@ -59,12 +52,15 @@ export const LEVEL1_CONFIG = {
     objectLayers: ['DoorObjet'],
   },
 
-  tutorial: [
-    { key: 'imgSaltar', x: 530, y: 800, scale: 0.25 },
-    { key: 'imgDerecha', x: 300, y: 600, scale: 0.25 },
-    { key: 'imgIzquierda', x: 150, y: 600, scale: 0.25 },
-    { key: 'imgAtacar', x: 700, y: 650, scale: 0.25 },
-    { key: 'imgInsertarLlave', x: 1600, y: 500, scale: 0.25 },
+  // Marcadores DOM separados. x/y indican la esquina superior izquierda en coordenadas del mapa.
+  tutorialOverlays: [
+    { id: 'movement-wasd', src: '/img/tutorial/teclas_WASD.png', alt: 'Teclas W, A, S y D', label: 'MOVERSE CON W S D', x: 250, y: 650, width: 100 },
+    { id: 'movement-arrows', src: '/img/tutorial/teclas_flecha.png', alt: 'Teclas de flecha', label: 'O CON FLECHAS', x: 450, y: 658, width: 100 },
+    { id: 'jump-space', src: '/img/tutorial/tecla_espacio.png', alt: 'Tecla Espacio', label: 'SALTAR · W / ↑', x: 640, y: 900, width: 100 },
+    { id: 'attack-l', src: '/img/tutorial/tecla_L.png', alt: 'Tecla L', label: 'ATACAR', x: 900, y: 762, width: 30 },
+    { id: 'interact-g', src: '/img/tutorial/tecla_G.png', alt: 'Tecla G', label: 'RECOGER LLAVE', x: 840, y: 410, width: 30 },
+    { id: 'drop-key', src: '/img/tutorial/tecla_k.png', alt: 'Tecla K', label: 'SOLTAR LLAVE', x: 1150, y: 410, width: 30 },
+    { id: 'interact-g', src: '/img/tutorial/tecla_G.png', alt: 'Tecla G', label: 'ABRIR PUERTA', x: 2220, y: 750, width: 30 },
   ],
 
   enemies: [
@@ -74,35 +70,15 @@ export const LEVEL1_CONFIG = {
   ],
 
   boxes: [
-    {
-      x: 780,
-      y: 435,
-      keyData: {
-        texture: 'key2',
-        grupo: 'keys',
-        color: 'silver',
-        efecto: 'ninguno',
-        correcta: true,
-      },
-    },
+    { x: 780, y: 435, keyData: { texture: 'key2', grupo: 'keys', color: 'silver', efecto: 'ninguno', correcta: true } },
     { x: 812, y: 435 },
     { x: 844, y: 435 },
     { x: 812, y: 403 },
     { x: 920, y: 660 },
-    {
-      x: 340,
-      y: 752,
-      keyData: {
-        texture: 'key4Bronze',
-        grupo: 'keys',
-        color: 'bronze',
-        efecto: 'ninguno',
-        correcta: false,
-      },
-    },
+    { x: 340, y: 752, keyData: { texture: 'key4Bronze', grupo: 'keys', color: 'bronze', efecto: 'ninguno', correcta: false } },
   ],
 
-  player: { x: 230, y: 600 },
+  player: { x: 200, y: 650 },
 
   collisionRules: [
     'PlayerGroundRule',

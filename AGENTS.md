@@ -18,7 +18,7 @@
 - The only live Phaser bootstrap is `src/views/GameView.vue:onMounted` (creates `Phaser.Game` in `#game-container`, starting **Level2Scene**). `src/game/main.js` is an unused standalone bootstrap (no physics, no parent element) referenced nowhere — a new/edited scene won't run unless wired up in `GameView.vue`.
 - `GameView.vue` imports `Level1Scene` but never starts it. Verify which scene you touched before claiming a level is reachable.
 - Phaser and Vue share state via Pinia: `src/game/objects/player.js` mutates `useGameStore()` (`src/stores/game.js`, fields `vidas`, `llaves`, `enemigos`), which `src/components/HUD.vue` reads.
-- Controls (defined in `player.js`): A/D move, SPACE jump, L attack, G pick up key / open door.
+- Controls (defined in `src/game/services/InputService.js`): A/D or Left/Right arrows move, SPACE or Up arrow jumps, L attack, G pick up key / open door.
 - Level assets are Tiled maps at `public/maps/Mapa_level_*.json` plus tilesets in `public/tiles/` and sprites in `public/img/`, loaded in each scene's `preload()` with root-relative paths (`/img/...`, `/maps/...`). Map edits go through Tiled JSON.
 - Object-layer names must match the map exactly: Level 1 reads `map.getObjectLayer('DoorObjet')` (intentional typo matching the JSON); Level 2 uses `'DoorObject'` and `'PinchosDanger'`.
 - Animations (`caminar`, `saltar`, `atacar`, …) are recreated per scene in `create()`; a new scene must define them before `play()`.

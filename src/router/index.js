@@ -150,7 +150,10 @@ function preloadBackground(url) {
     }
 
     image.onload = () => {
-      image.decode?.().then(() => finish(true)).catch(() => finish(true))
+      image
+        .decode?.()
+        .then(() => finish(true))
+        .catch(() => finish(true))
     }
     image.onerror = () => finish(false)
     image.src = url

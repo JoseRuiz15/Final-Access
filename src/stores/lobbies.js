@@ -177,8 +177,7 @@ export const useLobbyStore = defineStore('lobbies', () => {
   function connectWebSocket(code) {
     // Si no se define VITE_WS_URL se deriva de la URL de API detectada (http -> ws,
     // https -> wss), incluido el host LAN al probar desde un dispositivo móvil.
-    const WS_BASE_URL =
-      import.meta.env.VITE_WS_URL || API_BASE_URL.replace(/^http/, 'ws')
+    const WS_BASE_URL = import.meta.env.VITE_WS_URL || API_BASE_URL.replace(/^http/, 'ws')
     const wsUrl = `${WS_BASE_URL}/ws/lobby/${code}`
 
     if (ws.value) {

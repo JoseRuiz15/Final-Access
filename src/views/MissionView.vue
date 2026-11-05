@@ -63,29 +63,31 @@ onUnmounted(() => {
 
 <template>
   <section class="mission-screen fixed inset-0 overflow-hidden bg-[#080e20]">
-    <img src="/img/present/loadingscene.webp" alt="mission" fetchpriority="high" decoding="async" class="absolute inset-0 w-full h-full object-cover blur-[4px] scale-105" />
+    <img
+      src="/img/present/loadingscene.webp"
+      alt="mission"
+      fetchpriority="high"
+      decoding="async"
+      class="absolute inset-0 w-full h-full object-cover blur-[4px] scale-105"
+    />
     <img
       src="/img/present/tutorialPersonaje.png"
       alt="tutorial"
       class="mission-character absolute top-[460px] left-[650px] w-[500px]"
     />
 
-    <h1 class="mission-title absolute top-[200px] left-[750px] text-[50px] text-white font-pixel text-[30px]">
+    <h1
+      class="mission-title absolute top-[200px] left-[750px] text-[50px] text-white font-pixel text-[30px]"
+    >
       NIVEL {{ nivelActual }}
     </h1>
 
     <div class="mission-dialogue absolute top-[295px] left-[760px] w-[760px] h-[220px]">
-      <img
-        src="/img/textbox/textbox.png"
-        alt=""
-        class="absolute inset-0 w-full h-full"
-      />
+      <img src="/img/textbox/textbox.png" alt="" class="absolute inset-0 w-full h-full" />
 
       <div
         :style="
-          nivelActual === 2
-            ? { left: '60px', right: '90px' }
-            : { left: '90px', right: '120px' }
+          nivelActual === 2 ? { left: '60px', right: '90px' } : { left: '90px', right: '120px' }
         "
         class="absolute top-4 bottom-6 overflow-y-auto"
       >

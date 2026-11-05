@@ -30,13 +30,6 @@ export default class Level3Scene extends BaseScene {
       if (!this.player.muerto) this.player.setTexture(this.player.idleTexture)
     })
 
-    this.player.on('animationcomplete-playerDamage', () => {
-      if (!this.player.muerto && this.player.body.blocked.down) {
-        this.player.setTexture(this.player.idleTexture)
-      }
-      this.player.recibiendoDano = false
-      this.player.setTexture(this.player.idleTexture)
-    })
   }
 
   _createEnemies() {

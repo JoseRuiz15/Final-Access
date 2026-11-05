@@ -12,7 +12,7 @@ export const useMultiplayerStore = defineStore('multiplayer', {
     messages: [],
     gameStarted: false,
     isPrivate: false, // Bandera para la sala actual (privada o pública)
-    publicRooms: [] // Lista de salas públicas descubiertas
+    publicRooms: [], // Lista de salas públicas descubiertas
   }),
   actions: {
     connect() {
@@ -22,7 +22,10 @@ export const useMultiplayerStore = defineStore('multiplayer', {
       }
 
       const configuredSocketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001'
-      const socketUrl = configuredSocketUrl.trim().replace(/[\s,]+$/, '').replace(/\/+$/, '')
+      const socketUrl = configuredSocketUrl
+        .trim()
+        .replace(/[\s,]+$/, '')
+        .replace(/\/+$/, '')
       this.socket = io(socketUrl)
 
       this.socket.on('connect', () => {
@@ -95,10 +98,10 @@ export const useMultiplayerStore = defineStore('multiplayer', {
       this.socket.emit('setReady', { roomCode: this.roomCode })
     },
     sendMessage(message) {
-      this.socket.emit('sendMessage', { 
-        roomCode: this.roomCode, 
-        message, 
-        username: this.username 
+      this.socket.emit('sendMessage', {
+        roomCode: this.roomCode,
+        message,
+        username: this.username,
       })
     },
     limpiarChat() {
@@ -121,6 +124,6 @@ export const useMultiplayerStore = defineStore('multiplayer', {
     // Nueva acción para cargar salas públicas
     fetchPublicRooms() {
       if (this.socket) this.socket.emit('listPublicRooms')
-    }
-  }
+    },
+  },
 })

@@ -33,13 +33,6 @@ export default class Level5Scene extends BaseScene {
       if (!this.player.muerto) this.player.setTexture(this.player.idleTexture)
     })
 
-    this.player.on('animationcomplete-playerDamage', () => {
-      if (!this.player.muerto && this.player.body.blocked.down) {
-        this.player.setTexture(this.player.idleTexture)
-      }
-      this.player.recibiendoDano = false
-      this.player.setTexture(this.player.idleTexture)
-    })
   }
 
   _createEnemies() {
@@ -101,12 +94,7 @@ export default class Level5Scene extends BaseScene {
 
     // Checkpoint en X:1530 - guarda posición actual del jugador al cruzarla
     const cpX = this.config.checkpointX
-    if (
-      cpX &&
-      !this._checkpointActivado &&
-      this.player?.active &&
-      this.player.x >= cpX
-    ) {
+    if (cpX && !this._checkpointActivado && this.player?.active && this.player.x >= cpX) {
       this.player.spawnX = this.player.x
       this.player.spawnY = this.player.y
       this._checkpointActivado = true

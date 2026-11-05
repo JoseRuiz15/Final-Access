@@ -28,7 +28,7 @@ export default class AssetLoader {
         { frameWidth: 32, frameHeight: 32 },
       ],
       ['playerDead', '/img/animatics-player/playerDead.png', { frameWidth: 64, frameHeight: 32 }],
-/*
+      /*
       ['character2Walk', '/img/animatics-player/character2Walk', { frameWidth: 32, frameHeight: 32 }],
       ['character2Jump', '/img/animatics-player/character2Jump', { frameWidth: 32, frameHeight: 32 }],
       ['character2JumpAttack', '/img/animatics-player/character2JumpAttack', { frameWidth: 32, frameHeight: 32 }],
@@ -59,7 +59,11 @@ export default class AssetLoader {
         '/img/animatics-enemy/enemyDronAttack.png',
         { frameWidth: 32, frameHeight: 32 },
       ],
-      ['enemyDronDead', '/img/animatics-enemy/enemyDronDead.png', { frameWidth: 32, frameHeight: 32 }],
+      [
+        'enemyDronDead',
+        '/img/animatics-enemy/enemyDronDead.png',
+        { frameWidth: 32, frameHeight: 32 },
+      ],
       [
         'enemy2AttackEffect',
         '/img/animatics-enemy/enemy2attackeffect.png',

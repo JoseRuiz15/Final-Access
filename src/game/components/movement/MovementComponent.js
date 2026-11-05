@@ -46,7 +46,12 @@ export default class MovementComponent {
   stop() {
     if (this.dashActivo) return
     this.player.setVelocityX(0)
-    if (this.isGrounded() && !this.player.ataque && !this.player.muerto) {
+    if (
+      this.isGrounded() &&
+      !this.player.ataque &&
+      !this.player.recibiendoDano &&
+      !this.player.muerto
+    ) {
       if (this.player.anims.currentAnim?.key === 'saltar') {
         this.player.anims.stop()
       }

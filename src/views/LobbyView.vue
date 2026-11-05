@@ -1,20 +1,22 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useLobbyStore } from '@/stores/lobbies'
 import { useCharacterStore } from '@/stores/characters'
+import { useGameStore } from '@/stores/game'
 import { useProfileStore } from '@/stores/profile'
-import PlayerProfilePanel from '@/components/PlayerProfilePanel.vue'
+import CharacterShowcase from '@/components/CharacterShowcase.vue'
+import AppHeader from '@/components/AppHeader.vue'
 import { initFlowbite } from 'flowbite'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const lobbyStore = useLobbyStore()
 const characterStore = useCharacterStore()
+const gameStore = useGameStore()
 const profileStore = useProfileStore()
 
-const mostrarConfirmacion = ref(false)
 const mostrarCrearLobby = ref(false)
 const nuevoLobby = ref({
   name: '',
@@ -25,21 +27,23 @@ const nuevoLobby = ref({
 const isCreating = ref(false)
 const createError = ref(null)
 
+// El lobby muestra el personaje equipado. Si la API falla, usa la selección
+// guardada en localStorage por el store del juego.
+const showcaseCharacterId = computed(
+  () =>
+    characterStore.equippedCharacterId ||
+    gameStore.selectedCharacterId ||
+    profileStore.profile?.equippedCharacterId ||
+    profileStore.profile?.characterId ||
+    'cosa1',
+)
+
 function irGameMode() {
   router.push('/gamemode')
 }
 
-function irCharacters() {
-  router.push('/characters')
-}
-
 function irStore() {
   router.push('/store')
-}
-
-async function irLogin() {
-  await authStore.logout()
-  router.push('/login')
 }
 
 async function fetchLobbies() {
@@ -85,7 +89,7 @@ async function handleLeaveLobby() {
 }
 
 function toggleReady() {
-  const currentReady = lobbyStore.players.find(p => p.userId === authStore.user?.id)?.isReady
+  const currentReady = lobbyStore.players.find((p) => p.userId === authStore.user?.id)?.isReady
   lobbyStore.setReady(!currentReady)
 }
 
@@ -115,7 +119,9 @@ onMounted(() => {
   profileStore.fetchProfile().catch((err) => {
     console.warn('No se pudo cargar el perfil del jugador.', err)
   })
-  characterStore.fetchUnlocked()
+  characterStore.fetchUnlocked().catch((err) => {
+    console.warn('No se pudo cargar el personaje equipado.', err)
+  })
 })
 
 onUnmounted(() => {
@@ -136,216 +142,61 @@ onUnmounted(() => {
 
     <!-- Contenido general -->
     <div class="relative min-h-screen flex flex-col">
-      <!-- Barra superior -->
-      <header
-        class="app-header w-full h-[150px] bg-[#000000]/50 backdrop-blur-sm flex items-center px-4"
-      >
-        <PlayerProfilePanel compact />
+      <!-- Barra superior (compartida con tienda y personajes) -->
+      <AppHeader />
 
-        <!-- Menú central -->
-        <nav class="header-nav flex items-center gap-20 ml-16">
-          <h1
-            class="text-white hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2] font-pixel"
-          >
-            INICIO
-          </h1>
-
-          <button @click="irCharacters">
-            <h1
-              class="text-white font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]"
-            >
-              PERSONAJES
-            </h1>
-          </button>
-
-          <button @click="irStore">
-            <h1
-              class="text-white font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]"
-            >
-              TIENDA
-            </h1>
-          </button>
-        </nav>
-
-        <!-- Acciones derecha -->
-        <div class="header-actions ml-auto flex items-center gap-8">
-          <div class="flex items-center gap-2">
-            <img src="/img/iconos/moneda.png" alt="puntos" class="h-[30px]" />
-            <h1 class="font-pixel text-[20px] text-[#FB00FF]">{{ authStore.user?.coins || 0 }}</h1>
-          </div>
-
-          <button
-            class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]"
-          >
-            <img src="/img/iconos/ajustes.png" alt="ajustes" class="w-full h-full object-cover" />
-          </button>
-
-          <button
-            class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]"
-          >
-            <img src="/img/iconos/mensajes.png" alt="mensajes" class="w-full h-full object-cover" />
-          </button>
-
-          <button
-            @click="mostrarConfirmacion = true"
-            class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]"
-          >
-            <img
-              src="/img/iconos/salida.png"
-              alt="cierre de sesión"
-              class="w-full h-full object-cover"
-            />
-          </button>
-        </div>
-      </header>
-
-      <!-- Contenido principal -->
+      <!-- Contenido Izquierdo -->
       <main class="lobby-main flex justify-between px-10 pt-20 flex-1">
-        <!-- Sección de Misiones Diarias (lugar donde estaban los botones) -->
-        <section class="border border-[#00D9FF]/70 bg-[#07101f] px-7 py-8 text-white shadow-[0_0_60px_#00D9FF33] rounded-lg max-w-sm w-full overflow-hidden">
-          <div class="border-b-[3px] border-[#00D9FF]/50 py-2 px-5">
-            <p class="font-pixel text-[13px] text-[#00D9FF]">MISIONES DIARIAS</p>
-          </div>
+        <section class="shrink-0">
+          <!-- Misiones Diarias-->
+          <div
+            class="self-start pause-panel relative overflow-hidden border border-[#00D9FF]/70 bg-[#07101f] px-2 py-2 text-white shadow-[0_0_60px_#00D9FF33] flex flex-col gap-4 mt-5"
+          >
+            <div class="border border-[#00D9FF]/15">
+              <div class="border border-[#00D9FF]/15 py-2 px-5">
+                <p class="font-pixel text-[13px] text-[#00D9FF]">MISIONES DIARIAS</p>
+              </div>
 
-          <div class="p-5 space-y-5 ">
-            <div>
-              <div class="flex justify-between items-center mb-1">
-                <p class="font-pixel text-white text-[10px]">JUEGA 2 PARTIDAS</p>
-                <p class="font-pixel text-white text-[10px]">0/2</p>
-              </div>
-              <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
-                <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
-              </div>
-            </div>
-            <div>
-              <div class="flex justify-between items-center mb-1">
-                <p class="font-pixel text-white text-[10px]">ELIMINA 10 ENEMIGOS</p>
-                <p class="font-pixel text-white text-[10px]">0/10</p>
-              </div>
-              <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
-                <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
-              </div>
-            </div>
-            <div>
-              <div class="flex justify-between items-center mb-1">
-                <p class="font-pixel text-white text-[10px] text-[#6F89A5]">GANA 1 PARTIDA</p>
-                <p class="font-pixel text-white text-[10px] text-[#6F89A5]">0/1</p>
-              </div>
-              <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
-                <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Lado derecho -->
-        <section
-          class="lobby-widgets flex flex-col items-center gap-20"
-          :class="{ 'is-in-lobby': lobbyStore.isInLobby }"
-        >
-          <!-- Mi Lobby Actual -->
-          <div v-if="lobbyStore.isInLobby" class="bg-[#000208] w-80 border-3 border-[#FF00D9] rounded-lg p-5">
-            <div class="border-b-[3px] border-[#FF00D9] py-2 px-5 mb-4">
-              <p class="font-pixel text-[13px] text-[#FF00D9] flex justify-between">
-                MI LOBBY: {{ lobbyStore.currentLobby?.code }}
-                <span class="text-[#00FFEA]">{{ lobbyStore.players.length }}/{{ lobbyStore.currentLobby?.maxPlayers }}</span>
-              </p>
-            </div>
-
-            <div class="space-y-3">
-              <div v-for="player in lobbyStore.players" :key="player.userId" class="flex justify-between items-center p-2 bg-black/30 rounded">
-                <span class="font-pixel text-white text-[11px]">{{ player.username }}</span>
-                <div class="flex items-center gap-2">
-                  <span v-if="player.isReady" class="text-green-400 font-pixel text-[10px]">✓ LISTO</span>
-                  <span v-else class="text-yellow-400 font-pixel text-[10px]">ESPERANDO</span>
-                  <span v-if="player.isCreator" class="text-purple-400 font-pixel text-[10px]">★ CREADOR</span>
+              <div class="p-5 space-y-5">
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <p class="font-pixel text-white text-[10px]">JUEGA 2 PARTIDAS</p>
+                    <p class="font-pixel text-white text-[10px]">0/2</p>
+                  </div>
+                  <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
+                    <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
+                  </div>
                 </div>
-              </div>
-
-              <div class="pt-2 border-t border-[#2D2F4B] flex flex-col gap-2">
-                <button
-                  @click="toggleReady"
-                  :disabled="lobbyStore.isLoading"
-                  class="w-full h-10 font-pixel text-[11px] rounded-lg border-2 transition-all duration-300"
-                  :class="lobbyStore.players.find(p => p.userId === authStore.user?.id)?.isReady
-                    ? 'bg-[#123C32] text-[#B7F7D5] border-[#58D6A3] hover:bg-[#0A5C2E]'
-                    : 'bg-[#2A1A4B] text-white border-[#B17BE3] hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]'"
-                >
-                  {{ lobbyStore.players.find(p => p.userId === authStore.user?.id)?.isReady ? 'DESISTIR' : 'LISTO' }}
-                </button>
-
-                <button
-                  v-if="lobbyStore.isCreator"
-                  @click="startMatch"
-                  :disabled="!lobbyStore.canStartMatch || lobbyStore.isLoading"
-                  class="w-full h-10 bg-[#FF00D9] text-black font-pixel text-[11px] rounded-lg border-2 border-[#FF00D9] transition-all duration-300 hover:bg-[#FF33E0] hover:shadow-[0_0_20px_#FF00D9] disabled:opacity-50"
-                >
-                  INICIAR PARTIDA
-                </button>
-
-                <button
-                  v-if="!lobbyStore.isCreator"
-                  @click="handleLeaveLobby"
-                  class="w-full h-10 bg-[#4B1A2A] text-white font-pixel text-[11px] rounded-lg border-2 border-[#8B3A4A] transition-all duration-300 hover:bg-[#6B2A3A] hover:shadow-[0_0_20px_#FF0055]"
-                >
-                  SALIR DEL LOBBY
-                </button>
-
-                <button
-                  v-if="lobbyStore.isCreator"
-                  @click="cancelLobby"
-                  class="w-full h-10 bg-[#4B1A2A] text-white font-pixel text-[11px] rounded-lg border-2 border-[#8B3A4A] transition-all duration-300 hover:bg-[#6B2A3A] hover:shadow-[0_0_20px_#FF0055]"
-                >
-                  CANCELAR LOBBY
-                </button>
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <p class="font-pixel text-white text-[10px]">ELIMINA 10 ENEMIGOS</p>
+                    <p class="font-pixel text-white text-[10px]">0/10</p>
+                  </div>
+                  <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
+                    <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <p class="font-pixel text-white text-[10px] text-[#6F89A5]">GANA 1 PARTIDA</p>
+                    <p class="font-pixel text-white text-[10px] text-[#6F89A5]">0/1</p>
+                  </div>
+                  <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
+                    <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-
-          <!-- Misiones diarias -->
-           <section
-             class="border border-[#00D9FF]/70 bg-[#07101f] px-7 text-white shadow-[0_0_60px_#00D9FF33] rounded-lg max-w-sm w-full overflow-hidden"
-           >
-             <div class="border-b-[3px] border-[#00D9FF]/50 py-2 px-5">
-               <p class="font-pixel text-[13px] text-[#00D9FF]">MISIONES DIARIAS</p>
-             </div>
-
-            <div class="p-5 space-y-5 ">
-              <div>
-                <div class="flex justify-between items-center mb-1">
-                  <p class="font-pixel text-white text-[10px]">JUEGA 2 PARTIDAS</p>
-                  <p class="font-pixel text-white text-[10px]">0/2</p>
-                </div>
-                <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
-                  <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between items-center mb-1">
-                  <p class="font-pixel text-white text-[10px]">ELIMINA 10 ENEMIGOS</p>
-                  <p class="font-pixel text-white text-[10px]">0/10</p>
-                </div>
-                <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
-                  <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between items-center mb-1">
-                  <p class="font-pixel text-white text-[10px] text-[#6F89A5]">GANA 1 PARTIDA</p>
-                  <p class="font-pixel text-white text-[10px] text-[#6F89A5]">0/1</p>
-                </div>
-                <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
-                  <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
-                </div>
-              </div>
-            </div>
-          </section>
 
           <!-- Carrusel de tienda -->
-          <div id="default-carousel" class="relative w-80 h-52" data-carousel="slide" >
-            <div
-              class="relative w-full h-full overflow-hidden rounded-lg border-3 border-[#00F0FF] shadow-[0_0_10px_#00F0FF]"
-            >
+
+          <div
+            id="default-carousel"
+            class="relative w-80 h-52 border border-[#00D9FF]/70 bg-[#07101f] px-2 py-2 shadow-[0_0_60px_#00D9FF33] mt-20"
+            data-carousel="slide"
+          >
+            <div class="relative w-full h-full overflow-hidden border border-[#00D9FF]/15">
               <div class="hidden duration-400 ease-in-out" data-carousel-item="active">
                 <img
                   src="/img/store/tienda1.png"
@@ -372,16 +223,45 @@ onUnmounted(() => {
               </div>
             </div>
             <div class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3">
-              <button type="button" class="w-3 h-3 rounded-full bg-white/70" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
-              <button type="button" class="w-3 h-3 rounded-full bg-white/70" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
-              <button type="button" class="w-3 h-3 rounded-full bg-white/70" aria-current="false" aria-label="Slide 3" data-carousel-slide-to="2"></button>
+              <button
+                type="button"
+                class="w-3 h-3 rounded-full bg-white/70"
+                aria-current="true"
+                aria-label="Slide 1"
+                data-carousel-slide-to="0"
+              ></button>
+              <button
+                type="button"
+                class="w-3 h-3 rounded-full bg-white/70"
+                aria-current="false"
+                aria-label="Slide 2"
+                data-carousel-slide-to="1"
+              ></button>
+              <button
+                type="button"
+                class="w-3 h-3 rounded-full bg-white/70"
+                aria-current="false"
+                aria-label="Slide 3"
+                data-carousel-slide-to="2"
+              ></button>
             </div>
           </div>
+        </section>
 
-          <!-- Botón jugar (para modo single player) -->
+        <!-- Personaje equipado en el centro del lobby -->
+        <div
+          class="pointer-events-none hidden min-w-0 flex-1 -translate-y-10 justify-center self-center xl:flex"
+        >
+          <CharacterShowcase :character-id="showcaseCharacterId" />
+        </div>
+
+        <!-- Lado derecho -->
+        <section class="lobby-widgets flex flex-col items-center gap-20 shrink-0">
+          <!-- Botón jugar -->
           <button
             v-if="!lobbyStore.isInLobby"
-            class="cursor-pointer select-none bg-[#000000]/50 backdrop-blur-sm  h-15 w-80 text-white font-pixel rounded-lg border-4 border-[#00F0FF] shadow-[0_0_10px_#00F0FF] transition-all duration-300 hover:bg-fuchsia-500 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
+            type="button"
+            class="mt-134 cursor-pointer select-none w-80 bg-[#00D9FF] border border-[#00D9FF]/70 px-6 py-4 font-pixel text-[10px] text-[#050711] shadow-[0_0_60px_#00D9FF33] transition hover:bg-white hover:shadow-[0_0_24px_#00D9FF66]"
             @click="irGameMode"
           >
             JUGAR
@@ -390,107 +270,4 @@ onUnmounted(() => {
       </main>
     </div>
   </section>
-
-  <!-- Modal crear lobby -->
-  <div v-if="mostrarCrearLobby" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-    <div class="create-lobby-modal w-[600px] bg-black border-4 border-[#FF00D9] rounded-lg p-8">
-      <h1 class="font-pixel text-[#FF00D9] text-2xl text-center mb-6">CREAR NUEVO LOBBY</h1>
-
-      <div v-if="createError" class="mb-4 p-3 bg-red-900/50 border border-red-500 rounded-lg text-red-200 text-sm font-pixel text-center">
-        {{ createError }}
-      </div>
-
-      <div class="space-y-4">
-        <div>
-          <label class="block font-pixel text-white text-[12px] mb-2">NOMBRE DEL LOBBY</label>
-          <input
-            v-model="nuevoLobby.name"
-            type="text"
-            maxlength="30"
-            class="w-full bg-[#1A1A2E] border-2 border-[#41334B] rounded-lg p-3 text-white font-pixel text-[14px] focus:border-[#FF00D9] focus:outline-none"
-            placeholder="Mi Lobby Épico"
-          />
-        </div>
-
-        <div>
-          <label class="block font-pixel text-white text-[12px] mb-2">MODO</label>
-          <select
-            v-model="nuevoLobby.mode"
-            class="w-full bg-[#1A1A2E] border-2 border-[#41334B] rounded-lg p-3 text-white font-pixel text-[14px] focus:border-[#FF00D9] focus:outline-none"
-          >
-            <option value="competitive">Competitivo</option>
-            <option value="collaborative">Colaborativo</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block font-pixel text-white text-[12px] mb-2">MÁXIMO JUGADORES</label>
-          <select
-            v-model="nuevoLobby.maxPlayers"
-            class="w-full bg-[#1A1A2E] border-2 border-[#41334B] rounded-lg p-3 text-white font-pixel text-[14px] focus:border-[#FF00D9] focus:outline-none"
-          >
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-          </select>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <input
-            v-model="nuevoLobby.isPrivate"
-            type="checkbox"
-            id="private-lobby"
-            class="w-5 h-5 accent-[#FF00D9]"
-          />
-          <label for="private-lobby" class="font-pixel text-white text-[12px]">Lobby privado (solo con código)</label>
-        </div>
-
-        <div class="flex gap-4 mt-6">
-          <button
-            @click="closeCreateModal"
-            class="flex-1 h-12 font-pixel text-white rounded-lg border-2 border-[#41334B] bg-[#1A1A2E] transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]"
-          >
-            CANCELAR
-          </button>
-          <button
-            @click="handleCreateLobby"
-            :disabled="isCreating"
-            class="flex-1 h-12 font-pixel text-black rounded-lg border-2 border-[#FF00D9] bg-[#FF00D9] transition-all duration-300 hover:bg-[#FF33E0] hover:shadow-[0_0_20px_#FF00D9] disabled:opacity-50"
-          >
-            {{ isCreating ? 'CREANDO...' : 'CREAR LOBBY' }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal confirmación salida -->
-  <div
-    v-if="mostrarConfirmacion"
-    class="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
-  >
-    <div class="confirm-dialog w-[700px] h-[400px] bg-black border-4 border-[#8B7A91] rounded-lg">
-      <h1 class="font-pixel text-[#FB00FF] text-3xl text-center mt-8">
-        ¿ESTÁS SEGURO DE QUE QUIERES SALIR?
-      </h1>
-
-      <div class="flex flex-col items-center gap-8 mt-16">
-        <button
-          @click="irLogin"
-          class="font-pixel text-white w-[250px] h-[60px] bg-[#2A1A4B] rounded-xl border-2 border-fuchsia-500 transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
-        >
-          SI
-        </button>
-
-        <button
-          @click="mostrarConfirmacion = false"
-          class="font-pixel text-white w-[250px] h-[60px] bg-[#2A1A4B] rounded-xl border-2 border-fuchsia-500 transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
-        >
-          NO
-        </button>
-      </div>
-    </div>
-  </div>
 </template>

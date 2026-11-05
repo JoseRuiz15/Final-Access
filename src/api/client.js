@@ -1,7 +1,6 @@
 import axios from 'axios'
 
-const localHost =
-  (typeof window !== 'undefined' && window.location.hostname) || 'localhost'
+const localHost = (typeof window !== 'undefined' && window.location.hostname) || 'localhost'
 const localApiHost = localHost.includes(':') ? `[${localHost}]` : localHost
 export const API_BASE_URL = import.meta.env.VITE_API_URL || `http://${localApiHost}:3000`
 
@@ -19,7 +18,7 @@ api.interceptors.request.use(
     // Cookies are automatically sent with withCredentials: true
     return config
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 )
 
 // Rutas donde un 401 NO significa "sesión caducada", así que no hay que
@@ -51,7 +50,7 @@ api.interceptors.response.use(
       window.location.assign(`/login?redirect=${destino}`)
     }
     return Promise.reject(error)
-  }
+  },
 )
 
 // Auth endpoints

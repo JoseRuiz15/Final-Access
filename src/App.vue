@@ -46,8 +46,7 @@ async function activateLandscapeMode() {
 }
 
 onMounted(() => {
-  isTouchDevice.value =
-    'ontouchstart' in window || (navigator.maxTouchPoints || 0) > 0
+  isTouchDevice.value = 'ontouchstart' in window || (navigator.maxTouchPoints || 0) > 0
   orientationQuery = window.matchMedia('(orientation: portrait)')
   refreshOrientation()
   orientationQuery.addEventListener?.('change', refreshOrientation)
@@ -76,11 +75,28 @@ onBeforeUnmount(() => {
       aria-labelledby="orientation-title"
     >
       <div class="orientation-grid pointer-events-none absolute inset-0"></div>
-      <section class="orientation-panel relative w-full max-w-md border border-cyan-300/45 bg-[#07101f]/95 px-6 py-10 shadow-[0_0_60px_#00d9ff22] sm:px-10">
-        <div class="orientation-icon mx-auto mb-7 grid h-20 w-20 place-items-center border border-cyan-200/50 bg-cyan-300/5 text-cyan-200">
+      <section
+        class="orientation-panel relative w-full max-w-md border border-cyan-300/45 bg-[#07101f]/95 px-6 py-10 shadow-[0_0_60px_#00d9ff22] sm:px-10"
+      >
+        <div
+          class="orientation-icon mx-auto mb-7 grid h-20 w-20 place-items-center border border-cyan-200/50 bg-cyan-300/5 text-cyan-200"
+        >
           <svg viewBox="0 0 64 64" class="h-12 w-12" fill="none" aria-hidden="true">
-            <rect x="20" y="8" width="24" height="48" rx="4" stroke="currentColor" stroke-width="3" />
-            <path d="M27 48h10M10 27a22 22 0 0 1 36-15M46 12V4m0 8h-8M54 37a22 22 0 0 1-36 15m0 0v8m0-8h8" stroke="#ff4de1" stroke-width="3" stroke-linecap="square" />
+            <rect
+              x="20"
+              y="8"
+              width="24"
+              height="48"
+              rx="4"
+              stroke="currentColor"
+              stroke-width="3"
+            />
+            <path
+              d="M27 48h10M10 27a22 22 0 0 1 36-15M46 12V4m0 8h-8M54 37a22 22 0 0 1-36 15m0 0v8m0-8h8"
+              stroke="#ff4de1"
+              stroke-width="3"
+              stroke-linecap="square"
+            />
           </svg>
         </div>
         <p class="mb-3 font-mono text-[10px] uppercase tracking-[0.32em] text-cyan-200/65">
@@ -109,9 +125,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .orientation-gate {
-  background:
-    radial-gradient(ellipse at 50% 38%, rgb(0 217 255 / 12%), transparent 48%),
-    #030711;
+  background: radial-gradient(ellipse at 50% 38%, rgb(0 217 255 / 12%), transparent 48%), #030711;
   padding-top: max(24px, env(safe-area-inset-top));
   padding-right: max(24px, env(safe-area-inset-right));
   padding-bottom: max(24px, env(safe-area-inset-bottom));

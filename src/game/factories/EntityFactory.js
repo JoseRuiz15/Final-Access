@@ -42,9 +42,9 @@ export default class EntityFactory {
     if (config.vida != null) enemy.vida = config.vida
     if (config.velocidad != null) enemy.velocidad = config.velocidad
     if (config.limiteIzquierdo != null) {
-    enemy.limiteIzquierdo = config.limiteIzquierdo
-    if (enemy.ai) enemy.ai.limiteIzquierdo = config.limiteIzquierdo
-  }
+      enemy.limiteIzquierdo = config.limiteIzquierdo
+      if (enemy.ai) enemy.ai.limiteIzquierdo = config.limiteIzquierdo
+    }
     if (config.limiteDerecho != null) {
       enemy.limiteDerecho = config.limiteDerecho
       if (enemy.ai) enemy.ai.limiteDerecho = config.limiteDerecho

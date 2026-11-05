@@ -59,9 +59,13 @@ async function handleLogin() {
     />
     <!--cuadro-->
     <div class="relative z-10 flex items-center justify-center min-h-screen">
-      <div class="auth-panel login-panel relative w-[510px] h-[560px] bg-black/50 rounded-3xl backdrop-blur-sm">
+      <div
+        class="auth-panel login-panel relative w-[510px] h-[560px] bg-black/50 rounded-3xl backdrop-blur-sm"
+      >
         <!--texto-->
-        <h2 class="login-title font-pixel text-4xl text-[#E41F1F] text-center mt-[50px]">INICIO DE SESION</h2>
+        <h2 class="login-title font-pixel text-4xl text-[#E41F1F] text-center mt-[50px]">
+          INICIO DE SESION
+        </h2>
 
         <!-- Error message -->
         <div

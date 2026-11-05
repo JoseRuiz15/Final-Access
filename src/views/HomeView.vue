@@ -6,22 +6,12 @@ import { useAuthStore } from '@/stores/auth'
 const router = useRouter()
 const authStore = useAuthStore()
 
-async function checkAuth() {
-  if (!authStore.isAuthenticated) {
-    try {
-      await authStore.fetchMe()
-      router.push('/lobby')
-    } catch {
-      // Not authenticated, stay on home
-    }
-  } else {
-    router.push('/lobby')
-  }
+function checkAuth() {
+  // optionalAuth ya restauró la sesión antes de montar esta vista.
+  if (authStore.isAuthenticated) router.push('/lobby')
 }
 
-onMounted(() => {
-  checkAuth()
-})
+onMounted(checkAuth)
 </script>
 
 <template>

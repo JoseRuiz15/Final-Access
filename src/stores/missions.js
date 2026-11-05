@@ -7,9 +7,13 @@ export const useMissionStore = defineStore('missions', () => {
   const isLoading = ref(false)
   const error = ref(null)
 
-  const availableMissions = computed(() => missions.value.filter((m) => !m.claimed && m.currentProgress >= m.target))
+  const availableMissions = computed(() =>
+    missions.value.filter((m) => !m.claimed && m.currentProgress >= m.target),
+  )
   const claimedMissions = computed(() => missions.value.filter((m) => m.claimed))
-  const pendingMissions = computed(() => missions.value.filter((m) => !m.claimed && m.currentProgress < m.target))
+  const pendingMissions = computed(() =>
+    missions.value.filter((m) => !m.claimed && m.currentProgress < m.target),
+  )
 
   async function fetchMissions() {
     isLoading.value = true

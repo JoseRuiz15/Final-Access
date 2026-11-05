@@ -150,7 +150,7 @@ export const KEY_SPRITESHEETS = [
     frames: 25,
     frameRate: 12,
   },
-];
+]
 
 /**
  * Devuelve la clave de animación asociada a una textura de llave.

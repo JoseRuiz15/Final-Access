@@ -114,7 +114,8 @@ async function handleVerify() {
       router.push('/lobby')
     }, 1500)
   } catch (err) {
-    error.value = err.response?.data?.message || err.response?.data?.error || 'Código inválido o expirado'
+    error.value =
+      err.response?.data?.message || err.response?.data?.error || 'Código inválido o expirado'
   } finally {
     isLoading.value = false
   }
@@ -145,9 +146,12 @@ async function resendCode() {
     countdown.value = 600
     startCountdown()
     notice.value = 'Código reenviado correctamente'
-    setTimeout(() => { notice.value = null }, 3000)
+    setTimeout(() => {
+      notice.value = null
+    }, 3000)
   } catch (err) {
-    error.value = err.response?.data?.message || err.response?.data?.error || 'Error al reenviar código'
+    error.value =
+      err.response?.data?.message || err.response?.data?.error || 'Error al reenviar código'
   } finally {
     isLoading.value = false
   }
@@ -187,15 +191,22 @@ onUnmounted(() => {
     />
     <!--cuadro de verificacion de codigo-->
     <div class="relative z-10 flex items-center justify-center min-h-screen">
-      <div class="auth-panel verification-panel relative w-[550px] h-[550px] rounded-3xl bg-[#14172C] border-4 border-[#68699E]">
+      <div
+        class="auth-panel verification-panel relative w-[550px] h-[550px] rounded-3xl bg-[#14172C] border-4 border-[#68699E]"
+      >
         <!--textos-->
-        <p class="verification-title text-[#A55CCF] font-pixel text-3xl text-center mt-10">VERIFICACION DE CORREO</p>
+        <p class="verification-title text-[#A55CCF] font-pixel text-3xl text-center mt-10">
+          VERIFICACION DE CORREO
+        </p>
 
         <p v-if="!devCode" class="verification-intro text-[15px] text-white font-pixel text-center">
           Hemos enviado un código de verificación a tu correo electrónico
         </p>
 
-        <div v-if="devCode" class="mx-6 mt-4 rounded-lg border border-yellow-500 bg-yellow-900/40 p-3 text-center text-yellow-200">
+        <div
+          v-if="devCode"
+          class="mx-6 mt-4 rounded-lg border border-yellow-500 bg-yellow-900/40 p-3 text-center text-yellow-200"
+        >
           <p class="font-pixel text-xs">Código local de desarrollo (no se envió un correo):</p>
           <p class="mt-2 font-pixel text-2xl tracking-[0.3em]">{{ devCode }}</p>
         </div>
@@ -292,7 +303,9 @@ onUnmounted(() => {
 
         <!--cronometro-->
         <div class="verification-timer mt-5 text-center">
-          <p class="text-white font-pixel">Reenviar código en <span class="text-[#A55CCF]">{{ formatTime(countdown) }}</span></p>
+          <p class="text-white font-pixel">
+            Reenviar código en <span class="text-[#A55CCF]">{{ formatTime(countdown) }}</span>
+          </p>
         </div>
       </div>
     </div>

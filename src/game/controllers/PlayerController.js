@@ -32,14 +32,13 @@ export default class PlayerController extends IController {
       return
     }
     this.entity.movement?.update()
-    if (this.entity.recibiendoDano) {
+    const recibiendoDano = this.entity.recibiendoDano
+    if (recibiendoDano) {
       this.attackWasDown = false
-      this.entity.movement?.cancelDash()
       this.entity.cancelarCargaAtaque?.()
-      return
     }
 
-    if (this.entity.idleTexture === 'cosa3') {
+    if (!recibiendoDano && this.entity.idleTexture === 'cosa3') {
       this._handleDashInput()
     }
 
@@ -49,8 +48,13 @@ export default class PlayerController extends IController {
       this.entity.moverIzquierda()
     } else if (this.inputService.isMovingRight() || isTouchDirectionDown('right')) {
       this.entity.moverDerecha()
-    } else {
+    } else if (!recibiendoDano || this.entity.movement?.isGrounded()) {
       this.entity.detenerMovimiento()
+    }
+
+    if (recibiendoDano) {
+      this.entity.alignJumpSpriteWithHitbox?.()
+      return
     }
 
     // Cosa 3 usa L tanto para el disparo normal como para iniciar la carga.
@@ -60,11 +64,7 @@ export default class PlayerController extends IController {
       const ataqueSoltado = this.attackWasDown && !teclaAtaqueAbajo
       this.attackWasDown = teclaAtaqueAbajo
 
-      this.entity.manejarEntradaAtaqueCosa3(
-        ataquePresionado,
-        teclaAtaqueAbajo,
-        ataqueSoltado,
-      )
+      this.entity.manejarEntradaAtaqueCosa3(ataquePresionado, teclaAtaqueAbajo, ataqueSoltado)
     } else if (!this.entity.ataque && this.inputService.isAttacking()) {
       this.entity.atacar()
     }

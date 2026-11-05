@@ -21,12 +21,12 @@ export default class Player extends Entity {
 
     scene.add.existing(this)
     scene.physics.add.existing(this)
-    this.setDepth(1) 
+    this.setDepth(1)
     this.body.setCollideWorldBounds(false)
 
     // ★ Caja de colisión — ajústala a tu gusto
-    this.body.setSize(22, 30)    // ancho, alto del hitbox
-    this.body.setOffset(5, 1)    // desplazamiento X, Y respecto al sprite
+    this.body.setSize(22, 30) // ancho, alto del hitbox
+    this.body.setOffset(5, 1) // desplazamiento X, Y respecto al sprite
     this.body.debugShowBody = false
     this.body.debugBodyColor = 0x00ff00
     this._idleOriginX = this.originX
@@ -95,20 +95,19 @@ export default class Player extends Entity {
     return this.inventory.llaves
   }
 
- get enemies() {
-  return this._enemies
-}
-set enemies(e) {
-  this._enemies = e
-}
+  get enemies() {
+    return this._enemies
+  }
+  set enemies(e) {
+    this._enemies = e
+  }
 
-get boxes() {
-  return this._boxes
-}
-set boxes(b) {
-  this._boxes = b
-}
-
+  get boxes() {
+    return this._boxes
+  }
+  set boxes(b) {
+    this._boxes = b
+  }
 
   takeDamage(amount) {
     return this.health.takeDamage(amount)
@@ -144,7 +143,9 @@ set boxes(b) {
       : this._idleOriginX
     // Compensa el cambio de origen para que la caja física no se desplace al atacar hacia la izquierda.
     const offsetX = isAttackAnimation
-      ? this._idleBodyOffsetX + this.frame.realWidth * originX - this._idleFrameWidth * this._idleOriginX
+      ? this._idleBodyOffsetX +
+        this.frame.realWidth * originX -
+        this._idleFrameWidth * this._idleOriginX
       : this._idleBodyOffsetX
     // El ataque aéreo conserva la misma caja física del salto y alinea los pies de sus cuadros de 48 px.
     const originY = isTallJumpAnimation ? 0.698 : isCosa2JumpAttack ? 0.636 : this._idleOriginY

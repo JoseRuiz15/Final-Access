@@ -1,5 +1,10 @@
 const activePointers = { left: new Set(), right: new Set() }
-const activeActions = { jump: new Set(), attack: new Set(), interact: new Set(), dropKey: new Set() }
+const activeActions = {
+  jump: new Set(),
+  attack: new Set(),
+  interact: new Set(),
+  dropKey: new Set(),
+}
 const pendingActionPresses = new Set()
 const lastTapAt = { left: Number.NEGATIVE_INFINITY, right: Number.NEGATIVE_INFINITY }
 let pendingDash = null

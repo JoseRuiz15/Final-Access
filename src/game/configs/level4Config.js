@@ -28,7 +28,6 @@ export const LEVEL4_CONFIG = {
       ['pinchos', '/tiles/pinchos.png'],
       ['redDoor', '/img/door/redDoor.png'],
       ['greenDoor', '/img/door/greenDoor.png'],
-      ['imgRecogerLlave', '/img/instruction/imgRecogerLlave.png'],
       ['enemyTrap', '/img/animatics-enemy/enemyTrap.png'],
       ['enemyBulletTrap', '/img/animatics-enemy/enemyBulletTrap.png'],
     ],
@@ -45,10 +44,10 @@ export const LEVEL4_CONFIG = {
 
   // Usa el mismo encuadre y movimiento de parallax que los niveles 1 y 3.
   parallax: [
-    { key: 'map3Layer1', speed: 0.08, depth: -5, tileScale: { x: 1, y: 1.2 }},
+    { key: 'map3Layer1', speed: 0.08, depth: -5, tileScale: { x: 1, y: 1.2 } },
     { key: 'map3Layer2', speed: 0.15, depth: -4, tileScale: { x: 1, y: 1.2 }, offsetY: -50 },
     { key: 'map3Layer3', speed: 0.25, depth: -3, tileScale: { x: 1, y: 1.2 }, offsetY: 110 },
-    { key: 'map3Layer4', speed: 0.4, depth: -2, tileScale: { x: 1, y: 1.2 }},
+    { key: 'map3Layer4', speed: 0.4, depth: -2, tileScale: { x: 1, y: 1.2 } },
   ],
 
   map: {
@@ -70,12 +69,11 @@ export const LEVEL4_CONFIG = {
 
   tutorial: [],
 
-
   enemies: [
-    { x: 800, y: 700, texture: 'enemyWalk', vida: 20, rangoDeteccion: 400,  rangoAtaque: 400,},
-    { x: 1030, y: 400, texture: 'enemyWalk', vida: 20, rangoDeteccion: 400,  rangoAtaque: 400},
-    { x: 1000, y: 800, texture: 'enemyWalk', vida: 20, rangoDeteccion: 800,  rangoAtaque: 800},
-    { x: 1500, y: 580, texture: 'enemyDron', tipo: 'dron', vida: 30, velocidad: 60, limiteIzquierdo: 1150, limiteDerecho: 1800, rangoDeteccion: 320, dano: 20}
+    { x: 800, y: 700, texture: 'enemyWalk', vida: 20, rangoDeteccion: 400, rangoAtaque: 400 },
+    { x: 1030, y: 400, texture: 'enemyWalk', vida: 20, rangoDeteccion: 400, rangoAtaque: 400 },
+    { x: 1000, y: 800, texture: 'enemyWalk', vida: 20, rangoDeteccion: 800, rangoAtaque: 800 },
+    { x: 1500, y: 580, texture: 'enemyDron', tipo: 'dron', vida: 30, velocidad: 60, limiteIzquierdo: 1150, limiteDerecho: 1800, rangoDeteccion: 320, dano: 20 },
   ],
 
   enemyTraps: [
@@ -84,92 +82,20 @@ export const LEVEL4_CONFIG = {
     { x: 915, y: 640, detectionRange: 280, attackCooldown: 1200, damage: 20 },
     { x: 2258, y: 417, detectionRange: 280, attackCooldown: 1200, damage: 20 },
     { x: 2354, y: 417, detectionRange: 280, attackCooldown: 1200, damage: 20 },
-
   ],
 
   boxes: [
-    {
-      x: 100,
-      y: 752,
-      keyData: {
-        texture: 'key13Silver',
-        grupo: 'keys',
-        color: 'silver',
-        efecto: 'ninguno',
-        correcta: true,
-      },
-    },
-    {
-      x: 950,
-      y: 592,
-      keyData: {
-        texture: 'key15Bronze',
-        grupo: 'keys',
-        color: 'bronze',
-        efecto: 'ninguno',
-        correcta: true,
-      },
-    },
-    {
-      x: 2300,
-      y: 368,
-      keyData: {
-        texture: 'key11Gold',
-        grupo: 'keys',
-        color: 'gold',
-        efecto: 'ninguno',
-        correcta: true,
-      },
-    },
-    {
-      x: 690,
-      y: 720,
-      keyData: {
-        texture: 'key13Bronze',
-        grupo: 'keys',
-        color: 'bronze',
-        efecto: 'ninguno',
-        correcta: false,
-      },
-    },
-    {
-      x: 1080,
-      y: 816,
-      keyData: {
-        texture: 'key13Grey',
-        grupo: 'keys',
-        color: 'grey',
-        efecto: 'ninguno',
-        correcta: false,
-      },
-    },
-    {
-      x: 2640,
-      y: 784,
-      keyData: {
-        texture: 'key11Silver',
-        grupo: 'keys',
-        color: 'silver',
-        efecto: 'ninguno',
-        correcta: false,
-      },
-    },
-    {
-      x: 3700,
-      y: 848,
-      keyData: {
-        texture: 'key4Gold',
-        grupo: 'keys',
-        color: 'gold',
-        efecto: 'ninguno',
-        correcta: false,
-      },
-    },
+    { x: 100, y: 752, keyData: { texture: 'key13Silver', grupo: 'keys', color: 'silver', efecto: 'ninguno', correcta: true } },
+    { x: 950, y: 592, keyData: { texture: 'key15Bronze', grupo: 'keys', color: 'bronze', efecto: 'ninguno', correcta: true } },
+    { x: 2300, y: 368, keyData: { texture: 'key11Gold', grupo: 'keys', color: 'gold', efecto: 'ninguno', correcta: true } },
+    { x: 690, y: 720, keyData: { texture: 'key13Bronze', grupo: 'keys', color: 'bronze', efecto: 'ninguno', correcta: false } },
+    { x: 1080, y: 816, keyData: { texture: 'key13Grey', grupo: 'keys', color: 'grey', efecto: 'ninguno', correcta: false } },
+    { x: 2640, y: 784, keyData: { texture: 'key11Silver', grupo: 'keys', color: 'silver', efecto: 'ninguno', correcta: false } },
+    { x: 3700, y: 848, keyData: { texture: 'key4Gold', grupo: 'keys', color: 'gold', efecto: 'ninguno', correcta: false } },
     { x: 180, y: 752 },
     { x: 220, y: 752 },
     { x: 1980, y: 592 },
   ],
-
 
   player: { x: 150, y: 500 },
 

@@ -30,32 +30,25 @@ export default class Level4Scene extends BaseScene {
       if (!this.player.muerto) this.player.setTexture(this.player.idleTexture)
     })
 
-    this.player.on('animationcomplete-playerDamage', () => {
-      if (!this.player.muerto && this.player.body.blocked.down) {
-        this.player.setTexture(this.player.idleTexture)
-      }
-      this.player.recibiendoDano = false
-      this.player.setTexture(this.player.idleTexture)
-    })
   }
 
-_createEnemies() {
-  this.enemies = this.add.group()
+  _createEnemies() {
+    this.enemies = this.add.group()
 
-  this.config.enemies.forEach((config) => {
-    const enemy = EntityFactory.createEnemy(
-      this,
-      config.x,
-      config.y,
-      config.texture,
-      config,
-      this.gameRepository,
-    )
-    enemy.target = this.player
-    this.enemies.add(enemy)
-  })
-  this._createEnemyTraps()
-}
+    this.config.enemies.forEach((config) => {
+      const enemy = EntityFactory.createEnemy(
+        this,
+        config.x,
+        config.y,
+        config.texture,
+        config,
+        this.gameRepository,
+      )
+      enemy.target = this.player
+      this.enemies.add(enemy)
+    })
+    this._createEnemyTraps()
+  }
 
   _createEnemyTraps() {
     const attackAnimation = 'enemyTrapAttack'

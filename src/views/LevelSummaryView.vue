@@ -61,7 +61,9 @@ function backToLevelMap() {
     <div class="summary-scrim absolute inset-0"></div>
     <div class="summary-scanlines pointer-events-none absolute inset-0"></div>
 
-    <div class="summary-content relative mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8 sm:py-8">
+    <div
+      class="summary-content relative mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8 sm:py-8"
+    >
       <header class="flex items-start justify-between gap-4 border-b border-cyan-200/20 pb-4">
         <div>
           <p class="font-mono text-[10px] uppercase tracking-[0.42em] text-cyan-100/65">
@@ -75,16 +77,22 @@ function backToLevelMap() {
           <span class="block font-mono text-[8px] uppercase tracking-[0.24em] text-cyan-100/50">
             Nivel
           </span>
-          <span class="font-pixel text-sm text-cyan-100">{{ String(summary.levelId).padStart(2, '0') }}</span>
+          <span class="font-pixel text-sm text-cyan-100">{{
+            String(summary.levelId).padStart(2, '0')
+          }}</span>
         </div>
       </header>
 
-      <section class="summary-panel my-auto mx-auto w-full max-w-4xl border border-cyan-100/30 bg-[#07101f]/90 px-5 py-7 shadow-[0_24px_90px_#030610aa] sm:px-10 sm:py-9">
+      <section
+        class="summary-panel my-auto mx-auto w-full max-w-4xl border border-cyan-100/30 bg-[#07101f]/90 px-5 py-7 shadow-[0_24px_90px_#030610aa] sm:px-10 sm:py-9"
+      >
         <div class="mb-7 text-center">
           <p class="mb-3 font-mono text-[9px] uppercase tracking-[0.48em] text-fuchsia-200/80">
             Extracción confirmada
           </p>
-          <h1 class="font-pixel text-2xl leading-relaxed text-white drop-shadow-[0_0_18px_#4adfff66] sm:text-4xl">
+          <h1
+            class="font-pixel text-2xl leading-relaxed text-white drop-shadow-[0_0_18px_#4adfff66] sm:text-4xl"
+          >
             MISIÓN COMPLETADA
           </h1>
           <p class="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-cyan-50/55">
@@ -94,36 +102,59 @@ function backToLevelMap() {
 
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <article class="summary-stat border-l-2 border-cyan-300 bg-cyan-950/25 px-4 py-4">
-            <p class="font-mono text-[9px] uppercase tracking-[0.2em] text-cyan-100/60">Vidas restantes</p>
+            <p class="font-mono text-[9px] uppercase tracking-[0.2em] text-cyan-100/60">
+              Vidas restantes
+            </p>
             <p class="mt-2 font-pixel text-3xl text-cyan-100">{{ summary.livesRemaining }}</p>
           </article>
           <article class="summary-stat border-l-2 border-fuchsia-300 bg-fuchsia-950/20 px-4 py-4">
-            <p class="font-mono text-[9px] uppercase tracking-[0.2em] text-fuchsia-100/60">Tiempo empleado</p>
-            <p class="mt-2 font-mono text-3xl font-semibold tabular-nums text-white">{{ formattedTime }}</p>
+            <p class="font-mono text-[9px] uppercase tracking-[0.2em] text-fuchsia-100/60">
+              Tiempo empleado
+            </p>
+            <p class="mt-2 font-mono text-3xl font-semibold tabular-nums text-white">
+              {{ formattedTime }}
+            </p>
           </article>
           <article class="summary-stat border-l-2 border-sky-200 bg-sky-950/25 px-4 py-4">
-            <p class="font-mono text-[9px] uppercase tracking-[0.2em] text-sky-100/60">Enemigos derrotados</p>
+            <p class="font-mono text-[9px] uppercase tracking-[0.2em] text-sky-100/60">
+              Enemigos derrotados
+            </p>
             <p class="mt-2 font-pixel text-3xl text-sky-100">
-              {{ summary.kills }}<span class="ml-2 font-mono text-sm text-white/45">/ {{ summary.enemiesTotal }}</span>
+              {{ summary.kills
+              }}<span class="ml-2 font-mono text-sm text-white/45"
+                >/ {{ summary.enemiesTotal }}</span
+              >
             </p>
           </article>
         </div>
 
-        <div class="key-result my-4 flex flex-col gap-3 border border-cyan-100/15 bg-[#030915]/70 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div
+          class="key-result my-4 flex flex-col gap-3 border border-cyan-100/15 bg-[#030915]/70 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+        >
           <div class="flex items-center gap-3">
-            <span class="grid h-10 w-10 shrink-0 place-items-center border border-cyan-100/40 font-pixel text-xl text-cyan-100">⌑</span>
+            <span
+              class="grid h-10 w-10 shrink-0 place-items-center border border-cyan-100/40 font-pixel text-xl text-cyan-100"
+              >⌑</span
+            >
             <div>
-              <p class="font-mono text-[9px] uppercase tracking-[0.22em] text-white/45">Verificación de llave</p>
-              <p class="mt-1 font-pixel text-[10px] leading-5 text-cyan-50 sm:text-xs">{{ keyResult }}</p>
+              <p class="font-mono text-[9px] uppercase tracking-[0.22em] text-white/45">
+                Verificación de llave
+              </p>
+              <p class="mt-1 font-pixel text-[10px] leading-5 text-cyan-50 sm:text-xs">
+                {{ keyResult }}
+              </p>
             </div>
           </div>
           <p class="font-mono text-[10px] uppercase tracking-[0.12em] text-white/50 sm:text-right">
-            {{ summary.keyAttempts }} {{ summary.keyAttempts === 1 ? 'intento' : 'intentos' }} para abrir la puerta
+            {{ summary.keyAttempts }} {{ summary.keyAttempts === 1 ? 'intento' : 'intentos' }} para
+            abrir la puerta
           </p>
         </div>
 
         <div class="flex flex-col items-center border-y border-cyan-100/15 py-5 text-center">
-          <p class="font-mono text-[9px] uppercase tracking-[0.34em] text-amber-100/65">Calificación final</p>
+          <p class="font-mono text-[9px] uppercase tracking-[0.34em] text-amber-100/65">
+            Calificación final
+          </p>
           <div
             class="my-2 flex items-center gap-3"
             role="img"
@@ -141,17 +172,28 @@ function backToLevelMap() {
             {{ summary.stars }} / 3 ESTRELLAS
           </p>
           <p class="mt-2 font-mono text-[8px] text-white/35">
-            Puntaje: rapidez 50%, vidas restantes 25% y enemigos derrotados 25%. 1 estrella por completar; 2 con 40 puntos y 3 con 70.
+            Puntaje: rapidez 50%, vidas restantes 25% y enemigos derrotados 25%. 1 estrella por
+            completar; 2 con 40 puntos y 3 con 70.
           </p>
         </div>
 
-        <section class="my-4 border border-amber-200/25 bg-amber-950/20 px-4 py-4 sm:px-6" aria-live="polite">
+        <section
+          class="my-4 border border-amber-200/25 bg-amber-950/20 px-4 py-4 sm:px-6"
+          aria-live="polite"
+        >
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p class="font-mono text-[9px] uppercase tracking-[0.3em] text-amber-100/65">Monedas obtenidas</p>
-              <p class="mt-2 font-pixel text-2xl text-amber-100">{{ summary.coinsSaved === false ? '—' : `+${summary.coinGain ?? '...'}` }}</p>
+              <p class="font-mono text-[9px] uppercase tracking-[0.3em] text-amber-100/65">
+                Monedas obtenidas
+              </p>
+              <p class="mt-2 font-pixel text-2xl text-amber-100">
+                {{ summary.coinsSaved === false ? '—' : `+${summary.coinGain ?? '...'}` }}
+              </p>
             </div>
-            <p v-if="summary.coinsBalance !== undefined" class="font-mono text-[10px] text-white/60">
+            <p
+              v-if="summary.coinsBalance !== undefined"
+              class="font-mono text-[10px] text-white/60"
+            >
               Saldo guardado: {{ summary.coinsBalance }}
             </p>
             <p v-else-if="summary.coinsSaved === false" class="font-mono text-[9px] text-rose-200">
@@ -159,7 +201,10 @@ function backToLevelMap() {
             </p>
             <p v-else class="font-mono text-[9px] text-white/45">Guardando recompensa...</p>
           </div>
-          <div v-if="summary.coinBreakdown" class="mt-3 grid grid-cols-2 gap-x-5 gap-y-2 border-t border-amber-100/10 pt-3 font-mono text-[9px] text-white/55 sm:grid-cols-5">
+          <div
+            v-if="summary.coinBreakdown"
+            class="mt-3 grid grid-cols-2 gap-x-5 gap-y-2 border-t border-amber-100/10 pt-3 font-mono text-[9px] text-white/55 sm:grid-cols-5"
+          >
             <span>Completar +{{ summary.coinBreakdown.completion }}</span>
             <span>Estrellas +{{ summary.coinBreakdown.stars }}</span>
             <span>Rapidez +{{ summary.coinBreakdown.speed }}</span>

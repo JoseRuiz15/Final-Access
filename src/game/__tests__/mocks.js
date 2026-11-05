@@ -49,6 +49,9 @@ export const createMockScene = () => ({
       addKeys: () => ({
         A: { isDown: false },
         D: { isDown: false },
+        LEFT: { isDown: false },
+        RIGHT: { isDown: false },
+        UP: { isDown: false },
         SPACE: { isDown: false },
         W: { isDown: false },
         L: { isDown: false },

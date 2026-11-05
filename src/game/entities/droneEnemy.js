@@ -133,8 +133,7 @@ export default class DroneEnemy extends Enemy {
     if (!target?.active || target.muerto || this.muerto) return false
 
     return (
-      Phaser.Math.Distance.Between(this.x, this.y, target.x, target.y) <=
-      this.ai.rangoDeteccion
+      Phaser.Math.Distance.Between(this.x, this.y, target.x, target.y) <= this.ai.rangoDeteccion
     )
   }
 

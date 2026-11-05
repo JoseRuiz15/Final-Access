@@ -503,7 +503,7 @@ button:disabled,
     width: 100%;
     min-height: 360px;
     border-left: 0 !important;
-    border-top: 3px solid #20273c;
+    border-top: 3px solid rgba(251, 0, 255, 0.33);
   }
 
   .character-detail > div:first-child {
@@ -1003,8 +1003,7 @@ button:disabled,
   }
 }
 
-@media
-  (pointer: coarse) and (orientation: landscape),
+@media (pointer: coarse) and (orientation: landscape),
   (any-pointer: coarse) and (orientation: landscape) {
   #login-screen {
     position: fixed;
@@ -1096,8 +1095,7 @@ button:disabled,
   }
 }
 
-@media
-  (pointer: coarse) and (orientation: landscape),
+@media (pointer: coarse) and (orientation: landscape),
   (any-pointer: coarse) and (orientation: landscape) {
   #lobby-screen {
     position: fixed;
@@ -1136,14 +1134,14 @@ button:disabled,
     height: clamp(46px, 8vh, 64px) !important;
     flex: 0 1 auto;
     min-width: 0;
-    border-width: 2px;
+    border-width: 0;
   }
 
   #lobby-screen .header-profile > div:first-child {
     width: clamp(34px, 6vh, 50px) !important;
     height: clamp(34px, 6vh, 50px) !important;
     flex: 0 0 clamp(34px, 6vh, 50px);
-    margin-left: 6px !important;
+    margin-left: 10px !important;
     border-width: 2px;
   }
 
@@ -1531,14 +1529,14 @@ button:disabled,
     width: clamp(126px, 21vw, 205px) !important;
     height: clamp(44px, 7vh, 58px) !important;
     flex: 0 1 auto;
-    border-width: 2px;
+    border-width: 0;
   }
 
   :is(#lobby-screen, .store-screen) .header-profile > div:first-child {
     width: clamp(32px, 5.7vh, 46px) !important;
     height: clamp(32px, 5.7vh, 46px) !important;
     flex: 0 0 clamp(32px, 5.7vh, 46px);
-    margin-left: 5px !important;
+    margin-left: 9px !important;
     border-width: 2px;
   }
 
@@ -1612,7 +1610,7 @@ button:disabled,
     width: min(96vw, 1350px) !important;
     height: 100% !important;
     min-height: 0 !important;
-    border-width: 2px;
+    border-width: 1px;
   }
 
   #lobby-screen:has(.character-layout) .character-list {
@@ -1635,7 +1633,7 @@ button:disabled,
     min-width: 0;
     min-height: 0;
     border-top: 0 !important;
-    border-left: 2px solid #20273c !important;
+    border-left: 2px solid rgba(251, 0, 255, 0.33) !important;
   }
 
   #lobby-screen:has(.character-layout) .character-detail > div:first-child {

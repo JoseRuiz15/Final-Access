@@ -175,15 +175,13 @@ export default class Enemy extends Entity {
     this._limiteDerecho = v
   }
 
-  
-
   set target(t) {
     this._target = t
   }
 
   get target() {
-  return this._target
-}
+    return this._target
+  }
 
   takeDamage(amount) {
     return this.health.takeDamage(amount)

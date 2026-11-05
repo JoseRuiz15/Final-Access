@@ -15,30 +15,33 @@ export default class InputService {
   }
 
   init(scene) {
-  this.scene = scene
+    this.scene = scene
 
-  const keyboard = scene.input.keyboard
-  // El nivel puede abrirse desde un botón Vue que conserva el foco del teclado.
-  // Volvemos a activar el plugin al inicializar cada escena.
-  keyboard.enabled = true
+    const keyboard = scene.input.keyboard
+    // El nivel puede abrirse desde un botón Vue que conserva el foco del teclado.
+    // Volvemos a activar el plugin al inicializar cada escena.
+    keyboard.enabled = true
 
-  // Descarta las referencias a teclas del ciclo anterior de la escena.
-  keyboard.removeAllKeys(true)
+    // Descarta las referencias a teclas del ciclo anterior de la escena.
+    keyboard.removeAllKeys(true)
 
-  // Registra teclas nuevas para la escena reiniciada.
-  this._keys = keyboard.addKeys({
-    W: Phaser.Input.Keyboard.KeyCodes.W,
-    A: Phaser.Input.Keyboard.KeyCodes.A,
-    S: Phaser.Input.Keyboard.KeyCodes.S,
-    D: Phaser.Input.Keyboard.KeyCodes.D,
-    SPACE: Phaser.Input.Keyboard.KeyCodes.SPACE,
-    L: Phaser.Input.Keyboard.KeyCodes.L,
-    G: Phaser.Input.Keyboard.KeyCodes.G,
-    K: Phaser.Input.Keyboard.KeyCodes.K,
-  })
+    // Registra teclas nuevas para la escena reiniciada.
+    this._keys = keyboard.addKeys({
+      W: Phaser.Input.Keyboard.KeyCodes.W,
+      A: Phaser.Input.Keyboard.KeyCodes.A,
+      S: Phaser.Input.Keyboard.KeyCodes.S,
+      D: Phaser.Input.Keyboard.KeyCodes.D,
+      LEFT: Phaser.Input.Keyboard.KeyCodes.LEFT,
+      RIGHT: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      UP: Phaser.Input.Keyboard.KeyCodes.UP,
+      SPACE: Phaser.Input.Keyboard.KeyCodes.SPACE,
+      L: Phaser.Input.Keyboard.KeyCodes.L,
+      G: Phaser.Input.Keyboard.KeyCodes.G,
+      K: Phaser.Input.Keyboard.KeyCodes.K,
+    })
 
-  this._initialized = true
-}
+    this._initialized = true
+  }
 
   _ensureInit() {
     if (!this._initialized || !this.scene) {
@@ -48,30 +51,37 @@ export default class InputService {
 
   isMovingLeft() {
     this._ensureInit()
-    return this._keys.A.isDown
+    return this._keys.A.isDown || this._keys.LEFT.isDown
   }
 
   isMovingLeftJustDown() {
     this._ensureInit()
-    return Phaser.Input.Keyboard.JustDown(this._keys.A)
+    // Se evalúan ambas teclas para no dejar un JustDown pendiente al hacer cortocircuito.
+    const aPressed = Phaser.Input.Keyboard.JustDown(this._keys.A)
+    const leftPressed = Phaser.Input.Keyboard.JustDown(this._keys.LEFT)
+    return aPressed || leftPressed
   }
 
   isMovingRight() {
     this._ensureInit()
-    return this._keys.D.isDown
+    return this._keys.D.isDown || this._keys.RIGHT.isDown
   }
 
   isMovingRightJustDown() {
     this._ensureInit()
-    return Phaser.Input.Keyboard.JustDown(this._keys.D)
+    // Se evalúan ambas teclas para no dejar un JustDown pendiente al hacer cortocircuito.
+    const dPressed = Phaser.Input.Keyboard.JustDown(this._keys.D)
+    const rightPressed = Phaser.Input.Keyboard.JustDown(this._keys.RIGHT)
+    return dPressed || rightPressed
   }
 
   isJumping() {
     this._ensureInit()
-    // Un salto por pulsación: mantener SPACE o W no provoca otro salto al aterrizar.
+    // Un salto por pulsación: mantener SPACE, W o flecha arriba no provoca otro salto al aterrizar.
     const spacePressed = Phaser.Input.Keyboard.JustDown(this._keys.SPACE)
     const wPressed = Phaser.Input.Keyboard.JustDown(this._keys.W)
-    return spacePressed || wPressed || consumeTouchActionPress('jump')
+    const upPressed = Phaser.Input.Keyboard.JustDown(this._keys.UP)
+    return spacePressed || wPressed || upPressed || consumeTouchActionPress('jump')
   }
 
   isAttacking() {
@@ -86,17 +96,17 @@ export default class InputService {
 
   isInteracting() {
     this._ensureInit()
-        
-        // 👇 DEBUG + CACHE por frame (evita doble consumo de JustDown)
-        const currentFrame = this.scene.game.loop.frame
-        if (currentFrame !== this._lastFrame) {
-          this._interactingThisFrame =
-            Phaser.Input.Keyboard.JustDown(this._keys.G) || consumeTouchActionPress('interact')
-          this._lastFrame = currentFrame
-        }
-        
-        return this._interactingThisFrame
-      }
+
+    // 👇 DEBUG + CACHE por frame (evita doble consumo de JustDown)
+    const currentFrame = this.scene.game.loop.frame
+    if (currentFrame !== this._lastFrame) {
+      this._interactingThisFrame =
+        Phaser.Input.Keyboard.JustDown(this._keys.G) || consumeTouchActionPress('interact')
+      this._lastFrame = currentFrame
+    }
+
+    return this._interactingThisFrame
+  }
 
   isDroppingKey() {
     this._ensureInit()

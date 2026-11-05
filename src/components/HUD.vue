@@ -85,10 +85,7 @@ const llavesObjetivo = computed(() => Number(hudConfig.value.llavesObjetivo) || 
 
 const enemigos = computed(() => gameStore.enemigos)
 
-watch(
-  () => hudConfig.value.tiempoInicial,
-  resetTimer,
-)
+watch(() => hudConfig.value.tiempoInicial, resetTimer)
 
 watch(
   () => props.started,
@@ -205,59 +202,39 @@ function volverASeleccionDeNivel() {
       </template>
     </div>
     <!-- Pantalla de Game Over -->
-  <div
-  v-if="vidas <= 0 || tiempoAgotado"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-[#050711]/90"
->
-  <div
-    class="game-over-panel flex flex-col items-center justify-center
-           w-[90%] max-w-[650px] min-h-[350px]
-           bg-[#0B1020] border-2 border-[#00D9FF]
-           rounded-lg px-8 py-10"
-  >
-    <p class="font-pixel text-[#FF365E] text-4xl mb-4">
-      {{ tiempoAgotado && vidas > 0 ? 'TIEMPO AGOTADO' : 'GAME OVER' }}
-    </p>
-
-    <p class="font-pixel text-gray-300 text-sm mb-10">
-      {{ tiempoAgotado && vidas > 0 ? 'EL TIEMPO DE LA MISIÓN SE ACABÓ' : 'HAS FALLADO LA MISIÓN' }}
-    </p>
-
-    <div class="flex flex-col sm:flex-row gap-5">
-      <button
-        @click="volverASeleccionDeNivel"
-          class="font-pixel text-xs px-6 py-4 w-full sm:w-auto
-           bg-[#14182D] text-[#00D9FF]
-           border border-[#00D9FF] rounded
-
-           transition-all duration-200 ease-in-out
-           hover:scale-105
-           hover:bg-[#00D9FF] hover:text-black
-           hover:shadow-[0_0_15px_#00D9FF]
-
-           active:scale-95"
+    <div
+      v-if="vidas <= 0 || tiempoAgotado"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-[#050711]/90"
+    >
+      <div
+        class="game-over-panel flex flex-col items-center justify-center w-[90%] max-w-[650px] min-h-[350px] bg-[#0B1020] border-2 border-[#00D9FF] rounded-lg px-8 py-10"
       >
-           VOLVER AL MAPA
-      </button>
+        <p class="font-pixel text-[#FF365E] text-4xl mb-4">
+          {{ tiempoAgotado && vidas > 0 ? 'TIEMPO AGOTADO' : 'GAME OVER' }}
+        </p>
 
-      <button
-        @click="restartLevel"
-          class="font-pixel text-xs px-6 py-4 w-full sm:w-auto
-           bg-[#00D9FF] text-black
-           border border-[#00D9FF] rounded
+        <p class="font-pixel text-gray-300 text-sm mb-10">
+          {{
+            tiempoAgotado && vidas > 0 ? 'EL TIEMPO DE LA MISIÓN SE ACABÓ' : 'HAS FALLADO LA MISIÓN'
+          }}
+        </p>
 
-           transition-all duration-200 ease-in-out
-           hover:scale-105
-           hover:bg-white
-           hover:shadow-[0_0_15px_#00D9FF]
+        <div class="flex flex-col sm:flex-row gap-5">
+          <button
+            @click="volverASeleccionDeNivel"
+            class="font-pixel text-xs px-6 py-4 w-full sm:w-auto bg-[#14182D] text-[#00D9FF] border border-[#00D9FF] rounded transition-all duration-200 ease-in-out hover:scale-105 hover:bg-[#00D9FF] hover:text-black hover:shadow-[0_0_15px_#00D9FF] active:scale-95"
+          >
+            VOLVER AL MAPA
+          </button>
 
-           active:scale-95"
-        >
+          <button
+            @click="restartLevel"
+            class="font-pixel text-xs px-6 py-4 w-full sm:w-auto bg-[#00D9FF] text-black border border-[#00D9FF] rounded transition-all duration-200 ease-in-out hover:scale-105 hover:bg-white hover:shadow-[0_0_15px_#00D9FF] active:scale-95"
+          >
             REINTENTAR NIVEL
-        </button>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-  </div>
 </template>
-

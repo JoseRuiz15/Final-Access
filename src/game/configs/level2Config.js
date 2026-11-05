@@ -4,8 +4,7 @@ export const LEVEL2_CONFIG = {
     tiempoInicial: 240,
     enemigosObjetivo: 4,
     llavesObjetivo: 2,
-    pista:
-      'Consigue una llave dorada con efecto azul y una llave plateada con efecto rojo',
+    pista: 'Consigue una llave dorada con efecto azul y una llave plateada con efecto rojo',
   },
   assets: {
     tilemaps: [['level2', '/maps/Mapa_level_2.json']],
@@ -20,11 +19,13 @@ export const LEVEL2_CONFIG = {
       ['redDoor', '/img/door/redDoor.png'],
       ['greenDoor', '/img/door/greenDoor.png'],
       ['box', '/tiles/box.png'],
-      ['imgRecogerLlave', '/img/instruction/imgRecogerLlave.png'],
-
     ],
     spritesheets: [
-      ['key4Gold', '/img/keys-animation/Key 4 - GOLD - Spritesheet.png', { frameWidth: 14, frameHeight: 27 }],
+      [
+        'key4Gold',
+        '/img/keys-animation/Key 4 - GOLD - Spritesheet.png',
+        { frameWidth: 14, frameHeight: 27 },
+      ],
       ['key10', '/img/keys-animation/key10.png', { frameWidth: 10, frameHeight: 27 }],
       ['crateBreak', '/img/box/crateBreak.png', { frameWidth: 32, frameHeight: 32 }],
     ],
@@ -58,80 +59,18 @@ export const LEVEL2_CONFIG = {
     { x: 400, y: 650, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 370, limiteDerecho: 600 },
     { x: 1250, y: 650, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 600, limiteDerecho: 1300 },
     { x: 2000, y: 650, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 1900, limiteDerecho: 2100 },
-    {
-      x: 1000,
-      y: 560,
-      texture: 'enemyDron',
-      tipo: 'dron',
-      vida: 30,
-      velocidad: 60,
-      limiteIzquierdo: 850,
-      limiteDerecho: 1150,
-      rangoDeteccion: 320,
-      dano: 20,
-    },
+    { x: 1000, y: 560, texture: 'enemyDron', tipo: 'dron', vida: 30, velocidad: 60, limiteIzquierdo: 850, limiteDerecho: 1150, rangoDeteccion: 320, dano: 20 },
   ],
 
   boxes: [
-    {x: 566, y: 752},
-    {x: 600, y: 752},
-        {
-      x:684,
-      y: 400,
-      keyData: {
-        texture: 'key15Silver',
-        grupo: 'keys',
-        color: 'silver',
-        efecto: 'ninguno',
-        correcta: false,
-      },
-    },
-    {
-      x: 717,
-      y: 367,
-      keyData: {
-        texture: 'key4Gold',
-        grupo: 'keys',
-        color: 'gold',
-        efecto: 'ninguno',
-        correcta: false,
-      },
-    },
-
-    {x: 717, y: 400},
-
-    { x: 750, 
-      y: 400,
-      keyData: {
-        texture: 'key10',
-        grupo: 'keys',
-        color: 'gold',
-        efecto: 'ninguno',
-        correcta: true,
-      },
-    },
-    {
-      x: 900,
-      y: 657,
-      keyData: {
-        texture: 'key4Silver',
-        grupo: 'keys',
-        color: 'silver',
-        efecto: 'ninguno',
-        correcta: true,
-      },
-    },
-    {
-      x: 1500,
-      y: 752,
-      keyData: {
-        texture: 'key11Gold',
-        grupo: 'keys',
-        color: 'gold',
-        efecto: 'ninguno',
-        correcta: false,
-      },
-    },
+    { x: 566, y: 752 },
+    { x: 600, y: 752 },
+    { x: 684, y: 400, keyData: { texture: 'key15Silver', grupo: 'keys', color: 'silver', efecto: 'ninguno', correcta: false } },
+    { x: 717, y: 367, keyData: { texture: 'key4Gold', grupo: 'keys', color: 'gold', efecto: 'ninguno', correcta: false } },
+    { x: 717, y: 400 },
+    { x: 750, y: 400, keyData: { texture: 'key10', grupo: 'keys', color: 'gold', efecto: 'ninguno', correcta: true } },
+    { x: 900, y: 657, keyData: { texture: 'key4Silver', grupo: 'keys', color: 'silver', efecto: 'ninguno', correcta: true } },
+    { x: 1500, y: 752, keyData: { texture: 'key11Gold', grupo: 'keys', color: 'gold', efecto: 'ninguno', correcta: false } },
   ],
 
   player: { x: 230, y: 600 },

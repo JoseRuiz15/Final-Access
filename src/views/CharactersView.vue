@@ -1,19 +1,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
 import { useCharacterStore } from '@/stores/characters'
 import { useGameStore } from '@/stores/game'
 import { useProfileStore } from '@/stores/profile'
-import PlayerProfilePanel from '@/components/PlayerProfilePanel.vue'
+import AppHeader from '@/components/AppHeader.vue'
 
-const router = useRouter()
-const authStore = useAuthStore()
 const characterStore = useCharacterStore()
 const gameStore = useGameStore()
 const profileStore = useProfileStore()
 
-const mostrarConfirmacion = ref(false)
 const personajeSeleccionado = ref(0)
 const isLoading = ref(false)
 const error = ref(null)
@@ -21,7 +16,7 @@ const error = ref(null)
 const personajes = computed(() => characterStore.allCharacters)
 
 const personajeEstaEquipado = computed(
-  () => personajes.value[personajeSeleccionado.value]?.isEquipped || false
+  () => personajes.value[personajeSeleccionado.value]?.isEquipped || false,
 )
 
 async function initializeData() {
@@ -59,7 +54,8 @@ async function initializeData() {
         'No se pudo cargar tu perfil. Si la sesión ha caducado, vuelve a entrar.'
     }
   } catch (err) {
-    error.value = err.response?.data?.message || err.response?.data?.error || 'Error al cargar personajes'
+    error.value =
+      err.response?.data?.message || err.response?.data?.error || 'Error al cargar personajes'
   } finally {
     isLoading.value = false
   }
@@ -86,20 +82,11 @@ async function equipCharacter() {
     characterStore.setEquipped(personaje.id)
     gameStore.equipCharacter(personaje.id)
   } catch (err) {
-    error.value = err.response?.data?.message || err.response?.data?.error || 'Error al equipar personaje'
+    error.value =
+      err.response?.data?.message || err.response?.data?.error || 'Error al equipar personaje'
   } finally {
     isLoading.value = false
   }
-}
-
-function irLobby() { router.push('/lobby') }
-function irStore() { router.push('/store') }
-function irCharacters() {
-  // Ya estamos en la pantalla de personajes: no navega.
-}
-function irLogin() {
-  authStore.logout()
-  router.push('/login')
 }
 
 onMounted(() => {
@@ -118,84 +105,33 @@ onMounted(() => {
     />
 
     <div class="relative z-10 min-h-screen">
-      <header
-        class="app-header w-full h-[150px] bg-[#050711]/50 backdrop-blur-sm border-4 border-[#2D2F4B] flex items-center px-4"
-      >
-        <PlayerProfilePanel />
-
-        <!-- Menú central -->
-        <nav class="header-nav flex items-center gap-20 ml-16">
-          <button @click="irLobby">
-            <h1
-              class="text-[#876988] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]"
-            >
-              INICIO
-            </h1>
-          </button>
-
-          <button @click="irCharacters">
-            <h1
-              class="text-[#FB00FF] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]"
-            >
-              PERSONAJES
-            </h1>
-          </button>
-
-          <button @click="irStore">
-            <h1
-              class="text-[#876988] font-pixel hover:text-[#FB00FF] hover:text-shadow-[0_0_40px_#CF56D2]"
-            >
-              TIENDA
-            </h1>
-          </button>
-        </nav>
-
-        <!-- Acciones derecha -->
-        <div class="header-actions ml-auto flex items-center gap-8">
-          <div class="flex items-center gap-2">
-            <img src="/img/iconos/moneda.png" alt="puntos" class="h-[30px]" />
-            <h1 class="font-pixel text-[20px] text-[#FB00FF]">{{ profileStore.coins }}</h1>
-          </div>
-
-          <button
-            class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]"
-          >
-            <img src="/img/iconos/ajustes.png" alt="ajustes" class="w-full h-full object-cover" />
-          </button>
-
-          <button
-            class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]"
-          >
-            <img src="/img/iconos/mensajes.png" alt="mensajes" class="w-full h-full object-cover" />
-          </button>
-
-          <button
-            @click="mostrarConfirmacion = true"
-            class="w-[50px] h-[50px] border-3 border-[#41334B] rounded-lg overflow-hidden transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF]"
-          >
-            <img
-              src="/img/iconos/salida.png"
-              alt="cierre de sesión"
-              class="w-full h-full object-cover"
-            />
-          </button>
-        </div>
-      </header>
+      <AppHeader />
 
       <!-- Error toast -->
-      <div v-if="error" class="fixed bottom-10 right-10 z-50 bg-red-900/90 border border-red-500 rounded-lg p-4 text-white font-pixel text-sm max-w-md">
+      <div
+        v-if="error"
+        class="fixed bottom-10 right-10 z-50 bg-red-900/90 border border-red-500 rounded-lg p-4 text-white font-pixel text-sm max-w-md"
+      >
         {{ error }}
       </div>
 
       <!-- cuadro del centro -->
       <div class="character-layout min-h-[calc(100vh-150px)] flex items-center justify-center">
-        <div v-if="isLoading" class="character-panel h-[480px] w-[1350px] bg-[#000313] border-4 border-[#20273C] rounded-lg flex items-center justify-center">
+        <div
+          v-if="isLoading"
+          class="character-panel h-[480px] w-[1350px] border border-[#FB00FF55] bg-[#07101f] px-2 py-2 shadow-[0_0_60px_#FB00FF55] outline-1 outline-[#FB00FF55] [outline-offset:-9px] flex items-center justify-center"
+        >
           <p class="font-pixel text-[#FB00FF] text-2xl">CARGANDO PERSONAJES...</p>
         </div>
 
-        <div v-else class="character-panel h-[480px] w-[1350px] bg-[#000313] border-4 border-[#20273C] rounded-lg flex">
+        <div
+          v-else
+          class="character-panel h-[480px] w-[1350px] border border-[#FB00FF55] bg-[#07101f] px-2 py-2 shadow-[0_0_60px_#FB00FF55] outline-1 outline-[#FB00FF55] [outline-offset:-9px] flex"
+        >
           <!-- donde estan los personajes -->
-          <div class="character-list h-full w-[900px] flex items-center justify-center gap-10 px-10">
+          <div
+            class="character-list h-full w-[900px] flex items-center justify-center gap-10 px-10"
+          >
             <button
               v-for="(personaje, index) in personajes"
               :key="personaje.id"
@@ -215,11 +151,17 @@ onMounted(() => {
                   class="h-full w-full object-cover"
                 />
                 <!-- Lock overlay -->
-                <div v-if="!personaje.isUnlocked" class="absolute inset-0 bg-black/70 flex items-center justify-center">
+                <div
+                  v-if="!personaje.isUnlocked"
+                  class="absolute inset-0 bg-black/70 flex items-center justify-center"
+                >
                   <span class="text-6xl">🔒</span>
                 </div>
                 <!-- Equipped indicator -->
-                <div v-if="personaje.isEquipped" class="absolute top-2 right-2 bg-[#FF00D9] text-black font-pixel text-xs px-2 py-1 rounded">
+                <div
+                  v-if="personaje.isEquipped"
+                  class="absolute top-2 left-1/2 -translate-x-1/2 bg-[#FF00D9] text-black font-pixel text-xs px-2 py-1 rounded"
+                >
                   EQUIPADO
                 </div>
               </div>
@@ -227,16 +169,19 @@ onMounted(() => {
           </div>
 
           <!-- cuadro derecho -->
-          <div class="character-detail h-full flex-1 border-l-3 border-[#20273C] flex flex-col">
+          <div class="character-detail h-full flex-1 border-l-3 border-[#FB00FF55] flex flex-col">
             <!-- cuadro de arriba -->
-            <div class="h-1/2 border-b-3 border-[#20273C] flex">
+            <div class="h-1/2 border-b-3 border-[#FB00FF55] flex">
               <!-- imagen de perfil del personaje -->
               <div class="w-1/2 h-full flex items-center justify-center">
                 <div
-                  class="h-[130px] w-[130px] border-4 border-[#FF00D9] rounded-lg overflow-hidden shadow-[0_0_25px_#FF00D9]"
+                  class="h-[130px] w-[130px] border-4 border-[#FB00FF55] rounded-lg overflow-hidden shadow-[0_0_25px_#FB00FF55]"
                 >
                   <img
-                    :src="personajes[personajeSeleccionado]?.perfil || `/img/profile/${personajes[personajeSeleccionado]?.id}_perfil.webp`"
+                    :src="
+                      personajes[personajeSeleccionado]?.perfil ||
+                      `/img/profile/${personajes[personajeSeleccionado]?.id}_perfil.webp`
+                    "
                     :alt="personajes[personajeSeleccionado]?.nombre"
                     class="h-full w-full object-cover"
                   />
@@ -245,7 +190,7 @@ onMounted(() => {
 
               <!-- nombre y boton -->
               <div class="w-1/2 h-full flex flex-col items-center justify-center gap-6 px-4">
-                <h2 class="text-[#FF00D9] font-pixel text-[22px] text-center">
+                <h2 class="text-[#FB00FF] font-pixel text-[22px] text-center">
                   {{ personajes[personajeSeleccionado]?.nombre || 'SELECCIONA UN PERSONAJE' }}
                 </h2>
 
@@ -259,11 +204,17 @@ onMounted(() => {
                     personajeEstaEquipado
                       ? 'bg-[#123C32] text-[#B7F7D5] border-[#58D6A3] shadow-[0_0_18px_#58D6A355] cursor-default'
                       : personajes[personajeSeleccionado].isUnlocked
-                        ? 'bg-[#2A1A4B] text-white border-[#B17BE3] hover:shadow-[0_0_30px_#FF00D9] hover:bg-[#FF00D9] hover:border-[#FF00D9]'
+                        ? 'bg-[#2A1A4B] text-white border-[#B17BE3] hover:shadow-[0_0_30px_#FB00FF55] hover:bg-[#FB00FF55] hover:border-[#FB00FF55] hover:text-[#050711]'
                         : 'bg-[#1A1A2E] text-[#666] border-[#444] cursor-not-allowed'
                   "
                 >
-                  {{ personajeEstaEquipado ? 'EQUIPADO' : (personajes[personajeSeleccionado].isUnlocked ? 'EQUIPAR' : 'DESBLOQUEAR PRIMERO') }}
+                  {{
+                    personajeEstaEquipado
+                      ? 'EQUIPADO'
+                      : personajes[personajeSeleccionado].isUnlocked
+                        ? 'EQUIPAR'
+                        : 'DESBLOQUEAR PRIMERO'
+                  }}
                 </button>
               </div>
             </div>
@@ -272,12 +223,15 @@ onMounted(() => {
             <div class="h-1/2 p-8 flex flex-col justify-center">
               <h3 class="text-white font-pixel text-[16px] mb-4">HABILIDAD</h3>
 
-              <p class="text-[#FF00D9] font-pixel text-[14px] mb-6">
+              <p class="text-[#FB00FF] font-pixel text-[14px] mb-6">
                 {{ personajes[personajeSeleccionado]?.habilidad || '—' }}
               </p>
 
               <p class="text-[#9898BD] font-pixel text-[12px] leading-6">
-                {{ personajes[personajeSeleccionado]?.descripcion || 'Selecciona un personaje para ver su descripción.' }}
+                {{
+                  personajes[personajeSeleccionado]?.descripcion ||
+                  'Selecciona un personaje para ver su descripción.'
+                }}
               </p>
             </div>
           </div>
@@ -285,31 +239,5 @@ onMounted(() => {
       </div>
     </div>
 
-  <div
-    v-if="mostrarConfirmacion"
-    class="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
-  >
-    <div class="confirm-dialog w-[700px] h-[400px] bg-black border-4 border-[#8B7A91] rounded-lg">
-      <h1 class="font-pixel text-[#FB00FF] text-3xl text-center mt-8">
-        ¿ESTÁS SEGURO DE QUE QUIERES SALIR?
-      </h1>
-
-      <div class="flex flex-col items-center gap-8 mt-16">
-        <button
-          @click="irLogin"
-          class="font-pixel text-white w-[250px] h-[60px] bg-[#2A1A4B] rounded-xl border-2 border-fuchsia-500 transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
-        >
-          SI
-        </button>
-
-        <button
-          @click="mostrarConfirmacion = false"
-          class="font-pixel text-white w-[250px] h-[60px] bg-[#2A1A4B] rounded-xl border-2 border-fuchsia-500 transition-all duration-300 hover:border-fuchsia-500 hover:shadow-[0_0_20px_#FB00FF] hover:-translate-y-2"
-        >
-          NO
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 </template>

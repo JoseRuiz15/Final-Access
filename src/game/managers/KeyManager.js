@@ -12,7 +12,6 @@ export default class KeyManager {
     this.config = config
     this.keysGroup = null
     this.llaveCercana = null
-    this.imgRecogerLlave = null
     this._initialized = false
   }
 
@@ -32,14 +31,6 @@ export default class KeyManager {
     this._ensureInit()
     const KeyClass = keyClass || this._getKeyClass()
     this.keysGroup = this.scene.physics.add.group({ classType: KeyClass })
-
-    // UI para recoger llave
-    this.imgRecogerLlave = this.scene.add.image(0, 0, 'imgRecogerLlave')
-    this.imgRecogerLlave.setScale(0.25)
-    this.imgRecogerLlave.setDepth(1000)
-    this.imgRecogerLlave.setVisible(false)
-    
-    
   }
 
   _getKeyClass() {
@@ -48,14 +39,12 @@ export default class KeyManager {
 
   update(player, inputService) {
     this._ensureInit()
-    if (!this.keysGroup || !player || !this.imgRecogerLlave) return
+    if (!this.keysGroup || !player) return
 
     const limites = this.scene.physics.world.bounds
     this.keysGroup.getChildren().forEach((llave) => {
       const cayoAlVacio =
-        llave.y > limites.bottom + 48 ||
-        llave.x < limites.left - 48 ||
-        llave.x > limites.right + 48
+        llave.y > limites.bottom + 48 || llave.x < limites.left - 48 || llave.x > limites.right + 48
 
       if (!llave.active || !cayoAlVacio) return
 
@@ -70,20 +59,13 @@ export default class KeyManager {
       const distancia = Phaser.Math.Distance.Between(player.x, player.y, llave.x, llave.y)
       if (distancia < 80) {
         this.llaveCercana = llave
-        this.imgRecogerLlave.setPosition(llave.x, llave.y - 40)
-        this.imgRecogerLlave.setVisible(true)
       }
     })
-
-    if (!this.llaveCercana) {
-      this.imgRecogerLlave.setVisible(false)
-    }
 
     // Recoger llave
     if (inputService.isInteracting() && this.llaveCercana) {
       player.recogerLlave(this.llaveCercana)
       this.llaveCercana = null
-      this.imgRecogerLlave.setVisible(false)
     }
   }
 
@@ -91,7 +73,4 @@ export default class KeyManager {
     return this.keysGroup
   }
 
-  getImgRecogerLlave() {
-    return this.imgRecogerLlave
-  }
 }

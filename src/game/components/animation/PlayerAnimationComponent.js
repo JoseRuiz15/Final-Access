@@ -36,11 +36,14 @@ export default class PlayerAnimationComponent {
     })
 
     this.player.on('animationcomplete-playerDamage', () => {
-      if (!this.player.muerto && this.player.body.blocked.down) {
-        this.player.setTexture(this.player.idleTexture)
-      }
+      if (this.player.muerto) return
+
       this.player.recibiendoDano = false
-      this.player.setTexture(this.player.idleTexture)
+      if (this.player.movement.isGrounded()) {
+        this.player.setTexture(this.player.idleTexture)
+      } else {
+        this.player.play('saltar', true)
+      }
     })
 
     this.player.on('animationcomplete-playerDead', () => {

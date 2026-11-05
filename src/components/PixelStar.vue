@@ -19,9 +19,6 @@ defineProps({
       d="M7 2h2v3h1v2h3v2h-3v1H9v3H7v-3H6V9H3V7h3V5h1z"
       :fill="active ? '#ffe996' : '#8190a8'"
     />
-    <path
-      d="M7 3h1v2H7zM6 6h1v1H6z"
-      :fill="active ? '#fff8d5' : '#b6c1d1'"
-    />
+    <path d="M7 3h1v2H7zM6 6h1v1H6z" :fill="active ? '#fff8d5' : '#b6c1d1'" />
   </svg>
 </template>

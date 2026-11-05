@@ -8,20 +8,28 @@ export default class PlayerHealthComponent {
 
     this.muerto = false
     this.recibiendoDano = false
+    this.invulnerableHasta = 0
 
     this.vidas = Math.min(this.gameRepository.vidas ?? this.maxVidas, this.maxVidas)
     this.gameRepository.vidas = this.vidas
   }
 
-  takeDamage(amount) {
-    if (this.muerto || this.recibiendoDano) return false
+  puedeRecibirDano() {
+    const ahora = this.player.scene.time?.now ?? Date.now()
+    if (this.muerto || ahora < this.invulnerableHasta) return false
 
-    this.player.movement?.cancelDash()
+    this.invulnerableHasta = ahora + 1500
+    return true
+  }
+
+  takeDamage(amount) {
+    if (!this.puedeRecibirDano()) return false
 
     this.vida -= amount
     if (this.vida <= 0) {
       this.vida = 0
       this.muerto = true
+      this.player.movement?.cancelDash()
       this.player.setVelocity(0, 0)
       this.player.play('playerDead')
       //this.player.scene.onPlayerDeath?.()
@@ -29,15 +37,12 @@ export default class PlayerHealthComponent {
     }
 
     this.recibiendoDano = true
-    this.player.setVelocity(0, 0)
     this.player.play('playerDamage')
     return false
   }
 
   recibirDano(dano) {
-    if (this.muerto || this.recibiendoDano) return
-
-    this.player.movement?.cancelDash()
+    if (!this.puedeRecibirDano()) return
 
     this.player.ataque = false
     this.vida -= dano
@@ -46,20 +51,18 @@ export default class PlayerHealthComponent {
       this.vida = 0
       this.vidas = Math.max(0, this.vidas - 1)
       //this.vidas--
-      
+
       this.gameRepository.vidas = this.vidas
 
-
       this.muerto = true
+      this.player.movement?.cancelDash()
       this.player.setVelocity(0, 0)
       this.player.play('playerDead')
 
       //this.player.scene.onPlayerDeath?.()
       return
     } else {
-
       this.recibiendoDano = true
-      this.player.setVelocity(0, 0)
       this.player.play('playerDamage')
     }
   }
@@ -75,6 +78,7 @@ export default class PlayerHealthComponent {
     this.player.play('caminar', true)
     this.muerto = false
     this.recibiendoDano = false
+    this.invulnerableHasta = 0
     this.player.ataque = false
   }
 }

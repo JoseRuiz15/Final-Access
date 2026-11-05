@@ -29,7 +29,6 @@ export const LEVEL5_CONFIG = {
       ['box', '/tiles/box.png'],
       ['redDoor', '/img/door/redDoor.png'],
       ['greenDoor', '/img/door/greenDoor.png'],
-      ['imgRecogerLlave', '/img/instruction/imgRecogerLlave.png'],
       ['enemyTrap', '/img/animatics-enemy/enemyTrap.png'],
       ['enemyBulletTrap', '/img/animatics-enemy/enemyBulletTrap.png'],
     ],
@@ -72,64 +71,16 @@ export const LEVEL5_CONFIG = {
 
   enemies: [
     // Plataforma inicial.
-    {
-      x: 250,
-      y: 740,
-      texture: 'enemyWalk',
-      vida: 20,
-      limiteIzquierdo: 82,
-      limiteDerecho: 240,
-      rangoDeteccion: 260,
-    },
-    {
-      x: 60,
-      y: 740,
-      texture: 'enemyWalk',
-      vida: 20,
-      limiteIzquierdo: 82,
-      limiteDerecho: 240,
-      rangoDeteccion: 260,
-    },
+    { x: 250, y: 740, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 82, limiteDerecho: 240, rangoDeteccion: 260 },
+    { x: 60, y: 740, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 82, limiteDerecho: 240, rangoDeteccion: 260 },
     // Plataforma alta de la primera sección.
-    {
-      x: 600,
-      y: 230,
-      texture: 'enemyWalk',
-      vida: 20,
-      limiteIzquierdo: 490,
-      limiteDerecho: 726,
-      rangoDeteccion: 320,
-    },
+    { x: 600, y: 230, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 490, limiteDerecho: 726, rangoDeteccion: 320 },
     // Plataforma superior de la zona central.
-    {
-      x: 1700,
-      y: 300,
-      texture: 'enemyWalk',
-      vida: 20,
-      limiteIzquierdo: 1548,
-      limiteDerecho: 1844,
-      rangoDeteccion: 300,
-    },
+    { x: 1700, y: 300, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 1548, limiteDerecho: 1844, rangoDeteccion: 300 },
     // Plataforma inferior de la zona central.
-    {
-      x: 1650,
-      y: 650,
-      texture: 'enemyWalk',
-      vida: 20,
-      limiteIzquierdo: 1520,
-      limiteDerecho: 1860,
-      rangoDeteccion: 300,
-    },
+    { x: 1650, y: 650, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 1520, limiteDerecho: 1860, rangoDeteccion: 300 },
     // Plataforma de la puerta final.
-    {
-      x: 4000,
-      y: 610,
-      texture: 'enemyWalk',
-      vida: 20,
-      limiteIzquierdo: 3890,
-      limiteDerecho: 4110,
-      rangoDeteccion: 300,
-    },
+    { x: 4000, y: 610, texture: 'enemyWalk', vida: 20, limiteIzquierdo: 3890, limiteDerecho: 4110, rangoDeteccion: 300 },
     // Drones que vigilan los saltos entre plataformas.
   ],
 
@@ -151,94 +102,14 @@ export const LEVEL5_CONFIG = {
   retrasoCaida: 3000,
 
   boxes: [
-    {
-      x: 560,
-      y: 272,
-      keyData: {
-        texture: 'key15Gold',
-        grupo: 'keys',
-        color: 'gold',
-        efecto: 'ninguno',
-        correcta: true,
-      },
-    },
-    {
-      x: 1600,
-      y: 688,
-      keyData: {
-        texture: 'key15Silver',
-        grupo: 'keys',
-        color: 'silver',
-        efecto: 'ninguno',
-        correcta: true,
-      },
-    },
-    {
-      x: 3900,
-      y: 656,
-      keyData: {
-        texture: 'key13Silver',
-        grupo: 'keys',
-        color: 'silver',
-        efecto: 'ninguno',
-        correcta: true,
-      },
-    },
-    {
-      x: 1760,
-      y: 688,
-      keyData: {
-        texture: 'key15Bronze',
-        grupo: 'keys',
-        color: 'bronze',
-        efecto: 'ninguno',
-        correcta: false,
-      },
-    },
-    {
-      x: 120,
-      y: 784,
-      keyData: {
-        texture: 'key15Grey',
-        grupo: 'keys',
-        color: 'grey',
-        efecto: 'ninguno',
-        correcta: false,
-      },
-    },
-    {
-      x: 680,
-      y: 272,
-      keyData: {
-        texture: 'key13Bronze',
-        grupo: 'keys',
-        color: 'bronze',
-        efecto: 'ninguno',
-        correcta: false,
-      },
-    },
-    {
-      x: 4100,
-      y: 656,
-      keyData: {
-        texture: 'key11Silver',
-        grupo: 'keys',
-        color: 'silver',
-        efecto: 'ninguno',
-        correcta: false,
-      },
-    },
-    {
-      x: 180,
-      y: 784,
-      keyData: {
-        texture: 'key4Gold',
-        grupo: 'keys',
-        color: 'gold',
-        efecto: 'ninguno',
-        correcta: false,
-      },
-    },
+    { x: 560, y: 272, keyData: { texture: 'key15Gold', grupo: 'keys', color: 'gold', efecto: 'ninguno', correcta: true } },
+    { x: 1600, y: 688, keyData: { texture: 'key15Silver', grupo: 'keys', color: 'silver', efecto: 'ninguno', correcta: true } },
+    { x: 3900, y: 656, keyData: { texture: 'key13Silver', grupo: 'keys', color: 'silver', efecto: 'ninguno', correcta: true } },
+    { x: 1760, y: 688, keyData: { texture: 'key15Bronze', grupo: 'keys', color: 'bronze', efecto: 'ninguno', correcta: false } },
+    { x: 120, y: 784, keyData: { texture: 'key15Grey', grupo: 'keys', color: 'grey', efecto: 'ninguno', correcta: false } },
+    { x: 680, y: 272, keyData: { texture: 'key13Bronze', grupo: 'keys', color: 'bronze', efecto: 'ninguno', correcta: false } },
+    { x: 4100, y: 656, keyData: { texture: 'key11Silver', grupo: 'keys', color: 'silver', efecto: 'ninguno', correcta: false } },
+    { x: 180, y: 784, keyData: { texture: 'key4Gold', grupo: 'keys', color: 'gold', efecto: 'ninguno', correcta: false } },
     { x: 520, y: 272 },
     { x: 1700, y: 688 },
     { x: 1840, y: 688 },

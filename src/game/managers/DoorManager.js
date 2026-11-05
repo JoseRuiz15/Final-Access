@@ -44,8 +44,8 @@ export default class DoorManager {
       'DoorObjet',
       'DoorObject',
     ]
-    const nombreCapa = nombresCandidatos.find((nombre) =>
-      mapResult?.objectLayers?.[nombre]?.objects?.length,
+    const nombreCapa = nombresCandidatos.find(
+      (nombre) => mapResult?.objectLayers?.[nombre]?.objects?.length,
     )
 
     this.doors = nombreCapa ? mapResult.objectLayers[nombreCapa] : null
@@ -55,11 +55,7 @@ export default class DoorManager {
       // Tiled da la esquina superior izquierda; Phaser ubica la imagen por el centro.
       const ancho = puerta.width ?? 64
       const alto = puerta.height ?? 64
-      this.doorSprite = this.scene.add.image(
-        puerta.x + ancho / 2,
-        puerta.y + alto / 2,
-        'redDoor',
-      )
+      this.doorSprite = this.scene.add.image(puerta.x + ancho / 2, puerta.y + alto / 2, 'redDoor')
       // La compuerta del nivel 3 ocupa 256x128; el sprite debe cubrirla entera.
       this.doorSprite.setDisplaySize(ancho, alto)
       // Las capas del mapa están en profundidad 0; jugadores y enemigos usan 1.
@@ -83,12 +79,7 @@ export default class DoorManager {
       const alto = puerta.height ?? 64
       const masCercanoX = Phaser.Math.Clamp(player.x, puerta.x, puerta.x + ancho)
       const masCercanoY = Phaser.Math.Clamp(player.y, puerta.y, puerta.y + alto)
-      const distancia = Phaser.Math.Distance.Between(
-        player.x,
-        player.y,
-        masCercanoX,
-        masCercanoY,
-      )
+      const distancia = Phaser.Math.Distance.Between(player.x, player.y, masCercanoX, masCercanoY)
       if (distancia < 80) {
         const llaveNecesaria = puerta.properties?.find((p) => p.name === 'llave_necesaria')?.value
         // La puerta puede exigir varias llaves separadas por coma.
@@ -117,7 +108,10 @@ export default class DoorManager {
             const tieneTodas = llavesRequeridas.every((textura) =>
               llavesDelJugador.some((llave) => llave.texture === textura),
             )
-            if (!tieneTodas) return
+            const soloTieneLlavesRequeridas = llavesDelJugador.every((llave) =>
+              llavesRequeridas.includes(llave.texture),
+            )
+            if (!tieneTodas || !soloTieneLlavesRequeridas) return
           }
 
           this.doorSprite.setTexture('greenDoor')

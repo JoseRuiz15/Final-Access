@@ -2,7 +2,6 @@ import { getKeyAnimationKey, KEY_SPRITESHEETS } from '../configs/keyAnimations.j
 
 export default class AnimationRegistry {
   registerAll(scene, characterConfig = null) {
-
     // Llaves animadas: se registran siempre (assets comunes).
     this._registerKeys(scene)
 
@@ -23,12 +22,10 @@ export default class AnimationRegistry {
     if (characterConfig?.animFrames) {
       this._registerFromCharacter(scene, characterConfig)
     }
-
   }
 
-  _registerPlayerDefault(scene){
-
-      scene.anims.create({
+  _registerPlayerDefault(scene) {
+    scene.anims.create({
       key: 'caminar',
       frames: scene.anims.generateFrameNumbers('playerWalk', { start: 0, end: 7 }),
       frameRate: 10,
@@ -58,9 +55,9 @@ export default class AnimationRegistry {
       frameRate: 12,
       repeat: 0,
     })
-    }
+  }
 
-    _registerKeys(scene) {
+  _registerKeys(scene) {
     KEY_SPRITESHEETS.forEach(({ texture, frames, frameRate = 12 }) => {
       const animationKey = getKeyAnimationKey(texture)
 
@@ -175,42 +172,41 @@ export default class AnimationRegistry {
     })
   } */
 
-    _registerFromCharacter(scene, characterConfig) {
-      const ranges = characterConfig.animFrames || {}
-      if (!ranges || !Object.keys(ranges).length) return
+  _registerFromCharacter(scene, characterConfig) {
+    const ranges = characterConfig.animFrames || {}
+    if (!ranges || !Object.keys(ranges).length) return
 
-      // Mapa: nombre que usa el Player → entrada en animFrames
-      const logical = {
-        caminar: ranges.walk,
-        saltar: ranges.jump,
-        atacar: ranges.attack,
-        atacarQuieto: ranges.attackIdle,
-        atacarAereo: ranges.jumpAttack,
-        cosa3AttackEffect: ranges.attackEffect,
-        cosa3Projectile: ranges.projectile,
-        cosa3ChargeEffect: ranges.chargeEffect,
-        cosa3Dash: ranges.dash,
-        cosa3ChargedProjectile: ranges.chargedProjectile,
-        playerDamage: ranges.damage,
-        playerDead: ranges.dead,
-  }
-
-  Object.entries(logical).forEach(([key, def]) => {
-    if (!def) return
-    // Si ya existe (cosa1), la sobrescribimos solo si este personaje la necesita
-    if (scene.anims.exists(key)) {
-      scene.anims.remove(key)
+    // Mapa: nombre que usa el Player → entrada en animFrames
+    const logical = {
+      caminar: ranges.walk,
+      saltar: ranges.jump,
+      atacar: ranges.attack,
+      atacarQuieto: ranges.attackIdle,
+      atacarAereo: ranges.jumpAttack,
+      cosa3AttackEffect: ranges.attackEffect,
+      cosa3Projectile: ranges.projectile,
+      cosa3ChargeEffect: ranges.chargeEffect,
+      cosa3Dash: ranges.dash,
+      cosa3ChargedProjectile: ranges.chargedProjectile,
+      playerDamage: ranges.damage,
+      playerDead: ranges.dead,
     }
-    scene.anims.create({
-      key,
-      frames: scene.anims.generateFrameNumbers(def.sheet, {
-        start: def.start,
-        end: def.end,
-      }),
-      frameRate: def.frameRate,
-      repeat: def.repeat,
-    })
-  })
-}
 
+    Object.entries(logical).forEach(([key, def]) => {
+      if (!def) return
+      // Si ya existe (cosa1), la sobrescribimos solo si este personaje la necesita
+      if (scene.anims.exists(key)) {
+        scene.anims.remove(key)
+      }
+      scene.anims.create({
+        key,
+        frames: scene.anims.generateFrameNumbers(def.sheet, {
+          start: def.start,
+          end: def.end,
+        }),
+        frameRate: def.frameRate,
+        repeat: def.repeat,
+      })
+    })
+  }
 }

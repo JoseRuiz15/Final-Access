@@ -111,171 +111,206 @@ onMounted(async () => {
           decoding="async"
           class="pointer-events-none absolute inset-0 h-full w-full select-none object-fill"
         />
-      <!--Iconos de niveles-->
+        <!--Iconos de niveles-->
 
-      <!-- Nivel 1 -->
-      <button
-        class="absolute top-[39.44%] left-[20.81%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
-        aria-label="Seleccionar nivel 1"
-        @click="seleccionarNivel(1)"
-        :disabled="isLoading"
-      >
-        <img
-          src="/img/level-icons/icono_level_1.png"
-          alt="nivel 1"
-          class="h-full w-full object-contain"
-        />
-        <!-- Stars indicator -->
-        <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-          <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(1)" />
-        </div>
-      </button>
+        <!-- Nivel 1 -->
+        <button
+          class="absolute top-[39.44%] left-[20.81%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300 hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]"
+          aria-label="Seleccionar nivel 1"
+          @click="seleccionarNivel(1)"
+          :disabled="isLoading"
+        >
+          <img
+            src="/img/level-icons/icono_level_1.png"
+            alt="nivel 1"
+            class="h-full w-full object-contain"
+          />
+          <!-- Stars indicator -->
+          <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+            <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(1)" />
+          </div>
+        </button>
 
-      <!-- Nivel 2 -->
-      <button
-        :class="[
-          'absolute top-[45.65%] left-[26.77%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300',
-          isLevelUnlocked(2) ? 'hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]' : 'opacity-50 cursor-not-allowed'
-        ]"
-        aria-label="Seleccionar nivel 2"
-        @click="seleccionarNivel(2)"
-        :disabled="!isLevelUnlocked(2) || isLoading"
-      >
-        <img
-          :src="isLevelUnlocked(2) ? '/img/level-icons/icono_level_2.png' : '/img/level-icons/nivel_bloqueado.png'"
-          alt="nivel 2"
-          class="h-full w-full object-contain"
-        />
-        <div v-if="isLevelUnlocked(2)" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-          <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(2)" />
-        </div>
-      </button>
+        <!-- Nivel 2 -->
+        <button
+          :class="[
+            'absolute top-[45.65%] left-[26.77%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300',
+            isLevelUnlocked(2)
+              ? 'hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]'
+              : 'opacity-50 cursor-not-allowed',
+          ]"
+          aria-label="Seleccionar nivel 2"
+          @click="seleccionarNivel(2)"
+          :disabled="!isLevelUnlocked(2) || isLoading"
+        >
+          <img
+            :src="
+              isLevelUnlocked(2)
+                ? '/img/level-icons/icono_level_2.png'
+                : '/img/level-icons/nivel_bloqueado.png'
+            "
+            alt="nivel 2"
+            class="h-full w-full object-contain"
+          />
+          <div
+            v-if="isLevelUnlocked(2)"
+            class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"
+          >
+            <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(2)" />
+          </div>
+        </button>
 
-      <!-- Nivel 3 -->
-      <button
-        :class="[
-          'absolute top-[52.96%] left-[23.39%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300',
-          isLevelUnlocked(3) ? 'hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]' : 'opacity-50 cursor-not-allowed'
-        ]"
-        aria-label="Seleccionar nivel 3"
-        @click="seleccionarNivel(3)"
-        :disabled="!isLevelUnlocked(3) || isLoading"
-      >
-        <img
-          :src="isLevelUnlocked(3) ? '/img/level-icons/icono_level_3.png' : '/img/level-icons/nivel_bloqueado.png'"
-          alt="nivel 3"
-          class="h-full w-full object-contain"
-        />
-        <div v-if="isLevelUnlocked(3)" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-          <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(3)" />
-        </div>
-      </button>
+        <!-- Nivel 3 -->
+        <button
+          :class="[
+            'absolute top-[52.96%] left-[23.39%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300',
+            isLevelUnlocked(3)
+              ? 'hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]'
+              : 'opacity-50 cursor-not-allowed',
+          ]"
+          aria-label="Seleccionar nivel 3"
+          @click="seleccionarNivel(3)"
+          :disabled="!isLevelUnlocked(3) || isLoading"
+        >
+          <img
+            :src="
+              isLevelUnlocked(3)
+                ? '/img/level-icons/icono_level_3.png'
+                : '/img/level-icons/nivel_bloqueado.png'
+            "
+            alt="nivel 3"
+            class="h-full w-full object-contain"
+          />
+          <div
+            v-if="isLevelUnlocked(3)"
+            class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"
+          >
+            <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(3)" />
+          </div>
+        </button>
 
-      <!-- Nivel 4 -->
-      <button
-        :class="[
-          'absolute top-[68.43%] left-[30.1%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300',
-          isLevelUnlocked(4) ? 'hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]' : 'opacity-50 cursor-not-allowed'
-        ]"
-        aria-label="Seleccionar nivel 4"
-        @click="seleccionarNivel(4)"
-        :disabled="!isLevelUnlocked(4) || isLoading"
-      >
-        <img
-          :src="isLevelUnlocked(4) ? '/img/level-icons/icono_level_4.png' : '/img/level-icons/nivel_bloqueado.png'"
-          alt="nivel 4"
-          class="h-full w-full object-contain"
-        />
-        <div v-if="isLevelUnlocked(4)" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-          <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(4)" />
-        </div>
-      </button>
+        <!-- Nivel 4 -->
+        <button
+          :class="[
+            'absolute top-[68.43%] left-[30.1%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300',
+            isLevelUnlocked(4)
+              ? 'hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]'
+              : 'opacity-50 cursor-not-allowed',
+          ]"
+          aria-label="Seleccionar nivel 4"
+          @click="seleccionarNivel(4)"
+          :disabled="!isLevelUnlocked(4) || isLoading"
+        >
+          <img
+            :src="
+              isLevelUnlocked(4)
+                ? '/img/level-icons/icono_level_4.png'
+                : '/img/level-icons/nivel_bloqueado.png'
+            "
+            alt="nivel 4"
+            class="h-full w-full object-contain"
+          />
+          <div
+            v-if="isLevelUnlocked(4)"
+            class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"
+          >
+            <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(4)" />
+          </div>
+        </button>
 
-      <!-- Nivel 5 -->
-      <button
-        :class="[
-          'absolute top-[50.83%] left-[41.04%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300',
-          isLevelUnlocked(5) ? 'hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]' : 'opacity-50 cursor-not-allowed'
-        ]"
-        aria-label="Seleccionar nivel 5"
-        @click="seleccionarNivel(5)"
-        :disabled="!isLevelUnlocked(5) || isLoading"
-      >
-        <img
-          :src="isLevelUnlocked(5) ? '/img/level-icons/icono_level_5.png' : '/img/level-icons/nivel_bloqueado.png'"
-          alt="nivel 5"
-          class="h-full w-full object-contain"
-        />
-        <div v-if="isLevelUnlocked(5)" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-          <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(5)" />
-        </div>
-      </button>
+        <!-- Nivel 5 -->
+        <button
+          :class="[
+            'absolute top-[50.83%] left-[41.04%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 transition-all duration-300',
+            isLevelUnlocked(5)
+              ? 'hover:scale-110 hover:drop-shadow-[0_0_15px_#FF00D9]'
+              : 'opacity-50 cursor-not-allowed',
+          ]"
+          aria-label="Seleccionar nivel 5"
+          @click="seleccionarNivel(5)"
+          :disabled="!isLevelUnlocked(5) || isLoading"
+        >
+          <img
+            :src="
+              isLevelUnlocked(5)
+                ? '/img/level-icons/icono_level_5.png'
+                : '/img/level-icons/nivel_bloqueado.png'
+            "
+            alt="nivel 5"
+            class="h-full w-full object-contain"
+          />
+          <div
+            v-if="isLevelUnlocked(5)"
+            class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"
+          >
+            <PixelStar v-for="i in 3" :key="i" class="h-3 w-3" :active="i <= getLevelStars(5)" />
+          </div>
+        </button>
 
-      <!-- Nivel 6 BLOQUEADO -->
-      <button
-        class="absolute top-[50.93%] left-[51.72%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 opacity-50 cursor-not-allowed"
-        aria-label="Nivel 6 bloqueado"
-        disabled
-      >
-        <img
-          src="/img/level-icons/nivel_bloqueado.png"
-          alt="nivel 6"
-          class="h-full w-full object-contain"
-        />
-      </button>
+        <!-- Nivel 6 BLOQUEADO -->
+        <button
+          class="absolute top-[50.93%] left-[51.72%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 opacity-50 cursor-not-allowed"
+          aria-label="Nivel 6 bloqueado"
+          disabled
+        >
+          <img
+            src="/img/level-icons/nivel_bloqueado.png"
+            alt="nivel 6"
+            class="h-full w-full object-contain"
+          />
+        </button>
 
-      <!-- Nivel 7 BLOQUEADO -->
-      <button
-        class="absolute top-[57.22%] left-[60.89%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 opacity-50 cursor-not-allowed"
-        aria-label="Nivel 7 bloqueado"
-        disabled
-      >
-        <img
-          src="/img/level-icons/nivel_bloqueado.png"
-          alt="nivel 7"
-          class="h-full w-full object-contain"
-        />
-      </button>
+        <!-- Nivel 7 BLOQUEADO -->
+        <button
+          class="absolute top-[57.22%] left-[60.89%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 opacity-50 cursor-not-allowed"
+          aria-label="Nivel 7 bloqueado"
+          disabled
+        >
+          <img
+            src="/img/level-icons/nivel_bloqueado.png"
+            alt="nivel 7"
+            class="h-full w-full object-contain"
+          />
+        </button>
 
-      <!-- Nivel 8 BLOQUEADO -->
-      <button
-        class="absolute top-[50.93%] left-[69.79%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 opacity-50 cursor-not-allowed"
-        aria-label="Nivel 8 bloqueado"
-        disabled
-      >
-        <img
-          src="/img/level-icons/nivel_bloqueado.png"
-          alt="nivel 8"
-          class="h-full w-full object-contain"
-        />
-      </button>
+        <!-- Nivel 8 BLOQUEADO -->
+        <button
+          class="absolute top-[50.93%] left-[69.79%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 opacity-50 cursor-not-allowed"
+          aria-label="Nivel 8 bloqueado"
+          disabled
+        >
+          <img
+            src="/img/level-icons/nivel_bloqueado.png"
+            alt="nivel 8"
+            class="h-full w-full object-contain"
+          />
+        </button>
 
-      <!-- Nivel 9 BLOQUEADO -->
-      <button
-        class="absolute top-[42.22%] left-[77.71%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 opacity-50 cursor-not-allowed"
-        aria-label="Nivel 9 bloqueado"
-        disabled
-      >
-        <img
-          src="/img/level-icons/nivel_bloqueado.png"
-          alt="nivel 9"
-          class="h-full w-full object-contain"
-        />
-      </button>
+        <!-- Nivel 9 BLOQUEADO -->
+        <button
+          class="absolute top-[42.22%] left-[77.71%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 opacity-50 cursor-not-allowed"
+          aria-label="Nivel 9 bloqueado"
+          disabled
+        >
+          <img
+            src="/img/level-icons/nivel_bloqueado.png"
+            alt="nivel 9"
+            class="h-full w-full object-contain"
+          />
+        </button>
 
-      <!-- Nivel 10 BLOQUEADO -->
-      <button
-        class="absolute top-[54.07%] left-[81.51%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 opacity-50 cursor-not-allowed"
-        aria-label="Nivel 10 bloqueado"
-        disabled
-      >
-        <img
-          src="/img/level-icons/nivel_bloqueado.png"
-          alt="nivel 10"
-          class="h-full w-full object-contain"
-        />
-      </button>
-
+        <!-- Nivel 10 BLOQUEADO -->
+        <button
+          class="absolute top-[54.07%] left-[81.51%] -translate-x-1/2 -translate-y-[90%] origin-[50%_90%] h-[11.111%] w-[6.25%] border-0 bg-transparent p-0 opacity-50 cursor-not-allowed"
+          aria-label="Nivel 10 bloqueado"
+          disabled
+        >
+          <img
+            src="/img/level-icons/nivel_bloqueado.png"
+            alt="nivel 10"
+            class="h-full w-full object-contain"
+          />
+        </button>
       </div>
     </div>
   </section>
@@ -303,7 +338,9 @@ onMounted(async () => {
             :active="i <= getLevelStars(nivelSeleccionado)"
           />
         </div>
-        <span v-if="getBestTime(nivelSeleccionado)" class="ml-4 text-[#00FFEA] font-pixel text-sm">Mejor tiempo: {{ getBestTime(nivelSeleccionado) }}</span>
+        <span v-if="getBestTime(nivelSeleccionado)" class="ml-4 text-[#00FFEA] font-pixel text-sm"
+          >Mejor tiempo: {{ getBestTime(nivelSeleccionado) }}</span
+        >
       </div>
 
       <!-- Contenido -->
@@ -326,10 +363,17 @@ onMounted(async () => {
             {{ obtenerDescripcion() }}
           </p>
 
-          <div v-if="progressionStore.isLevelCompleted(nivelSeleccionado)" class="mt-4 p-3 bg-green-900/30 border border-green-500 rounded-lg">
+          <div
+            v-if="progressionStore.isLevelCompleted(nivelSeleccionado)"
+            class="mt-4 p-3 bg-green-900/30 border border-green-500 rounded-lg"
+          >
             <p class="font-pixel text-green-300 text-sm">✓ Nivel completado</p>
-            <p class="font-pixel text-green-400 text-xs mt-1">Estrellas: {{ getLevelStars(nivelSeleccionado) }}/3</p>
-            <p v-if="getBestTime(nivelSeleccionado)" class="font-pixel text-green-400 text-xs">Mejor tiempo: {{ getBestTime(nivelSeleccionado) }}</p>
+            <p class="font-pixel text-green-400 text-xs mt-1">
+              Estrellas: {{ getLevelStars(nivelSeleccionado) }}/3
+            </p>
+            <p v-if="getBestTime(nivelSeleccionado)" class="font-pixel text-green-400 text-xs">
+              Mejor tiempo: {{ getBestTime(nivelSeleccionado) }}
+            </p>
           </div>
         </div>
       </div>

@@ -70,7 +70,7 @@ function refreshPublicRooms() {
     />
 
     <button
-class="multiplayer-back absolute left-6 top-6 z-20 font-pixel text-[13px] text-white transition-all duration-300 hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9]"
+      class="multiplayer-back absolute left-6 top-6 z-20 font-pixel text-[13px] text-white transition-all duration-300 hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9]"
       @click="irLobby"
     >
       &lt;- VOLVER AL MENU
@@ -89,7 +89,11 @@ class="multiplayer-back absolute left-6 top-6 z-20 font-pixel text-[13px] text-w
 
         <label
           class="cursor-pointer rounded-md border p-3 transition-colors"
-          :class="privacyOption === 'private' ? 'border-[#FF00D9] bg-[#FF00D9]/10' : 'border-white/15 bg-black/20'"
+          :class="
+            privacyOption === 'private'
+              ? 'border-[#FF00D9] bg-[#FF00D9]/10'
+              : 'border-white/15 bg-black/20'
+          "
         >
           <span class="flex items-center gap-3 font-pixel text-sm text-white">
             <input v-model="privacyOption" type="radio" name="privacy" value="private" />
@@ -102,7 +106,11 @@ class="multiplayer-back absolute left-6 top-6 z-20 font-pixel text-[13px] text-w
 
         <label
           class="cursor-pointer rounded-md border p-3 transition-colors"
-          :class="privacyOption === 'public' ? 'border-[#53f4ff] bg-[#53f4ff]/10' : 'border-white/15 bg-black/20'"
+          :class="
+            privacyOption === 'public'
+              ? 'border-[#53f4ff] bg-[#53f4ff]/10'
+              : 'border-white/15 bg-black/20'
+          "
         >
           <span class="flex items-center gap-3 font-pixel text-sm text-white">
             <input v-model="privacyOption" type="radio" name="privacy" value="public" />
@@ -151,7 +159,11 @@ class="multiplayer-back absolute left-6 top-6 z-20 font-pixel text-[13px] text-w
         class="mt-5 text-center text-xs"
         :class="multiplayerStore.connected ? 'text-[#7DF4FF]' : 'text-[#FFB2B8]'"
       >
-        {{ multiplayerStore.connected ? 'SERVIDOR CONECTADO' : multiplayerStore.connectionError || 'CONECTANDO…' }}
+        {{
+          multiplayerStore.connected
+            ? 'SERVIDOR CONECTADO'
+            : multiplayerStore.connectionError || 'CONECTANDO…'
+        }}
       </p>
     </section>
 
@@ -177,7 +189,11 @@ class="multiplayer-back absolute left-6 top-6 z-20 font-pixel text-[13px] text-w
 
       <div v-if="!hasPublicRooms" class="grid h-[590px] place-items-center text-center">
         <p class="font-pixel text-sm text-[#B9CACB]">
-          {{ multiplayerStore.connected ? 'NO HAY PARTIDAS PÚBLICAS DISPONIBLES' : 'CONECTANDO CON EL SERVIDOR…' }}
+          {{
+            multiplayerStore.connected
+              ? 'NO HAY PARTIDAS PÚBLICAS DISPONIBLES'
+              : 'CONECTANDO CON EL SERVIDOR…'
+          }}
         </p>
       </div>
 

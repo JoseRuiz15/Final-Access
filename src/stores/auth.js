@@ -22,7 +22,8 @@ export const useAuthStore = defineStore('auth', () => {
       }
       return response.data
     } catch (err) {
-      error.value = err.response?.data?.message || err.response?.data?.error || 'Error en el registro'
+      error.value =
+        err.response?.data?.message || err.response?.data?.error || 'Error en el registro'
       throw err
     } finally {
       isLoading.value = false
@@ -41,7 +42,9 @@ export const useAuthStore = defineStore('auth', () => {
       return response.data
     } catch (err) {
       error.value =
-        err.response?.data?.message || err.response?.data?.error || 'Código de verificación inválido'
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        'Código de verificación inválido'
       throw err
     } finally {
       isLoading.value = false
@@ -58,7 +61,8 @@ export const useAuthStore = defineStore('auth', () => {
       }
       return response.data
     } catch (err) {
-      error.value = err.response?.data?.message || err.response?.data?.error || 'Credenciales inválidas'
+      error.value =
+        err.response?.data?.message || err.response?.data?.error || 'Credenciales inválidas'
       throw err
     } finally {
       isLoading.value = false
