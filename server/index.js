@@ -13,7 +13,7 @@ app.get('/health', (_request, response) => {
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: 'https://final-access.onrender.com',
+    origin: '*',
     methods: ['GET', 'POST']
   }
 });
