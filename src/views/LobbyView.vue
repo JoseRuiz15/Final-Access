@@ -304,7 +304,7 @@ onUnmounted(() => {
 
           <!-- Misiones diarias -->
            <section
-             class="border border-[#00D9FF]/70 bg-[#07101f] px-7 py-8 text-white shadow-[0_0_60px_#00D9FF33] rounded-lg max-w-sm w-full overflow-hidden"
+             class="border border-[#00D9FF]/70 bg-[#07101f] px-7 text-white shadow-[0_0_60px_#00D9FF33] rounded-lg max-w-sm w-full overflow-hidden"
            >
              <div class="border-b-[3px] border-[#00D9FF]/50 py-2 px-5">
                <p class="font-pixel text-[13px] text-[#00D9FF]">MISIONES DIARIAS</p>
