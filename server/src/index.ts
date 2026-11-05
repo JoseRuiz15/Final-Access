@@ -1,8 +1,10 @@
 import { createApp } from './app.js';
 import { env } from './config/env.js';
+import { attachMultiplayer } from './realtime/multiplayer.js';
 
 async function main() {
   const app = await createApp();
+  attachMultiplayer(app.server);
 
   // Fastify no instala manejadores de SIGINT/SIGTERM: sin esto, Railway
   // mataría el proceso al desplegar y los hooks onClose (cierre del pool de

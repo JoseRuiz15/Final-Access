@@ -21,7 +21,8 @@ export const useMultiplayerStore = defineStore('multiplayer', {
         return
       }
 
-      const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001'
+      const configuredSocketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001'
+      const socketUrl = configuredSocketUrl.trim().replace(/[\s,]+$/, '').replace(/\/+$/, '')
       this.socket = io(socketUrl)
 
       this.socket.on('connect', () => {
