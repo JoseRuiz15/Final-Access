@@ -201,62 +201,39 @@ onUnmounted(() => {
 
       <!-- Contenido principal -->
       <main class="lobby-main flex justify-between px-10 pt-20 flex-1">
-        <!-- Lado izquierdo -->
-        <section class="lobby-shortcuts flex flex-col gap-10">
-          <button
-            class="h-20 w-80 border-4 border-[#00FFEA] bg-[#000004] rounded-lg flex items-center transition-all duration-300 hover:shadow-[0_0_20px_#00FFEA] hover:-translate-y-2"
-            @click="openCreateModal"
-          >
-            <div class="h-15 w-15 ml-[10px] rounded-lg flex items-center justify-center">
-              <img src="/img/iconos/clasificatoria.png" alt="crear lobby" />
-            </div>
+        <!-- Sección de Misiones Diarias (lugar donde estaban los botones) -->
+        <section class="border border-[#00D9FF]/70 bg-[#07101f] px-7 py-8 text-white shadow-[0_0_60px_#00D9FF33] rounded-lg max-w-sm w-full overflow-hidden">
+          <div class="border-b-[3px] border-[#00D9FF]/50 py-2 px-5">
+            <p class="font-pixel text-[13px] text-[#00D9FF]">MISIONES DIARIAS</p>
+          </div>
 
-            <h1 class="text-[#9898BD] font-pixel text-[15px] ml-[10px]">CREAR LOBBY</h1>
-          </button>
-
-          <button
-            class="h-20 w-80 border-4 border-[#00FFEA] bg-[#000004] rounded-lg flex items-center transition-all duration-300 hover:shadow-[0_0_20px_#00FFEA] hover:-translate-y-2"
-            @click="fetchLobbies"
-          >
-            <div class="h-15 w-15 ml-[10px] rounded-lg flex items-center justify-center">
-              <img src="/img/iconos/amigos.png" alt="buscar lobbies" />
-            </div>
-
-            <div class="ml-[10px]">
-              <h1 class="text-[#9898BD] font-pixel text-[15px]">BUSCAR LOBBIES</h1>
-
-              <p class="text-[#777787] font-pixel text-[12px]">{{ lobbyStore.lobbies.length }} disponibles</p>
-            </div>
-          </button>
-
-          <!-- Lista de lobbies públicos disponibles -->
-          <div
-            v-if="lobbyStore.lobbies.length > 0"
-            class="w-80 max-h-[420px] overflow-y-auto flex flex-col gap-3"
-          >
-            <div
-              v-for="lobby in lobbyStore.lobbies"
-              :key="lobby.code"
-              class="bg-[#000208] border-3 border-[#2D2F4B] rounded-lg p-4 flex flex-col gap-3"
-            >
-              <div class="flex justify-between items-start">
-                <div>
-                  <p class="font-pixel text-white text-[12px]">{{ lobby.name }}</p>
-                  <p class="font-pixel text-[#777787] text-[10px] mt-1">
-                    {{ lobby.code }} · {{ lobby.players?.length ?? 0 }}/{{ lobby.maxPlayers }}
-                  </p>
-                </div>
-                <span class="font-pixel text-[9px] text-[#00FFEA] uppercase">{{ lobby.mode }}</span>
+          <div class="p-5 space-y-5 ">
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <p class="font-pixel text-white text-[10px]">JUEGA 2 PARTIDAS</p>
+                <p class="font-pixel text-white text-[10px]">0/2</p>
               </div>
-
-              <button
-                type="button"
-                @click="handleJoinLobby(lobby.code)"
-                :disabled="lobbyStore.isLoading"
-                class="w-full h-9 font-pixel text-[11px] rounded-lg border-2 border-[#00FFEA] text-[#00FFEA] transition-all duration-300 hover:bg-[#00FFEA] hover:text-black disabled:opacity-50"
-              >
-                UNIRSE
-              </button>
+              <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
+                <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <p class="font-pixel text-white text-[10px]">ELIMINA 10 ENEMIGOS</p>
+                <p class="font-pixel text-white text-[10px]">0/10</p>
+              </div>
+              <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
+                <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <p class="font-pixel text-white text-[10px] text-[#6F89A5]">GANA 1 PARTIDA</p>
+                <p class="font-pixel text-white text-[10px] text-[#6F89A5]">0/1</p>
+              </div>
+              <div class="w-full h-[7px] bg-[#1E2034] rounded-full overflow-hidden">
+                <div class="h-full w-0 bg-[#A255F8] rounded-full"></div>
+              </div>
             </div>
           </div>
         </section>
