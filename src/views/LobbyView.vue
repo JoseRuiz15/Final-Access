@@ -325,13 +325,13 @@ onUnmounted(() => {
             </div>
           </div>
 
-          <!-- Misiones diarias (placeholder) -->
-          <section
-            class="bg-[#000000]/50 backdrop-blur-sm w-80 h-52 border-3 border-[#00F0FF] shadow-[0_0_10px_#00F0FF] rounded-lg flex flex-col"
-          >
-            <div class="border-b-[3px] border-[#00F0FF] py-2 px-5">
-              <p class="font-pixel text-[13px] text-[#00F0FF]">MISIONES DIARIAS</p>
-            </div>
+          <!-- Misiones diarias -->
+           <section
+             class="border border-[#00D9FF]/70 bg-[#07101f] px-7 py-8 text-white shadow-[0_0_60px_#00D9FF33] rounded-lg max-w-sm w-full overflow-hidden"
+           >
+             <div class="border-b-[3px] border-[#00D9FF]/50 py-2 px-5">
+               <p class="font-pixel text-[13px] text-[#00D9FF]">MISIONES DIARIAS</p>
+             </div>
 
             <div class="p-5 space-y-5 ">
               <div>
