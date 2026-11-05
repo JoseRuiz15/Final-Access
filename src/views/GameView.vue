@@ -83,6 +83,7 @@ async function initializeGame() {
     2: () => SceneFactory.createLevel2Scene(),
     3: () => SceneFactory.createLevel3Scene(),
     4: () => SceneFactory.createLevel4Scene(),
+    5: () => SceneFactory.createLevel5Scene(),
   }
   const crearEscena = sceneFactories[Number(gameStore.nivelActual)] ?? sceneFactories[2]
   levelScene = crearEscena()
@@ -90,6 +91,7 @@ async function initializeGame() {
   // El HUD y el jugador empiezan con las vidas que corresponden a este nivel.
   gameStore.vidas = levelScene.config.vidasIniciales ?? 5
   gameStore.llaves = 0
+  gameStore.llavesCorrectas = 0
   gameStore.enemigos = 0
 
   const config = {
@@ -107,12 +109,13 @@ async function initializeGame() {
     },
 
     scale: {
-      // El nivel 4 necesita conservar toda su altura en pantallas panorámicas;
-      // EXPAND añade vista horizontal en lugar de recortar arriba y abajo.
+      // Los niveles 4 y 5 necesitan conservar toda su altura en pantallas
+      // panorámicas; EXPAND añade vista horizontal en lugar de recortar
+      // arriba y abajo.
       mode:
         isTouchDevice.value
           ? Phaser.Scale.FIT
-          : Number(gameStore.nivelActual) === 4
+          : [4, 5].includes(Number(gameStore.nivelActual))
             ? Phaser.Scale.EXPAND
             : Phaser.Scale.ENVELOP,
       autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -223,6 +226,7 @@ async function handleLevelCompleted(sceneCompletada, stats) {
     enemiesTotal: enemigosTotales,
     keyAttempts,
     correctKeyFirstTry,
+    correctKeys: completionData.correctKeys,
     stars,
     nextLevelId,
   })
@@ -253,6 +257,7 @@ function restartLevel() {
   // Reintentar restaura el nivel activo, sin asumir que todos tienen cinco vidas.
   gameStore.vidas = levelScene?.config.vidasIniciales ?? 5
   gameStore.llaves = 0
+  gameStore.llavesCorrectas = 0
   gameStore.enemigos = 0
 
   // Reinicia la escena Phaser activa; create() vuelve a crear al jugador y el nivel.

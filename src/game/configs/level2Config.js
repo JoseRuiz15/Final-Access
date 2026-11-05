@@ -3,13 +3,9 @@ export const LEVEL2_CONFIG = {
   hud: {
     tiempoInicial: 240,
     enemigosObjetivo: 4,
-    imagenLlave: '/img/keys/Key10-GOLD.png',
-    mision: [
-      'CONSIGUE LA LLAVE DE',
-      'COLOR DORADO PARA',
-      'SEGUIR AL SIGUIENTE',
-      'NIVEL.',
-    ],
+    llavesObjetivo: 2,
+    pista:
+      'Consigue una llave dorada con efecto azul y una llave dorada con morado',
   },
   assets: {
     tilemaps: [['level2', '/maps/Mapa_level_2.json']],
@@ -28,7 +24,7 @@ export const LEVEL2_CONFIG = {
 
     ],
     spritesheets: [
-      ['key10', '/img/keys-animation/key10.png', { frameWidth: 10, frameHeight: 27 }],
+      ['key4Gold', '/img/keys-animation/Key 4 - GOLD - Spritesheet.png', { frameWidth: 14, frameHeight: 27 }],
       ['crateBreak', '/img/box/crateBreak.png', { frameWidth: 32, frameHeight: 32 }],
     ],
   },
@@ -80,7 +76,18 @@ export const LEVEL2_CONFIG = {
       x: 800,
       y: 400,
       keyData: {
-        texture: 'key10',
+        texture: 'key4Gold',
+        grupo: 'keys',
+        color: 'gold',
+        efecto: 'ninguno',
+        correcta: true,
+      },
+    },
+    {
+      x: 900,
+      y: 752,
+      keyData: {
+        texture: 'key4Silver',
         grupo: 'keys',
         color: 'silver',
         efecto: 'ninguno',
@@ -91,7 +98,7 @@ export const LEVEL2_CONFIG = {
       x: 500,
       y: 752,
       keyData: {
-        texture: 'key4Gold',
+        texture: 'Key 2 - GOLD - Spritesheet.png',
         grupo: 'keys',
         color: 'gold',
         efecto: 'ninguno',
@@ -102,7 +109,7 @@ export const LEVEL2_CONFIG = {
       x: 2450,
       y: 752,
       keyData: {
-        texture: 'key15Gold',
+        texture: 'key11Gold',
         grupo: 'keys',
         color: 'gold',
         efecto: 'ninguno',

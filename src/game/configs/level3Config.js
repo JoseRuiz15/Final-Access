@@ -3,13 +3,9 @@ export const LEVEL3_CONFIG = {
 
   hud: {
     tiempoInicial: 180,
-    imagenLlave: '/img/keys/Key13-SILVER.png',
-    mision: [
-      'CONSIGUE LA LLAVE',
-      'PLATEADA, ABRE LA',
-      'PUERTA Y ESCAPA',
-      'DE LA CIUDAD.',
-    ],
+    llavesObjetivo: 2,
+    pista:
+      'Consigue una llave plateada mediana y una plateada alargada con cruz. Las de otros colores son señuelos.',
     enemigosObjetivo: 9,
   },
 
@@ -115,18 +111,63 @@ export const LEVEL3_CONFIG = {
 
   boxes: [
     {
-      x: 1550,
+      x: 100,
       y: 688,
       keyData: {
-        texture: 'key13',
+        texture: 'key11Silver',
         grupo: 'keys',
         color: 'silver',
         efecto: 'ninguno',
         correcta: true,
       },
     },
+    {
+      x: 250,
+      y: 784,
+      keyData: {
+        texture: 'key11Bronze',
+        grupo: 'keys',
+        color: 'bronze',
+        efecto: 'ninguno',
+        correcta: false,
+      },
+    },
+    {
+      x: 1100,
+      y: 688,
+      keyData: {
+        texture: 'key11Grey',
+        grupo: 'keys',
+        color: 'grey',
+        efecto: 'ninguno',
+        correcta: false,
+      },
+    },
+    {
+      x: 1550,
+      y: 688,
+      keyData: {
+        texture: 'key13Silver',
+        grupo: 'keys',
+        color: 'silver',
+        efecto: 'ninguno',
+        correcta: true,
+      },
+    },
+    {
+      x: 2350,
+      y: 688,
+      keyData: {
+        texture: 'key4Gold',
+        grupo: 'keys',
+        color: 'gold',
+        efecto: 'ninguno',
+        correcta: false,
+      },
+    },
     { x: 1000, y: 880 },
     { x: 1620, y: 688 },
+    { x: 150, y: 688 },
   ],
 
   player: { x: 100, y: 600 },

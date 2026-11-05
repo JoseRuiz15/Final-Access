@@ -61,7 +61,14 @@ const router = createRouter({
       beforeEnter: requireAuth,
     },
     {
+      path: '/lobby-room',
+      name: 'lobby-room',
+      component: () => import('../views/LobbyRoomView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
       path: '/store',
+
       name: 'store',
       component: () => import('../views/StoreView.vue'),
       beforeEnter: requireAuth,

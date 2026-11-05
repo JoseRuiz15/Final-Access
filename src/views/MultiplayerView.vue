@@ -1,156 +1,207 @@
 <script setup>
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { useMultiplayerStore } from '@/stores/multiplayer'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const multiplayerStore = useMultiplayerStore()
+
+const roomCodeInput = ref('')
+const privacyOption = ref('public')
+const username = computed(() => authStore.user?.username?.trim() || '')
+const hasPublicRooms = computed(() => multiplayerStore.publicRooms.length > 0)
+
+onMounted(() => {
+  multiplayerStore.connect()
+})
+
+watch(
+  () => multiplayerStore.roomCode,
+  (roomCode) => {
+    if (roomCode) router.push('/lobby-room')
+  },
+)
 
 function irLobby() {
+  multiplayerStore.disconnect()
   router.push('/lobby')
 }
 
-function irCreate() {
-  router.push('/create')
+function joinRoom(roomCode = roomCodeInput.value) {
+  if (!username.value) {
+    alert('Por favor inicia sesión para entrar a una sala')
+    return
+  }
+
+  if (!roomCode?.trim()) {
+    alert('Ingresa un código de invitación o elige una sala pública')
+    return
+  }
+
+  multiplayerStore.limpiarChat()
+  multiplayerStore.joinRoom(roomCode, username.value)
+}
+
+function handleCreate() {
+  if (!username.value) {
+    alert('Por favor inicia sesión para crear una sala')
+    return
+  }
+
+  multiplayerStore.limpiarChat()
+  multiplayerStore.createRoom(username.value, privacyOption.value === 'private')
+}
+
+function refreshPublicRooms() {
+  multiplayerStore.fetchPublicRooms()
 }
 </script>
+
 <template>
   <div class="multiplayer-screen relative isolate min-h-screen bg-[#080e20]">
-    <!--fondo del multijugador-->
     <img
       src="/img/multy-player/partida.webp"
-      alt="imagen del multi"
+      alt="Fondo del modo multijugador"
       fetchpriority="high"
       decoding="async"
-      class="h-full w-full absolute inset-0 object-cover -z-10"
+      class="absolute inset-0 -z-10 h-full w-full object-cover"
     />
 
     <button
-      class="multiplayer-back absolute top-6 left-6 z-20 text-white font-pixel text-[13px] hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9] transition-all duration-300"
+class="multiplayer-back absolute left-6 top-6 z-20 font-pixel text-[13px] text-white transition-all duration-300 hover:text-[#FF00D9] hover:text-shadow-[0_0_30px_#FF00D9]"
       @click="irLobby"
     >
-      &lt;- VOLVER AL MENU</button
-    >
-    <!--cuadro para crear sala-->
-    <div
-      class="private-lobby-panel bg-[#190C2D]/70 h-[563px] w-[463px] absolute left-[250px] top-[100px] backdrop-blur-sm rounded-lg"
-    >
-      <!--texto-->
-      <h1 class="text-[#00f7ff] font-pixel ml-5 mt-5">UNIRSE A LOBBY PRIVADO</h1>
-      <h1 class="text-[#D1BCFF] ml-5 font-pixel text-[16px] mt-20">CODIGO DE LOBBY</h1>
+      &lt;- VOLVER AL MENU
+    </button>
 
-      <div class="mt-[20px] flex items-center justify-center text-[#fff]">
-        <input
-          type="text"
-          id="code-input"
-          class="font-orbitron login-input w-[425px] bg-[#06093d]/70 rounded-[5px] h-[45px] flex justify-center items-center text-center"
-        />
-      </div>
-      <!--boton para unirse-->
-      <button
-        class="bg-[#53f4ff] h-[60px] w-[424px] mt-10 ml-5 font-pixel rounded-lg hover:scale-105 hover:shadow-[0_0_40px_#53f4ff] hover:text-white"
-      >
-        CONECTAR
-      </button>
-      <!--boton para crear partida-->
-      <button
-        class="h-[60px] w-[424px] mt-10 ml-5 font-pixel rounded-lg border text-[#53f4ff] border-4 border-[#53f4ff] hover:scale-105 hover:shadow-[0_0_40px_#53f4ff] hover:text-white"
-        @click="irCreate"
-      >
-        CREAR PARTIDA
-      </button>
-    </div>
-    <div
-      class="server-browser-panel h-[720px] w-[793px] bg-[#190C2D]/70 absolute top-[80px] right-[200px] backdrop-blur-sm rounded-lg border border-[#3B494B]"
+    <section
+      class="private-lobby-panel absolute left-[250px] top-[100px] flex w-[463px] flex-col rounded-lg bg-[#190C2D]/80 p-8 backdrop-blur-sm"
+      aria-labelledby="create-room-title"
     >
-      <div class="ml-5 mt-5">
-        <h1 class="text-[#ECDCFF] font-pixel text-[20px]">BUSCADOR DE PARTIDAS</h1>
-        <div class="h-[1px] w-[750px] bg-[#4A4A6A]"></div>
+      <h1 id="create-room-title" class="mb-6 text-center font-pixel text-[#00f7ff]">
+        CREAR O UNIRSE
+      </h1>
+
+      <fieldset :disabled="!multiplayerStore.connected" class="flex flex-col gap-3">
+        <legend class="mb-3 font-pixel text-[12px] text-[#D1BCFF]">VISIBILIDAD DE LA SALA</legend>
+
+        <label
+          class="cursor-pointer rounded-md border p-3 transition-colors"
+          :class="privacyOption === 'private' ? 'border-[#FF00D9] bg-[#FF00D9]/10' : 'border-white/15 bg-black/20'"
+        >
+          <span class="flex items-center gap-3 font-pixel text-sm text-white">
+            <input v-model="privacyOption" type="radio" name="privacy" value="private" />
+            PRIVADA
+          </span>
+          <span class="ml-7 mt-1 block text-xs text-[#D1BCFF]">
+            Solo se puede entrar con el código de invitación.
+          </span>
+        </label>
+
+        <label
+          class="cursor-pointer rounded-md border p-3 transition-colors"
+          :class="privacyOption === 'public' ? 'border-[#53f4ff] bg-[#53f4ff]/10' : 'border-white/15 bg-black/20'"
+        >
+          <span class="flex items-center gap-3 font-pixel text-sm text-white">
+            <input v-model="privacyOption" type="radio" name="privacy" value="public" />
+            PÚBLICA
+          </span>
+          <span class="ml-7 mt-1 block text-xs text-[#D1BCFF]">
+            Aparece en el buscador mientras tenga cupos.
+          </span>
+        </label>
+      </fieldset>
+
+      <button
+        class="mt-5 h-[54px] rounded-lg border-2 border-[#53f4ff] font-pixel text-sm text-[#53f4ff] transition-all hover:bg-[#53f4ff] hover:text-[#080e20] disabled:cursor-not-allowed disabled:opacity-50"
+        :disabled="!multiplayerStore.connected"
+        @click="handleCreate"
+      >
+        CREAR SALA {{ privacyOption === 'private' ? 'PRIVADA' : 'PÚBLICA' }}
+      </button>
+
+      <div class="my-5 h-px bg-white/15"></div>
+
+      <label for="room-code" class="mb-2 font-pixel text-[12px] text-[#D1BCFF]">
+        CÓDIGO DE INVITACIÓN
+      </label>
+      <input
+        id="room-code"
+        v-model="roomCodeInput"
+        type="text"
+        maxlength="4"
+        autocomplete="off"
+        placeholder="EJ: R13W"
+        class="login-input h-[45px] w-full rounded-[5px] border border-white/10 bg-[#06093d]/70 px-4 text-center font-orbitron text-white uppercase"
+        :disabled="!multiplayerStore.connected"
+        @keyup.enter="joinRoom()"
+      />
+      <button
+        class="mt-3 h-[48px] rounded-lg bg-[#53f4ff] font-pixel text-sm text-[#080e20] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50"
+        :disabled="!multiplayerStore.connected"
+        @click="joinRoom()"
+      >
+        ENTRAR CON CÓDIGO
+      </button>
+
+      <p
+        aria-live="polite"
+        class="mt-5 text-center text-xs"
+        :class="multiplayerStore.connected ? 'text-[#7DF4FF]' : 'text-[#FFB2B8]'"
+      >
+        {{ multiplayerStore.connected ? 'SERVIDOR CONECTADO' : multiplayerStore.connectionError || 'CONECTANDO…' }}
+      </p>
+    </section>
+
+    <section
+      class="server-browser-panel absolute right-[200px] top-[80px] h-[720px] w-[793px] rounded-lg border border-[#3B494B] bg-[#190C2D]/80 p-5 backdrop-blur-sm"
+      aria-labelledby="public-rooms-title"
+    >
+      <div class="mb-4 border-b border-[#4A4A6A] pb-4">
+        <h2 id="public-rooms-title" class="font-pixel text-[20px] text-[#ECDCFF]">
+          BUSCADOR DE PARTIDAS
+        </h2>
+        <div class="mt-2 flex items-center justify-between gap-4">
+          <p class="text-xs text-[#B9CACB]">Solo salas públicas disponibles</p>
+          <button
+            class="font-pixel text-[10px] text-[#7DF4FF] transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+            :disabled="!multiplayerStore.connected"
+            @click="refreshPublicRooms"
+          >
+            ACTUALIZAR ↻
+          </button>
+        </div>
       </div>
-      <div class="ml-5 mt-5 flex">
-        <h1 class="text-[#B9CACB] font-pixel text-[10px]">NOMBRE DEL SERVIDOR</h1>
-        <h1 class="text-[#B9CACB] font-pixel text-[10px] ml-[250px]">MODO</h1>
-        <h1 class="text-[#B9CACB] font-pixel text-[10px] ml-[90px]">JUGADPRES</h1>
+
+      <div v-if="!hasPublicRooms" class="grid h-[590px] place-items-center text-center">
+        <p class="font-pixel text-sm text-[#B9CACB]">
+          {{ multiplayerStore.connected ? 'NO HAY PARTIDAS PÚBLICAS DISPONIBLES' : 'CONECTANDO CON EL SERVIDOR…' }}
+        </p>
       </div>
-      <div class="ml-5 h-[1px] w-[750px] bg-[#4A4A6A]"></div>
-      <!--contenedor que mantiene los servers-->
-      <div class="h-[565px] w-[744.67px] mt-5 ml-[5px]">
-        <!--servidores competitivo-->
-        <div class="bg-[#211536]/50 w-[736.67px] h-[72px] ml-5 mt-5 flex">
-          <h1 class="text-[#DBFCFF] mt-5 ml-[10px]">NEON_STRIKE_US_EAST</h1>
-          <div class="bg-[#D1BCFF]/10 rounded-lg h-[25px] ml-[200px] mt-5">
-            <h1 class="text-[#D1BCFF]">MODO COMPETITIVO</h1>
+
+      <div v-else class="h-[590px] space-y-3 overflow-y-auto pr-2">
+        <article
+          v-for="room in multiplayerStore.publicRooms"
+          :key="room.code"
+          class="flex items-center justify-between rounded-md border border-[#53f4ff]/20 bg-[#080e20]/70 p-4"
+        >
+          <div>
+            <h3 class="font-pixel text-sm text-[#7DF4FF]">SALA {{ room.code }}</h3>
+            <p class="mt-2 text-xs text-[#B9CACB]">
+              {{ room.username }} · {{ room.playerCount }}/5 jugadores
+            </p>
           </div>
-          <h1 class="text-[#ECDCFF] mt-5 ml-[65px]">3/5</h1>
           <button
-            class="text-[#7DF4FF] text-[13px] border border-[#7DF4FF] h-5 mt-5 ml-10 tex-center w-[60px]hover:scale-105 hover:shadow-[0_0_40px_#7DF4FF]"
+            class="rounded border border-[#7DF4FF] px-4 py-2 font-pixel text-xs text-[#7DF4FF] transition-colors hover:bg-[#7DF4FF] hover:text-[#080e20] disabled:cursor-not-allowed disabled:opacity-50"
+            :disabled="!multiplayerStore.connected"
+            @click="joinRoom(room.code)"
           >
             UNIRSE
           </button>
-        </div>
-        <!--colavorativo-->
-        <div class="bg-[#211536]/50 w-[736.67px] h-[72px] ml-5 mt-[5px] flex">
-          <h1 class="text-[#DBFCFF] mt-5 ml-[10px]">CYBER_BRAWL_EU_01</h1>
-          <div class="bg-[#FF506E]/20 rounded-lg h-[50px] text-center ml-[200px] mt-5 w-[163.67px]">
-            <h1 class="text-[#FFB2B8]">MODO COLABORATIV0</h1>
-          </div>
-          <h1 class="text-[#ECDCFF] mt-5 ml-[65px]">2/5</h1>
-          <button
-            class="text-[#7DF4FF] text-[13px] border border-[#7DF4FF] h-5 mt-5 ml-[45px] tex-center w-[60px]hover:scale-105 hover:shadow-[0_0_40px_#7DF4FF]"
-          >
-            UNIRSE
-          </button>
-        </div>
-        <!--servidores competitivo-->
-        <div class="bg-[#211536]/50 w-[736.67px] h-[72px] ml-5 mt-[5px] flex">
-          <h1 class="text-[#DBFCFF] mt-5 ml-[10px]">UNDERGROUND_FIGHT_CLUB</h1>
-          <div class="bg-[#D1BCFF]/10 rounded-lg h-[25px] ml-[153px] mt-5">
-            <h1 class="text-[#D1BCFF]">MODO COMPETITIVO</h1>
-          </div>
-          <h1 class="text-[#FF506E] mt-5 ml-[65px]">5/5</h1>
-          <button
-            class="text-[#3B494B] text-[13px] border border-[#3B494B] h-5 mt-5 ml-[35px] tex-center w-[60px]"
-          >
-            LLENO
-          </button>
-        </div>
-        <!--colavorativo-->
-        <div class="bg-[#211536]/50 w-[736.67px] h-[72px] ml-5 mt-[5px] flex">
-          <h1 class="text-[#DBFCFF] mt-5 ml-[10px]">CORPORATE_HEIST_V2</h1>
-          <div class="bg-[#7DF4FF]/10 rounded-lg h-[50px] text-center ml-[200px] mt-5 w-[163.67px]">
-            <h1 class="text-[#7DF4FF]">MODO COLABORATIV0</h1>
-          </div>
-          <h1 class="text-[#ECDCFF] mt-5 ml-[65px]">4/5</h1>
-          <button
-            class="text-[#7DF4FF] text-[13px] border border-[#7DF4FF] h-5 mt-5 ml-[35px] tex-center w-[60px]hover:scale-105 hover:shadow-[0_0_40px_#7DF4FF]"
-          >
-            UNIRSE
-          </button>
-        </div>
-        <!--servidores competitivo-->
-        <div class="bg-[#211536]/50 w-[736.67px] h-[72px] ml-5 mt-[5px] flex">
-          <h1 class="text-[#DBFCFF] mt-5 ml-[10px]">UNDERGROUND_FIGHT_CLUB</h1>
-          <div class="bg-[#D1BCFF]/10 rounded-lg h-[25px] ml-[153px] mt-5">
-            <h1 class="text-[#D1BCFF]">MODO COMPETITIVO</h1>
-          </div>
-          <h1 class="text-[#ECDCFF] mt-5 ml-[65px]">1/5</h1>
-          <button
-            class="text-[#7DF4FF] text-[13px] border border-[#7DF4FF] h-5 mt-5 ml-[40px] tex-center w-[60px]hover:scale-105 hover:shadow-[0_0_40px_#7DF4FF]"
-          >
-            UNIRSE
-          </button>
-        </div>
-        <!--colavorativo-->
-        <div class="bg-[#211536]/50 w-[736.67px] h-[72px] ml-5 mt-[5px] flex">
-          <h1 class="text-[#DBFCFF] mt-5 ml-[10px]">NEON_DISTRICT_7</h1>
-          <div class="bg-[#7DF4FF]/10 rounded-lg h-[50px] text-center ml-[235px] mt-5 w-[163.67px]">
-            <h1 class="text-[#7DF4FF]">MODO COLABORATIV0</h1>
-          </div>
-          <h1 class="text-[#ECDCFF] mt-5 ml-[55px]">4/5</h1>
-          <button
-            class="text-[#7DF4FF] text-[13px] border border-[#7DF4FF] h-5 mt-5 ml-10 tex-center w-[60px]hover:scale-105 hover:shadow-[0_0_40px_#7DF4FF]"
-          >
-            UNIRSE
-          </button>
-        </div>
+        </article>
       </div>
-    </div>
+    </section>
   </div>
 </template>

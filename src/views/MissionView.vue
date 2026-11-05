@@ -3,27 +3,26 @@ import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { playMusicFromUserGesture } from '@/game/services/GameMusic.js'
 import { useGameStore } from '@/stores/game.js'
+import { LEVEL1_CONFIG } from '@/game/configs/level1Config.js'
+import { LEVEL2_CONFIG } from '@/game/configs/level2Config.js'
+import { LEVEL3_CONFIG } from '@/game/configs/level3Config.js'
+import { LEVEL4_CONFIG } from '@/game/configs/level4Config.js'
+import { LEVEL5_CONFIG } from '@/game/configs/level5Config.js'
 
 const router = useRouter()
 const gameStore = useGameStore()
 
 const nivelActual = computed(() => Number(gameStore.nivelActual) || 1)
 
-const textoCompleto = computed(() => {
-  if (nivelActual.value === 2) {
-    return 'Para pasar el nivel necesitas una llave dorada del grupo común, la cual podrás encontrar en cajas que tendrás que destruir. También tendrás que matar a todos los enemigos.'
-  }
-  if (nivelActual.value === 3) {
-    return 'Para pasar el nivel necesitas la llave plateada Key 13, que encontrarás en una caja. Abre la puerta al final de la ciudad y escapa.'
-  }
-  return 'Para pasar el nivel necesitas esta llave de plata del grupo común, la cual podrás encontrar en cajas que tendrás que destruir.'
+const configNivel = computed(() => {
+  if (nivelActual.value === 1) return LEVEL1_CONFIG
+  if (nivelActual.value === 3) return LEVEL3_CONFIG
+  if (nivelActual.value === 4) return LEVEL4_CONFIG
+  if (nivelActual.value === 5) return LEVEL5_CONFIG
+  return LEVEL2_CONFIG
 })
 
-const imagenLlave = computed(() => {
-  if (nivelActual.value === 2) return '/img/keys/Key10-GOLD.png'
-  if (nivelActual.value === 3) return '/img/keys/Key13-SILVER.png'
-  return '/img/keys/Key1-SILVER.png'
-})
+const textoCompleto = computed(() => configNivel.value.hud.pista ?? '')
 
 const textoMostrado = ref('')
 
@@ -96,8 +95,6 @@ onUnmounted(() => {
           <span class="w-full">{{ textoMostrado }}</span>
         </p>
       </div>
-
-      <img :src="imagenLlave" alt="llave" class="absolute right-[52px] top-7 w-[30px] rotate-[20deg]" />
     </div>
 
     <button

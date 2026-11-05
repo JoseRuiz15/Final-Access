@@ -15,6 +15,7 @@ import Level1Scene from '../scenes/Level1Scene.js'
 import Level2Scene from '../scenes/Level2Scene.js'
 import Level3Scene from '../scenes/Level3Scene.js'
 import Level4Scene from '../scenes/Level4Scene.js'
+import Level5Scene from '../scenes/Level5Scene.js'
 
 function createDependencies() {
   return {
@@ -56,6 +57,12 @@ export class SceneFactory {
   static createLevel4Scene() {
     const deps = createDependencies()
     const scene = new Level4Scene(deps)
+    return scene
+  }
+
+  static createLevel5Scene() {
+    const deps = createDependencies()
+    const scene = new Level5Scene(deps)
     return scene
   }
 }

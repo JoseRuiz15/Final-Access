@@ -23,6 +23,14 @@ export default class PiniaGameRepository extends IGameRepository {
     this._store.llaves = value
   }
 
+  get llavesCorrectas() {
+    return this._store.llavesCorrectas
+  }
+
+  set llavesCorrectas(value) {
+    this._store.llavesCorrectas = value
+  }
+
   get enemigos() {
     return this._store.enemigos
   }
@@ -46,6 +54,7 @@ export default class PiniaGameRepository extends IGameRepository {
   reset() {
     this._store.vidas = 5
     this._store.llaves = 0
+    this._store.llavesCorrectas = 0
     this._store.enemigos = 0
   }
 }

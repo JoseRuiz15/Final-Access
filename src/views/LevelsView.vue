@@ -13,6 +13,10 @@ const mostrarModalNivel = ref(false)
 const nivelSeleccionado = ref(null)
 const isLoading = ref(false)
 
+// TEMPORAL: niveles abiertos para probar cambios sin completar el anterior.
+// Vaciar este array para restaurar el bloqueo por progreso.
+const TEMPORARY_UNLOCKED_LEVELS = [4, 5]
+
 function volverASeleccionarModo() {
   router.push('/gamemode')
 }
@@ -37,8 +41,8 @@ async function irLoadingScene() {
       return
     }
 
-    // Los tres niveles jugables pasan por la pantalla de misión.
-    router.push(nivel <= 3 ? '/mission' : '/game')
+    // Todos los niveles pasan por la pantalla de misión con su pista.
+    router.push('/mission')
   } finally {
     isLoading.value = false
   }
@@ -57,12 +61,15 @@ function obtenerDescripcion() {
       return 'Debes rescatar a los rehenes antes de que se acabe el tiempo.'
     case 3:
       return 'Consigue la llave plateada Key 13, abre la compuerta al final de la ciudad y escapa.'
+    case 5:
+      return 'Atraviesa la ciudad en llamas saltando entre plataformas móviles y llega a la puerta del final.'
     default:
       return 'Descripción no disponible.'
   }
 }
 
 function isLevelUnlocked(level) {
+  if (TEMPORARY_UNLOCKED_LEVELS.includes(level)) return true
   if (level > 3) return false
   if (level === 1) return true
   return progressionStore.isLevelCompleted(level - 1)

@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "npm run db:migrate && tsx watch src/index.ts",
+    "dev:multiplayer": "node index.js",
     "build": "tsc",
     "start": "npm run db:migrate:prod && node dist/index.js",
     "test": "vitest run",
@@ -34,14 +35,17 @@
     "@types/uuid": "^10.0.0",
     "@types/ws": "^8.18.2",
     "bcrypt": "^5.1.1",
+    "cors": "^2.8.6",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.33.0",
     "drizzle-zod": "^0.5.1",
+    "express": "^5.3.0",
     "fastify": "^4.28.1",
     "fastify-plugin": "^4.5.1",
     "nodemailer": "^6.9.14",
     "pino-pretty": "^13.2.0",
     "postgres": "^3.4.4",
+    "socket.io": "^4.8.4",
     "typescript": "^5.5.4",
     "zod": "^3.23.8"
   },
@@ -50,5 +54,13 @@
     "tsx": "^4.19.0",
     "vitest": "^2.0.5",
     "ws": "^8.22.0"
-  }
+  },
+  "description": "",
+  "main": "check-user.js",
+  "directories": {
+    "test": "tests"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

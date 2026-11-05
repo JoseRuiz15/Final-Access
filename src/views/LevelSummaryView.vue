@@ -17,9 +17,11 @@ const formattedTime = computed(() => {
 
 const keyResult = computed(() => {
   if (!summary.value) return ''
+  if (summary.value.keyAttempts === 0) return 'PUERTA ABIERTA SIN LLAVE'
+  const etiqueta = (summary.value.correctKeys ?? 1) > 1 ? 'LLAVES CORRECTAS' : 'LLAVE CORRECTA'
   return summary.value.correctKeyFirstTry
-    ? 'LLAVE CORRECTA A LA PRIMERA'
-    : `LLAVE CORRECTA AL INTENTO ${summary.value.keyAttempts}`
+    ? `${etiqueta} A LA PRIMERA`
+    : `${etiqueta} AL INTENTO ${summary.value.keyAttempts}`
 })
 
 const continueLabel = computed(() =>

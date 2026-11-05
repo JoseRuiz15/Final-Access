@@ -2,13 +2,9 @@ export const LEVEL1_CONFIG = {
   vidasIniciales: 5,
   hud: {
     tiempoInicial: 300,
-    imagenLlave: '/img/keys/Key1-SILVER.png',
-    mision: [
-      'CONSIGUE UNA LLAVE',
-      'NORMAL DE COLOR',
-      'PLATEADO PARA PASAR',
-      'AL SIGUIENTE NIVEL',
-    ],
+    llavesObjetivo: 1,
+    pista:
+      'Consigue una llave plateada con brillo rojo para avanzar de nivel.',
   },
   assets: {
     tilemaps: [['level1', '/maps/Mapa_level_1.json']],
@@ -97,9 +93,9 @@ export const LEVEL1_CONFIG = {
       x: 340,
       y: 752,
       keyData: {
-        texture: 'key11Gold',
+        texture: 'key4Bronze',
         grupo: 'keys',
-        color: 'gold',
+        color: 'bronze',
         efecto: 'ninguno',
         correcta: false,
       },
