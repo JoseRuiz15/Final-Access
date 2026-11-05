@@ -5,7 +5,7 @@ export const LEVEL3_CONFIG = {
     tiempoInicial: 180,
     llavesObjetivo: 2,
     pista:
-      'Consigue una llave plateada mediana y una plateada alargada con cruz. Las de otros colores son señuelos.',
+      'Consigue una llave plateada con un accesorio rojo y una plateada con cruz.',
     enemigosObjetivo: 9,
   },
 
@@ -136,7 +136,7 @@ export const LEVEL3_CONFIG = {
       x: 1100,
       y: 688,
       keyData: {
-        texture: 'key11Grey',
+        texture: 'key4Grey',
         grupo: 'keys',
         color: 'grey',
         efecto: 'ninguno',
@@ -158,9 +158,9 @@ export const LEVEL3_CONFIG = {
       x: 2350,
       y: 688,
       keyData: {
-        texture: 'key4Gold',
+        texture: 'key4Silver',
         grupo: 'keys',
-        color: 'gold',
+        color: 'silver',
         efecto: 'ninguno',
         correcta: false,
       },

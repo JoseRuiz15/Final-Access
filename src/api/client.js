@@ -42,7 +42,7 @@ api.interceptors.response.use(
     const status = error.response?.status
     const url = error.config?.url || ''
 
-    // 401 en una ruta protegida = sesión caducada (el JWT dura 15 minutos) o
+    // 401 en una ruta protegida = sesión caducada (según JWT_EXPIRES_IN) o
     // cuenta que ya no existe. El backend borra la cookie en ese caso; aquí
     // se manda al login para no dejar la pantalla a medias (por ejemplo, la
     // de personajes se quedaba vacía sin explicar por qué).

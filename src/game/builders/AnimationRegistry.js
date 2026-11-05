@@ -64,7 +64,7 @@ export default class AnimationRegistry {
     KEY_SPRITESHEETS.forEach(({ texture, frames, frameRate = 12 }) => {
       const animationKey = getKeyAnimationKey(texture)
 
-      if (scene.anims.exists(animationKey)) return
+      if (scene.anims.exists(animationKey) || !scene.textures.exists(texture)) return
 
       scene.anims.create({
         key: animationKey,

@@ -142,7 +142,15 @@ export const KEY_SPRITESHEETS = [
     frames: 48,
     frameRate: 12,
   },
-]
+  {
+    texture: 'key10',
+    path: '/img/keys-animation/key10.png',
+    frameWidth: 10,
+    frameHeight: 27,
+    frames: 25,
+    frameRate: 12,
+  },
+];
 
 /**
  * Devuelve la clave de animación asociada a una textura de llave.

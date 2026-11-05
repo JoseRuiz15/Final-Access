@@ -5,7 +5,7 @@ export const LEVEL2_CONFIG = {
     enemigosObjetivo: 4,
     llavesObjetivo: 2,
     pista:
-      'Consigue una llave dorada con efecto azul y una llave dorada con morado',
+      'Consigue una llave dorada con efecto azul y una llave plateada con efecto rojo',
   },
   assets: {
     tilemaps: [['level2', '/maps/Mapa_level_2.json']],
@@ -25,6 +25,7 @@ export const LEVEL2_CONFIG = {
     ],
     spritesheets: [
       ['key4Gold', '/img/keys-animation/Key 4 - GOLD - Spritesheet.png', { frameWidth: 14, frameHeight: 27 }],
+      ['key10', '/img/keys-animation/key10.png', { frameWidth: 10, frameHeight: 27 }],
       ['crateBreak', '/img/box/crateBreak.png', { frameWidth: 32, frameHeight: 32 }],
     ],
   },
@@ -72,11 +73,37 @@ export const LEVEL2_CONFIG = {
   ],
 
   boxes: [
-    {
-      x: 800,
+    {x: 566, y: 752},
+    {x: 600, y: 752},
+        {
+      x:684,
       y: 400,
       keyData: {
+        texture: 'key15Silver',
+        grupo: 'keys',
+        color: 'silver',
+        efecto: 'ninguno',
+        correcta: false,
+      },
+    },
+    {
+      x: 717,
+      y: 367,
+      keyData: {
         texture: 'key4Gold',
+        grupo: 'keys',
+        color: 'gold',
+        efecto: 'ninguno',
+        correcta: false,
+      },
+    },
+
+    {x: 717, y: 400},
+
+    { x: 750, 
+      y: 400,
+      keyData: {
+        texture: 'key10',
         grupo: 'keys',
         color: 'gold',
         efecto: 'ninguno',
@@ -85,7 +112,7 @@ export const LEVEL2_CONFIG = {
     },
     {
       x: 900,
-      y: 752,
+      y: 657,
       keyData: {
         texture: 'key4Silver',
         grupo: 'keys',
@@ -95,18 +122,7 @@ export const LEVEL2_CONFIG = {
       },
     },
     {
-      x: 500,
-      y: 752,
-      keyData: {
-        texture: 'Key 2 - GOLD - Spritesheet.png',
-        grupo: 'keys',
-        color: 'gold',
-        efecto: 'ninguno',
-        correcta: false,
-      },
-    },
-    {
-      x: 2450,
+      x: 1500,
       y: 752,
       keyData: {
         texture: 'key11Gold',

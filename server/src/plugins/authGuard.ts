@@ -33,7 +33,7 @@ export async function authGuard(req: FastifyRequest, reply: FastifyReply) {
   }
 
   // Un JWT puede estar bien firmado y, aun así, ser inservible: el token
-  // dura 15 minutos, así que en cuanto caduca todas las rutas devuelven 401.
+  // dura lo que indique JWT_EXPIRES_IN, así que al caducar las rutas devuelven 401.
   // Peor aún, la cuenta puede haber desaparecido (otra base de datos, un
   // borrado...). En ambos casos la sesión no vale, así que se responde 401
   // (no 404) y se borra la cookie: el frontend detecta el 401, cierra la

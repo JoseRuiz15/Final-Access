@@ -19,7 +19,13 @@ const envSchema = z
   .object({
     DATABASE_URL: z.string().url().startsWith('postgresql://'),
     JWT_SECRET: z.string().min(32),
-    JWT_EXPIRES_IN: z.string().default('15m'),
+    JWT_EXPIRES_IN: z
+      .string()
+      .regex(
+        /^\s*\d+(?:\.\d+)?\s*(?:ms|msecs?|milliseconds?|s|secs?|seconds?|m|mins?|minutes?|h|hrs?|hours?|d|days?|w|weeks?|y|yrs?|years?)\s*$/i,
+        'JWT_EXPIRES_IN debe incluir una unidad de tiempo, por ejemplo 7d o 12h',
+      )
+      .default('7d'),
     COOKIE_SECRET: z.string().min(32),
     // Vacío = cookie host-only (obligatorio con .vercel.app / .up.railway.app,
     // que los navegadores rechazan por ser public suffixes).
