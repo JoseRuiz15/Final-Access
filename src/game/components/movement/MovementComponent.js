@@ -8,6 +8,8 @@ export default class MovementComponent {
     this.player = player
     this.velocidad = 160
     this.jumpAnimationPlayed = false
+    this.lastGroundedAt = Number.NEGATIVE_INFINITY
+    this.coyoteTimeMs = 120
     this.dashActivo = false
     this.direccionDash = 0
     this.dashTerminaEn = 0
@@ -22,13 +24,11 @@ export default class MovementComponent {
 
   isGrounded() {
     const body = this.player.body
-    const characterId = this.player.gameRepository?.selectedCharacterId
-    const needsConfirmedGroundContact = characterId === 'cosa2' || characterId === 'cosa3'
-    const groundContact =
-      body?.blocked?.down || (!needsConfirmedGroundContact && body?.touching?.down)
+    const groundContact = body?.onFloor?.() || body?.blocked?.down || body?.touching?.down
 
-    // Cosa 2 y 3 requieren apoyo confirmado para no contar un roce como suelo.
-    return Boolean(groundContact && body?.velocity?.y >= 0)
+    const grounded = Boolean(groundContact && body?.velocity?.y >= 0)
+    if (grounded) this.lastGroundedAt = this.player.scene.time.now
+    return grounded
   }
 
   moveLeft() {
@@ -82,7 +82,7 @@ export default class MovementComponent {
   startDash(direction) {
     const ahora = this.player.scene.time.now
     if (
-      this.player.idleTexture !== 'cosa3' ||
+      !this.player.gameRepository?.dashUnlocked ||
       ![-1, 1].includes(direction) ||
       ahora < this.dashDisponibleEn ||
       this.player.ataque ||
@@ -101,7 +101,9 @@ export default class MovementComponent {
     this.player.setVelocityX(direction * this.velocidadDash)
     this._stopWalkSound()
 
-    this.player.play('cosa3Dash', true)
+    if (this.player.idleTexture === 'cosa3') {
+      this.player.play('cosa3Dash', true)
+    }
 
     return true
   }
@@ -113,13 +115,18 @@ export default class MovementComponent {
   }
 
   jump() {
-    if (this.isGrounded()) {
-      this._stopWalkSound()
-      this.player.setVelocityY(-500)
-      this.player.play('saltar', true)
-      playPlayerSoundEffect(this.player.scene, 'jump')
-      this.jumpAnimationPlayed = true
-    }
+    const now = this.player.scene.time.now
+    const canJump =
+      this.isGrounded() || now - this.lastGroundedAt <= this.coyoteTimeMs
+    if (!canJump) return false
+
+    this.lastGroundedAt = Number.NEGATIVE_INFINITY
+    this._stopWalkSound()
+    this.player.setVelocityY(-500)
+    this.player.play('saltar', true)
+    playPlayerSoundEffect(this.player.scene, 'jump')
+    this.jumpAnimationPlayed = true
+    return true
   }
 
   update() {

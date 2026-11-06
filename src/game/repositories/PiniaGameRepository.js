@@ -47,6 +47,10 @@ export default class PiniaGameRepository extends IGameRepository {
     this._store.selectedCharacterId = value
   }
 
+  get dashUnlocked() {
+    return this._store.dashUnlocked
+  }
+
   incrementarEnemigos() {
     this._store.enemigos++
   }

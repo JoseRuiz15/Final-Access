@@ -57,6 +57,16 @@ onMounted(() => {
 })
 
 async function initializeGame() {
+  if (!gameStore.dashUnlocked && progressionStore.gameProgress === null) {
+    try {
+      await progressionStore.fetchProgress()
+      if (progressionStore.isLevelCompleted(3)) gameStore.unlockDash()
+    } catch (err) {
+      // El juego puede iniciar sin conexión con el estado guardado localmente.
+      console.warn('No se pudo sincronizar el desbloqueo del dash.', err)
+    }
+  }
+
   // Si se abre el juego directamente, recupera del perfil el personaje equipado.
   if (!characterStore.equippedCharacterId && !profileStore.profile?.characterId) {
     try {
@@ -89,6 +99,7 @@ async function initializeGame() {
   }
   const crearEscena = sceneFactories[Number(gameStore.nivelActual)] ?? sceneFactories[2]
   levelScene = crearEscena()
+  levelScene.mobileLayout = isTouchDevice.value
 
   // El HUD y el jugador empiezan con las vidas que corresponden a este nivel.
   gameStore.vidas = levelScene.config.vidasIniciales ?? 5
@@ -99,8 +110,8 @@ async function initializeGame() {
   const config = {
     type: Phaser.AUTO,
 
-    width: 1280,
-    height: 720,
+    width: Math.max(1, window.innerWidth),
+    height: Math.max(1, window.innerHeight),
 
     parent: 'game-container',
 
@@ -111,14 +122,8 @@ async function initializeGame() {
     },
 
     scale: {
-      // Los niveles 4 y 5 necesitan conservar toda su altura en pantallas
-      // panorámicas; EXPAND añade vista horizontal en lugar de recortar
-      // arriba y abajo.
-      mode: isTouchDevice.value
-        ? Phaser.Scale.FIT
-        : [4, 5].includes(Number(gameStore.nivelActual))
-          ? Phaser.Scale.EXPAND
-          : Phaser.Scale.ENVELOP,
+      // RESIZE adapta el área de juego a cualquier pantalla y orientación.
+      mode: Phaser.Scale.RESIZE,
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
 
@@ -206,6 +211,9 @@ async function handleLevelCompleted(sceneCompletada, stats) {
   const rendimiento = proporcionTiempo * 50 + proporcionVidas * 25 + proporcionEnemigos * 25
   const stars = 1 + Number(rendimiento >= 40) + Number(rendimiento >= 70)
   const nextLevelId = levelId < 3 ? levelId + 1 : null
+  const dashUnlocked = levelId >= 3 || gameStore.dashUnlocked
+
+  if (levelId >= 3) gameStore.unlockDash()
 
   // Prepare level completion data
   const completionData = {
@@ -228,6 +236,7 @@ async function handleLevelCompleted(sceneCompletada, stats) {
     correctKeys: completionData.correctKeys,
     stars,
     nextLevelId,
+    dashUnlocked,
   })
 
   progressionStore
@@ -423,6 +432,7 @@ function enfocarCanvasDelJuego() {
         ▶
       </button>
       <span
+        v-if="gameStore.dashUnlocked"
         class="touch-dash-hint mb-1 ml-1 max-w-20 font-pixel text-[7px] leading-relaxed text-white/65"
       >
         DOBLE TOQUE: DASH

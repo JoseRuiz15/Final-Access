@@ -69,7 +69,8 @@ export default class BaseScene extends Phaser.Scene {
       data.vidas ?? this.config.vidasIniciales ?? this.gameRepository.vidas ?? 5
     this.gameRepository.vidas = vidasIniciales
 
-    this.cameras.main.setZoom(this.config.zoom || 0.8)
+    const baseZoom = this.config.zoom || 0.8
+    this.cameras.main.setZoom(baseZoom * (this.mobileLayout ? 1.25 : 1))
 
     // === INICIALIZAR SERVICIOS LAZY (reciben scene aquí) ===
     this.physicsService?.init(this)

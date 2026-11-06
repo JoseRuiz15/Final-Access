@@ -18,6 +18,7 @@ export default class PlayerController extends IController {
     this.inputService = inputService
     this.attackWasDown = false
     this.lastDashTapAt = { left: Number.NEGATIVE_INFINITY, right: Number.NEGATIVE_INFINITY }
+    this.jumpBufferExpiresAt = Number.NEGATIVE_INFINITY
   }
 
   /**
@@ -32,13 +33,16 @@ export default class PlayerController extends IController {
       return
     }
     this.entity.movement?.update()
+    const now = this.entity.scene.time.now
+    if (this.inputService.isJumping()) this.jumpBufferExpiresAt = now + 180
+
     const recibiendoDano = this.entity.recibiendoDano
     if (recibiendoDano) {
       this.attackWasDown = false
       this.entity.cancelarCargaAtaque?.()
     }
 
-    if (!recibiendoDano && this.entity.idleTexture === 'cosa3') {
+    if (!recibiendoDano && this.entity.gameRepository?.dashUnlocked) {
       this._handleDashInput()
     }
 
@@ -69,8 +73,10 @@ export default class PlayerController extends IController {
       this.entity.atacar()
     }
 
-    if (!this.entity.ataque && this.inputService.isJumping()) {
-      this.entity.saltar()
+    if (!this.entity.ataque && now <= this.jumpBufferExpiresAt) {
+      if (this.entity.movement?.jump()) this.jumpBufferExpiresAt = Number.NEGATIVE_INFINITY
+    } else if (now > this.jumpBufferExpiresAt) {
+      this.jumpBufferExpiresAt = Number.NEGATIVE_INFINITY
     }
 
     if (this.inputService.isDroppingKey()) {

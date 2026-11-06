@@ -117,6 +117,19 @@ function backToLevelMap() {
           </p>
         </div>
 
+        <div
+          v-if="summary.dashUnlocked && summary.levelId === 3"
+          class="mb-6 border border-emerald-300/50 bg-emerald-950/40 px-4 py-3 text-center shadow-[0_0_24px_#34d39922]"
+          role="status"
+        >
+          <p class="font-pixel text-xs leading-relaxed text-emerald-200 sm:text-sm">
+            ¡FELICIDADES! DASH DESBLOQUEADO
+          </p>
+          <p class="mt-2 font-mono text-[9px] uppercase tracking-[0.16em] text-emerald-100/65">
+            Ya pueden usarlo todos los personajes con doble toque izquierda o derecha
+          </p>
+        </div>
+
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <article class="summary-stat border-l-2 border-cyan-300 bg-cyan-950/25 px-4 py-4">
             <p class="font-mono text-[9px] uppercase tracking-[0.2em] text-cyan-100/60">
