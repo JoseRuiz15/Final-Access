@@ -1,3 +1,5 @@
+import { playPlayerSoundEffect } from '../../services/PlayerSoundEffects.js'
+
 export default class PlayerHealthComponent {
   constructor(player, gameRepository) {
     this.player = player
@@ -25,6 +27,7 @@ export default class PlayerHealthComponent {
   takeDamage(amount) {
     if (!this.puedeRecibirDano()) return false
 
+    playPlayerSoundEffect(this.player.scene, 'hurt')
     this.vida -= amount
     if (this.vida <= 0) {
       this.vida = 0
@@ -44,6 +47,7 @@ export default class PlayerHealthComponent {
   recibirDano(dano) {
     if (!this.puedeRecibirDano()) return
 
+    playPlayerSoundEffect(this.player.scene, 'hurt')
     this.player.ataque = false
     this.vida -= dano
 
@@ -53,6 +57,7 @@ export default class PlayerHealthComponent {
       //this.vidas--
 
       this.gameRepository.vidas = this.vidas
+      playPlayerSoundEffect(this.player.scene, 'lifeLost')
 
       this.muerto = true
       this.player.movement?.cancelDash()
@@ -68,6 +73,7 @@ export default class PlayerHealthComponent {
   }
 
   respawn() {
+    playPlayerSoundEffect(this.player.scene, 'respawn')
     this.player.movement?.cancelDash()
     this.vida = this.maxVida
     this.player.setPosition(this.player.spawnX, this.player.spawnY)

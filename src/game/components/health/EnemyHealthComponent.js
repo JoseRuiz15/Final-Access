@@ -1,3 +1,5 @@
+import { playEnemySoundEffect } from '../../services/EnemySoundEffects.js'
+
 export default class EnemyHealthComponent {
   constructor(enemy, gameRepository) {
     this.enemy = enemy
@@ -21,11 +23,13 @@ export default class EnemyHealthComponent {
       if (hasDeathAnim) {
         this.enemy.play(deathAnim)
         this.enemy.once(`animationcomplete-${deathAnim}`, () => {
+          playEnemySoundEffect(scene, this.enemy.soundProfile, 'explosion')
           scene.mostrarExplosion(this.enemy.x, this.enemy.y)
           this.gameRepository.incrementarEnemigos()
           this.enemy.destroy()
         })
       } else {
+        playEnemySoundEffect(scene, this.enemy.soundProfile, 'explosion')
         scene.mostrarExplosion(this.enemy.x, this.enemy.y)
         this.gameRepository.incrementarEnemigos()
         this.enemy.destroy()

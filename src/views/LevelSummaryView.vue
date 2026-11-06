@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import PixelStar from '@/components/PixelStar.vue'
 import { useGameStore } from '@/stores/game.js'
@@ -7,6 +7,7 @@ import { useGameStore } from '@/stores/game.js'
 const gameStore = useGameStore()
 const router = useRouter()
 const summary = computed(() => gameStore.levelSummary)
+let winAudio = null
 
 const formattedTime = computed(() => {
   const seconds = summary.value?.elapsedTimeSec ?? 0
@@ -31,7 +32,23 @@ const continueLabel = computed(() =>
 )
 
 onMounted(() => {
-  if (!summary.value) router.replace('/levels')
+  if (!summary.value) {
+    router.replace('/levels')
+    return
+  }
+
+  winAudio = new Audio('/soundEffects/Jugador/win.mp3')
+  winAudio.volume = 0.7
+  winAudio.play().catch((error) => {
+    if (error?.name !== 'NotAllowedError') {
+      console.warn('No se pudo reproducir el sonido de victoria:', error)
+    }
+  })
+})
+
+onBeforeUnmount(() => {
+  winAudio?.pause()
+  winAudio = null
 })
 
 function continueFromSummary() {

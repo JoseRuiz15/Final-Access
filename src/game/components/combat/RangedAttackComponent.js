@@ -1,4 +1,5 @@
 import EntityFactory from '../../factories/EntityFactory.js'
+import { playEnemySoundEffect } from '../../services/EnemySoundEffects.js'
 
 export default class RangedAttackComponent {
   constructor(enemy) {
@@ -29,6 +30,8 @@ export default class RangedAttackComponent {
 
     const fire = () => {
       if (!this.enemy.active || this.enemy.muerto || !target.active) return
+
+      playEnemySoundEffect(scene, this.enemy.soundProfile, 'shot')
 
       const muzzleX = this.enemy.muzzleOffsetX ?? 18
       const muzzleY = this.enemy.muzzleOffsetY ?? 3

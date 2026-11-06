@@ -1,5 +1,6 @@
 import Entity from './Entity.js'
 import EntityFactory from '../factories/EntityFactory.js'
+import { playPlayerSoundEffect } from '../services/PlayerSoundEffects.js'
 
 class Box extends Entity {
   constructor(scene, x, y, keyData = null) {
@@ -37,10 +38,14 @@ class Box extends Entity {
     this.setImmovable(true)
     this.body.setAllowGravity(false)
     this.keyData = keyData
+    this.rompiendo = false
   }
 
   break() {
-    if (!this.active) return
+    if (!this.active || this.rompiendo) return
+
+    this.rompiendo = true
+    playPlayerSoundEffect(this.scene, 'brokenBox')
     this.body.enable = false
     this.setTexture('crateBreak')
     this.play('boxBreak')

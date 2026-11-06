@@ -1,4 +1,5 @@
 import EntityFactory from '../../factories/EntityFactory.js'
+import { playPlayerSoundEffect } from '../../services/PlayerSoundEffects.js'
 
 // Tiempo mínimo con L presionada para entrar en el ataque cargado.
 const UMBRAL_HOLD_COSA3_MS = 300
@@ -28,6 +29,10 @@ export default class MeleeAttackComponent {
     if (this.player.idleTexture === 'cosa3') {
       this._ejecutarAtaqueTapCosa3()
       return
+    }
+
+    if (this.player.idleTexture === 'player') {
+      playPlayerSoundEffect(this.player.scene, 'cosa1Attack')
     }
 
     this.player.ataque = true
@@ -165,6 +170,7 @@ export default class MeleeAttackComponent {
     this.cargaAnimacionTerminada = false
     this._tapPendienteCosa3 = null
     this.player.ataque = true
+    playPlayerSoundEffect(this.player.scene, 'cosa3Charge')
     this.repetirAnimacionCargaCosa3()
     this._crearEfectoCargaCosa3()
   }
@@ -291,6 +297,7 @@ export default class MeleeAttackComponent {
 
   dispararProyectilCosa3(cargado = false) {
     const scene = this.player.scene
+    playPlayerSoundEffect(scene, cargado ? 'cosa3ChargedShot' : 'cosa3NormalShot')
     const direccion = this.player.flipX ? -1 : 1
     const cuerpo = this.player.body
     const x = cuerpo.center.x + direccion * 16

@@ -31,6 +31,7 @@ export default class DroneEnemy extends Enemy {
       gameRepository,
     )
 
+    this.soundProfile = 'enemyDron'
     this.body.setAllowGravity(false)
 
     const body = config.body ?? {}

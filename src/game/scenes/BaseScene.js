@@ -1,6 +1,8 @@
 import Phaser from 'phaser'
 import ParallaxBuilder from '../builders/ParallaxBuilder.js'
 import { getCharacter } from '../configs/characters.js'
+import { loadEnemySoundEffects } from '../services/EnemySoundEffects.js'
+import { loadPlayerSoundEffects, playPlayerSoundEffect } from '../services/PlayerSoundEffects.js'
 
 export default class BaseScene extends Phaser.Scene {
   constructor(key, config, dependencies = {}) {
@@ -49,6 +51,10 @@ export default class BaseScene extends Phaser.Scene {
     const id = this.gameRepository?.selectedCharacterId ?? 'cosa1'
     const character = getCharacter(id)
     this.characterConfig = character
+    loadPlayerSoundEffects(this, character.id)
+    if (this.config.enemies?.length || this.config.enemyTraps?.length) {
+      loadEnemySoundEffects(this, this.config.enemies, this.config.enemyTraps)
+    }
     if (this.assetLoader && this.config.assets) {
       this.assetLoader.load(this, this.config.assets, character)
     }
@@ -243,6 +249,7 @@ export default class BaseScene extends Phaser.Scene {
     this._deathHandled = true
 
     if (this.gameRepository.vidas <= 0) {
+      playPlayerSoundEffect(this, 'gameOver')
       this.events.emit('game-over')
       return
     }

@@ -1,3 +1,8 @@
+import {
+  createPlayerSoundLoop,
+  playPlayerSoundEffect,
+} from '../../services/PlayerSoundEffects.js'
+
 export default class MovementComponent {
   constructor(player) {
     this.player = player
@@ -10,6 +15,9 @@ export default class MovementComponent {
     this.velocidadDash = 288
     this.duracionDash = 292
     this.recargaDash = 650
+    this.walkSound = null
+
+    this.player.scene.events?.once('shutdown', () => this._destroyWalkSound())
   }
 
   isGrounded() {
@@ -24,9 +32,13 @@ export default class MovementComponent {
   }
 
   moveLeft() {
-    if (this.dashActivo) return
+    if (this.dashActivo) {
+      this._stopWalkSound()
+      return
+    }
     this.player.setVelocityX(-this.velocidad)
     this.player.setFlipX(true)
+    this._syncWalkSound()
     // Mantiene el desplazamiento, pero no sustituye la animación de ataque.
     if (this.isGrounded() && !this.player.ataque && !this.player.recibiendoDano) {
       this.player.play('caminar', true)
@@ -34,9 +46,13 @@ export default class MovementComponent {
   }
 
   moveRight() {
-    if (this.dashActivo) return
+    if (this.dashActivo) {
+      this._stopWalkSound()
+      return
+    }
     this.player.setVelocityX(this.velocidad)
     this.player.setFlipX(false)
+    this._syncWalkSound()
     // Mantiene el desplazamiento, pero no sustituye la animación de ataque.
     if (this.isGrounded() && !this.player.ataque && !this.player.recibiendoDano) {
       this.player.play('caminar', true)
@@ -44,8 +60,12 @@ export default class MovementComponent {
   }
 
   stop() {
-    if (this.dashActivo) return
+    if (this.dashActivo) {
+      this._stopWalkSound()
+      return
+    }
     this.player.setVelocityX(0)
+    this._stopWalkSound()
     if (
       this.isGrounded() &&
       !this.player.ataque &&
@@ -79,6 +99,7 @@ export default class MovementComponent {
     this.dashDisponibleEn = ahora + this.recargaDash
     this.player.setFlipX(direction < 0)
     this.player.setVelocityX(direction * this.velocidadDash)
+    this._stopWalkSound()
 
     this.player.play('cosa3Dash', true)
 
@@ -93,8 +114,10 @@ export default class MovementComponent {
 
   jump() {
     if (this.isGrounded()) {
+      this._stopWalkSound()
       this.player.setVelocityY(-500)
       this.player.play('saltar', true)
+      playPlayerSoundEffect(this.player.scene, 'jump')
       this.jumpAnimationPlayed = true
     }
   }
@@ -103,6 +126,8 @@ export default class MovementComponent {
     if (this.dashActivo && this.player.scene.time.now >= this.dashTerminaEn) {
       this.cancelDash()
     }
+
+    this._syncWalkSound()
 
     if (this.isGrounded()) {
       // Se permite reproducir la animación otra vez en el próximo salto.
@@ -125,5 +150,34 @@ export default class MovementComponent {
       this.player.play('saltar', true)
     }
     this.jumpAnimationPlayed = true
+  }
+
+  _syncWalkSound() {
+    const isWalking =
+      this.isGrounded() &&
+      Math.abs(this.player.body?.velocity?.x ?? 0) > 1 &&
+      !this.dashActivo &&
+      !this.player.muerto &&
+      this.player.active
+
+    if (isWalking) {
+      if (!this.walkSound) {
+        this.walkSound = createPlayerSoundLoop(this.player.scene, 'walk')
+      }
+
+      if (this.walkSound && !this.walkSound.isPlaying) this.walkSound.play()
+      return
+    }
+
+    this._stopWalkSound()
+  }
+
+  _stopWalkSound() {
+    if (this.walkSound?.isPlaying) this.walkSound.stop()
+  }
+
+  _destroyWalkSound() {
+    this.walkSound?.destroy()
+    this.walkSound = null
   }
 }

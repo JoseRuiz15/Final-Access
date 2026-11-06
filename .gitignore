@@ -50,3 +50,8 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+
+# Skills and local setup installed for Codex; keep them out of project commits.
+/.agents/skills/
+/.codex/hooks.json
+/.impeccable/

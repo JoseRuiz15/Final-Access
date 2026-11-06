@@ -3,7 +3,7 @@ export const LEVEL1_CONFIG = {
   hud: {
     tiempoInicial: 300,
     llavesObjetivo: 1,
-    pista: 'Consigue una llave plateada con brillo rojo para avanzar de nivel.',
+    pista: 'Consigue una llave plateada con brillo rojo para avanzar de nivel. Solo podras avanzar si recoges e introduces la llave correcta.',
   },
   assets: {
     tilemaps: [['level1', '/maps/Mapa_level_1.json']],

@@ -36,9 +36,17 @@ const dialogos = [
 const sonidoEscritura = new Audio('/audio/audioText.mp3')
 let intervaloEscritura = null
 
-function reproducirSonido() {
+// El sonido suena en bucle hasta que termina de escribirse el párrafo.
+function iniciarSonidoParrafo() {
+  sonidoEscritura.loop = true
   sonidoEscritura.currentTime = 0
-  sonidoEscritura.play()
+  sonidoEscritura.play().catch(() => {})
+}
+
+function detenerSonidoParrafo() {
+  sonidoEscritura.loop = false
+  sonidoEscritura.pause()
+  sonidoEscritura.currentTime = 0
 }
 
 const dialogoActual = ref(0)
@@ -53,6 +61,7 @@ function siguienteDialogo() {
   if (textoMostrado.value.length < textoActual.length) {
     clearInterval(intervaloEscritura)
     intervaloEscritura = null
+    detenerSonidoParrafo()
     textoMostrado.value = textoActual
     return
   }
@@ -69,20 +78,23 @@ const textoMostrado = ref('')
 
 function escribirTexto() {
   clearInterval(intervaloEscritura)
+  detenerSonidoParrafo()
   textoMostrado.value = ''
   let indice = 0
   const texto = dialogos[dialogoActual.value].texto
 
+  iniciarSonidoParrafo()
+
   intervaloEscritura = setInterval(() => {
     if (indice < texto.length) {
       textoMostrado.value = texto.slice(0, indice + 1)
-      reproducirSonido()
       indice++
     } else {
       clearInterval(intervaloEscritura)
       intervaloEscritura = null
+      detenerSonidoParrafo()
     }
-  }, 40)
+  }, 70)
 }
 
 onMounted(() => {
@@ -91,7 +103,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   clearInterval(intervaloEscritura)
-  sonidoEscritura.pause()
+  detenerSonidoParrafo()
 })
 
 function irExplicacionNivel() {

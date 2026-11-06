@@ -29,10 +29,28 @@ const textoMostrado = ref('')
 let indice = 0
 let intervalo
 
+const sonidoEscritura = new Audio('/audio/audioTextMission.mp3')
+
+// El sonido suena en bucle hasta que termina de escribirse la pista.
+function iniciarSonidoParrafo() {
+  sonidoEscritura.loop = true
+  sonidoEscritura.currentTime = 0
+  sonidoEscritura.play().catch(() => {})
+}
+
+function detenerSonidoParrafo() {
+  sonidoEscritura.loop = false
+  sonidoEscritura.pause()
+  sonidoEscritura.currentTime = 0
+}
+
 function escribirTexto() {
   clearInterval(intervalo)
+  detenerSonidoParrafo()
   indice = 0
   textoMostrado.value = ''
+
+  iniciarSonidoParrafo()
 
   intervalo = setInterval(() => {
     if (indice < textoCompleto.value.length) {
@@ -41,11 +59,13 @@ function escribirTexto() {
     } else {
       clearInterval(intervalo)
       intervalo = undefined
+      detenerSonidoParrafo()
     }
   }, 40)
 }
 
 function irAlJuego() {
+  detenerSonidoParrafo()
   playMusicFromUserGesture().catch(() => {})
   router.push('/game')
 }
@@ -58,6 +78,7 @@ watch(nivelActual, escribirTexto)
 
 onUnmounted(() => {
   clearInterval(intervalo)
+  detenerSonidoParrafo()
 })
 </script>
 

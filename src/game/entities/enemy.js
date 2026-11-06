@@ -12,6 +12,7 @@ export default class Enemy extends Entity {
     this.gameRepository = gameRepository
     this._target = null
     this.config = config
+    this.soundProfile = config.soundProfile ?? 'enemyescarabajo'
 
     // Claves configurables para reutilizar la entidad con distintos enemigos.
     this.animWalk = config.animWalk ?? 'enemyWalk'

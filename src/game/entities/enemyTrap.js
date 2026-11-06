@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import EntityFactory from '../factories/EntityFactory.js'
+import { playEnemySoundEffect } from '../services/EnemySoundEffects.js'
 
 export default class EnemyTrap extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, config = {}) {
@@ -65,6 +66,8 @@ export default class EnemyTrap extends Phaser.GameObjects.Sprite {
   }
 
   _fireAt(target) {
+    playEnemySoundEffect(this.scene, 'enemytrap', 'shot')
+
     const projectile = EntityFactory.createProjectile(
       this.scene,
       this.x + this.muzzleOffsetX,

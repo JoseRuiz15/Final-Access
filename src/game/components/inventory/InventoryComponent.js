@@ -1,4 +1,5 @@
 import EntityFactory from '../../factories/EntityFactory.js'
+import { playPlayerSoundEffect } from '../../services/PlayerSoundEffects.js'
 
 export default class InventoryComponent {
   constructor(player, gameRepository) {
@@ -22,6 +23,7 @@ export default class InventoryComponent {
 
     this.llaves.push(keyData)
     this._syncRepository()
+    playPlayerSoundEffect(this.player.scene, 'getKey')
 
     console.log('Inventario:', this.llaves)
     llave.destroy()
@@ -46,6 +48,7 @@ export default class InventoryComponent {
 
     this.llaves.pop()
     this._syncRepository()
+    playPlayerSoundEffect(scene, 'dropKey')
     return true
   }
 
