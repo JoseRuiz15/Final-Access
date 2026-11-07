@@ -678,7 +678,7 @@ button:disabled,
     left: 50% !important;
     width: max-content !important;
     gap: 20px !important;
-    transform: translateX(-50%) scale(0.5);
+    transform: translateX(-50%) scale(0.7);
     transform-origin: top center;
   }
 }
@@ -730,7 +730,7 @@ button:disabled,
   }
 
   .game-hud {
-    transform: translateX(-50%) scale(0.36);
+    transform: translateX(-50%) scale(0.54);
   }
 
   .mission-character,
@@ -780,7 +780,7 @@ button:disabled,
 
 @media (max-width: 360px) {
   .game-hud {
-    transform: translateX(-50%) scale(0.31);
+    transform: translateX(-50%) scale(0.44);
   }
 }
 
@@ -1905,7 +1905,7 @@ button:disabled,
 
   .private-lobby-panel {
     position: absolute !important;
-    top: 50% !important;
+    top: 55% !important;
     left: 2vw !important;
     width: min(34vw, 390px) !important;
     height: min(74dvh, 520px) !important;
@@ -2139,7 +2139,7 @@ button:disabled,
     left: 50% !important;
     width: max-content !important;
     gap: 8px !important;
-    transform: translateX(-50%) scale(0.42) !important;
+    transform: translateX(-50%) scale(0.58) !important;
     transform-origin: top center;
   }
 
@@ -2335,7 +2335,7 @@ button:disabled,
 
 @media (any-pointer: coarse) and (orientation: landscape) and (max-height: 450px) {
   #game-hud {
-    transform: translateX(-50%) scale(0.35) !important;
+    transform: translateX(-50%) scale(0.48) !important;
   }
 
   #record-screen .register-panel,
@@ -2347,5 +2347,453 @@ button:disabled,
   .summary-content .summary-panel {
     padding-top: 6px !important;
     padding-bottom: 6px !important;
+  }
+}
+
+/* Lobby: layout móvil final, después de los estilos generales de tablet/táctil. */
+@media (max-width: 768px), (pointer: coarse), (any-pointer: coarse) {
+  #lobby-screen {
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  #lobby-screen > .lobby-shell {
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  #lobby-screen .lobby-main {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(88px, 0.48fr) !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    min-height: 0 !important;
+    gap: clamp(5px, 1.2vh, 10px) !important;
+    padding: clamp(5px, 1vh, 9px) clamp(8px, 2.5vw, 16px)
+      max(env(safe-area-inset-bottom), 6px) !important;
+    overflow: hidden !important;
+  }
+
+  #lobby-screen .lobby-left {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: clamp(7px, 1vh, 11px) !important;
+    min-height: 0 !important;
+    width: 100% !important;
+  }
+
+  #lobby-screen .lobby-missions {
+    width: min(100%, 280px) !important;
+    max-width: 280px !important;
+    min-height: clamp(138px, 23vh, 184px) !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: clamp(5px, 1.1vw, 8px) !important;
+    gap: clamp(5px, 1vh, 9px) !important;
+  }
+
+  #lobby-screen .lobby-missions > div > div:first-child {
+    padding: clamp(5px, 1vh, 8px) clamp(5px, 1vw, 7px) !important;
+  }
+
+  #lobby-screen .lobby-missions > div > div:first-child p {
+    font-size: clamp(5px, 1.2vw, 6px) !important;
+    line-height: 1.15 !important;
+  }
+
+  #lobby-screen .lobby-missions > div > div:last-child {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    justify-content: space-evenly !important;
+    gap: clamp(8px, 1.4vh, 12px) !important;
+    padding: clamp(6px, 1vh, 9px) !important;
+  }
+
+  #lobby-screen .lobby-missions > div > div:last-child p {
+    font-size: clamp(7px, 2vw, 9px) !important;
+    line-height: 1.35 !important;
+  }
+
+  #lobby-screen #default-carousel {
+    width: min(100%, 280px) !important;
+    max-width: 280px !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    aspect-ratio: 16 / 9 !important;
+    margin: 0 !important;
+    padding: clamp(3px, 0.8vw, 6px) !important;
+  }
+
+  #lobby-screen .lobby-widgets {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+    align-self: end !important;
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+
+  #lobby-screen .lobby-showcase {
+    display: flex !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    width: 0 !important;
+    height: 0 !important;
+    min-width: 0 !important;
+    flex: none !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 0;
+  }
+
+  #lobby-screen .lobby-showcase > .character-showcase {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) scale(0.38) !important;
+    transform-origin: center center !important;
+  }
+
+  #lobby-screen .lobby-play-button {
+    width: min(100%, 92px) !important;
+    min-height: clamp(30px, 5vh, 40px) !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 6px 8px !important;
+    font-size: clamp(6px, 1.5vw, 8px) !important;
+    line-height: 1.2 !important;
+  }
+}
+
+/* La regla táctil antigua anclaba CreateView en absolute con !important.
+   Esta anulación móvil devuelve el formulario al flujo y lo compacta en viewport. */
+@media (max-width: 700px), (pointer: coarse), (any-pointer: coarse) {
+  .create-game-screen .create-game-shell {
+    position: relative !important;
+    display: flex !important;
+    width: 100% !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    max-height: 100dvh !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    padding: 44px 8px 8px !important;
+  }
+
+  .create-game-screen .create-game-panel {
+    position: relative !important;
+    inset: auto !important;
+    width: min(100%, 460px) !important;
+    height: auto !important;
+    max-height: calc(100dvh - 52px) !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    padding: clamp(8px, 2vw, 13px) !important;
+    transform: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+
+  .create-game-screen .create-game-header h1 {
+    font-size: clamp(10px, 3vw, 16px) !important;
+  }
+
+  .create-game-screen .create-game-header {
+    margin-bottom: 6px !important;
+    padding-bottom: 5px !important;
+  }
+
+  .create-game-screen .create-game-fields {
+    gap: 6px !important;
+  }
+
+  .create-game-screen .create-game-fields input[type='radio'] {
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    flex: 0 0 14px !important;
+    aspect-ratio: 1 !important;
+    border-radius: 50% !important;
+  }
+
+  .create-game-screen .create-room-submit {
+    height: 32px !important;
+    margin-top: 8px !important;
+  }
+}
+
+@media (max-height: 600px) and (max-width: 700px),
+  (any-pointer: coarse) and (orientation: landscape) {
+  .create-game-screen .create-game-shell {
+    padding: 36px 6px 5px !important;
+  }
+
+  .create-game-screen .create-game-panel {
+    padding: 7px !important;
+  }
+
+  .create-game-screen .create-game-header > p:last-child,
+  .create-game-screen .create-game-fields label > span + span,
+  .create-game-screen .create-game-fields fieldset > p {
+    font-size: 7px !important;
+    line-height: 1.2 !important;
+  }
+
+  .create-game-screen .create-game-fields input:not([type='radio']),
+  .create-game-screen .create-game-fields select {
+    height: 27px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .create-game-screen {
+    height: 100dvh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .create-game-screen .create-game-shell {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100dvh !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 44px 8px 14px !important;
+  }
+
+  .create-game-screen .create-game-panel {
+    width: min(70vw, 270px) !important;
+    max-height: none !important;
+    flex: 0 0 auto !important;
+    margin: 0 auto !important;
+  }
+
+  .create-game-screen .create-game-panel h1 {
+    font-size: 7px !important;
+    line-height: 1.4 !important;
+  }
+
+  .create-game-screen .create-game-header > p:first-child,
+  .create-game-screen .create-game-header > p:last-child {
+    font-size: 5px !important;
+  }
+
+  .create-game-screen .create-game-fields label > span,
+  .create-game-screen .create-game-fields legend {
+    font-size: 5px !important;
+  }
+
+  .create-game-screen .create-game-fields input:not([type='radio']),
+  .create-game-screen .create-game-fields select,
+  .create-game-screen .create-game-fields textarea {
+    font-size: 8px !important;
+  }
+
+  .create-game-screen .create-game-fields fieldset > p,
+  .create-game-screen .create-game-fields fieldset label > span,
+  .create-game-screen .create-game-panel > p {
+    font-size: 5px !important;
+  }
+
+  .create-game-screen .create-room-submit {
+    font-size: 6px !important;
+  }
+
+  .create-game-screen .create-room-browser {
+    position: relative !important;
+    inset: auto !important;
+    width: min(92vw, 420px) !important;
+    height: min(48dvh, 360px) !important;
+    max-height: 52dvh !important;
+    min-height: 210px !important;
+    flex: 0 0 auto !important;
+    margin: 0 auto !important;
+    overflow: hidden !important;
+  }
+
+  .create-game-screen .create-room-browser h2 {
+    font-size: 6px !important;
+    line-height: 1.4 !important;
+  }
+
+  .create-game-screen .create-room-browser-header p,
+  .create-game-screen .create-room-filter,
+  .create-game-screen .create-room-filter span,
+  .create-game-screen .create-room-browser-empty p,
+  .create-game-screen .create-room-browser-list h3,
+  .create-game-screen .create-room-browser-list p,
+  .create-game-screen .create-room-browser-list button,
+  .create-game-screen .create-room-browser-header button {
+    font-size: 5px !important;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 600px) {
+  #game-hud {
+    top: max(6px, env(safe-area-inset-top)) !important;
+    left: 50% !important;
+    width: max-content !important;
+    gap: 4px !important;
+    transform: translateX(-50%) scale(0.38) !important;
+    transform-origin: top center;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 360px) {
+  #game-hud {
+    transform: translateX(-50%) scale(0.32) !important;
+  }
+}
+
+@media (max-height: 520px) and (max-width: 768px),
+  (any-pointer: coarse) and (orientation: landscape) and (max-height: 520px) {
+  #lobby-screen .lobby-missions > div > div:last-child {
+    gap: 3px !important;
+    padding: 4px !important;
+  }
+
+  #lobby-screen #default-carousel {
+    max-height: 36vh !important;
+  }
+
+  #lobby-screen .lobby-play-button {
+    min-height: 32px !important;
+    padding: 6px 12px !important;
+  }
+}
+
+/* Corrige la posición heredada del panel izquierdo en diseños táctiles. */
+@media (max-width: 900px), (pointer: coarse), (any-pointer: coarse) {
+  .multiplayer-screen .private-lobby-panel {
+    position: relative !important;
+    inset: auto !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    height: auto !important;
+    margin: clamp(72px, 14vh, 132px) auto 0 !important;
+  }
+}
+
+@media (any-pointer: coarse) and (orientation: landscape) {
+  .multiplayer-screen .private-lobby-panel {
+    top: 64% !important;
+  }
+}
+
+/* Safari en iPhone amplía la página al enfocar campos con texto menor a 16px. */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+    input:not([type='radio']):not([type='checkbox']),
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+}
+
+/* En computador, el acceso y el buscador siempre ocupan columnas paralelas. */
+@media (min-width: 701px) {
+  .multiplayer-screen {
+    display: block !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+  }
+
+  .multiplayer-screen .multiplayer-layout {
+    display: grid !important;
+    grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.22fr) !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    align-items: start !important;
+    gap: clamp(18px, 3vw, 36px) !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin-inline: auto !important;
+    padding: 34px clamp(18px, 5vw, 64px) 42px !important;
+    box-sizing: border-box !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    justify-self: start !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: fit-content !important;
+    max-height: calc(100dvh - 68px) !important;
+    padding: clamp(12px, 1.3vw, 18px) !important;
+  }
+
+  .multiplayer-screen .server-browser-panel {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    justify-self: stretch !important;
+    width: 100% !important;
+    height: min(82dvh, 470px) !important;
+    max-height: calc(100dvh - 68px) !important;
+  }
+}
+
+/* Botones de misión y tutorial con el mismo tamaño táctil en móviles. */
+@media (max-width: 768px), (pointer: coarse), (any-pointer: coarse) {
+  .mission-screen .mission-continue,
+  .tutorial-screen .tutorial-continue {
+    padding: clamp(12px, 2.5vh, 17px) clamp(24px, 6vw, 36px) !important;
+    font-size: clamp(13px, 3.3vw, 18px) !important;
+  }
+}
+
+@media (max-width: 768px), (pointer: coarse), (any-pointer: coarse) {
+  .multiplayer-screen .private-lobby-panel {
+    width: min(88vw, 460px) !important;
+    max-width: 460px !important;
+    margin-inline: auto !important;
+    padding: clamp(10px, 3vw, 16px) !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel .room-visibility-option {
+    min-height: 30px !important;
+    gap: 6px !important;
+    padding: 3px 6px !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel .room-visibility-option > span > span:first-child {
+    font-size: clamp(6px, 1.8vw, 8px) !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel .room-visibility-option > span > span:last-child {
+    font-size: clamp(5px, 1.5vw, 7px) !important;
+    line-height: 1.2 !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel .room-radio {
+    width: 9px !important;
+    height: 9px !important;
+    min-width: 9px !important;
+    flex-basis: 9px !important;
   }
 }

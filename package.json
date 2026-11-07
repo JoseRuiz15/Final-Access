@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "run-p dev:vite dev:socket",
+    "dev:vite": "vite",
     "dev:socket": "npm --prefix server run dev:multiplayer",
-    "dev:stack": "run-p dev dev:socket",
+    "dev:stack": "npm run dev",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "run-s lint:*",

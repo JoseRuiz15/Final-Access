@@ -106,6 +106,12 @@ export const useProfileStore = defineStore('profile', () => {
     profile.value = profileData
   }
 
+  function setCoins(coins) {
+    const balance = Number(coins)
+    if (!Number.isFinite(balance) || balance < 0) return
+    profile.value = { ...profile.value, coins: balance }
+  }
+
   return {
     profile,
     isLoading,
@@ -118,5 +124,6 @@ export const useProfileStore = defineStore('profile', () => {
     equipCharacter,
     clearError,
     setProfile,
+    setCoins,
   }
 })

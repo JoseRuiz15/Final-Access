@@ -101,8 +101,14 @@ export default class MovementComponent {
     this.player.setVelocityX(direction * this.velocidadDash)
     this._stopWalkSound()
 
-    if (this.player.idleTexture === 'cosa3') {
-      this.player.play('cosa3Dash', true)
+    const dashAnimations = {
+      player: 'playerDash',
+      cosa2: 'cosa2Dash',
+      cosa3: 'cosa3Dash',
+    }
+    const dashAnimation = dashAnimations[this.player.idleTexture]
+    if (dashAnimation && this.player.scene.anims.exists(dashAnimation)) {
+      this.player.play(dashAnimation, true)
     }
 
     return true

@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { progressionApi } from '@/api/client'
+import { useProfileStore } from '@/stores/profile'
 
 const MAX_PLAYABLE_LEVEL_ID = 3
 
 export const useProgressionStore = defineStore('progression', () => {
+  const profileStore = useProfileStore()
   const gameProgress = ref(null)
   const levelProgress = ref([])
   const isLoading = ref(false)
@@ -13,7 +15,7 @@ export const useProgressionStore = defineStore('progression', () => {
   const currentLevelId = computed(() => gameProgress.value?.currentLevelId || 1)
   const totalXp = computed(() => gameProgress.value?.totalXp || 0)
   const currentLevel = computed(() => gameProgress.value?.currentLevel || 1)
-  const coins = computed(() => gameProgress.value?.coins || 0)
+  const coins = computed(() => profileStore.coins)
 
   function mergeLevelProgress(previous, incoming) {
     if (!previous) return incoming

@@ -29,6 +29,7 @@ export const CHARACTERS = {
       walk: { sheet: 'character2Walk', start: 0, end: 7, frameRate: 10, repeat: -1 },
       // Mantiene la animación activa durante caídas largas; se cambia al aterrizar.
       jump: { sheet: 'character2Jump', start: 0, end: 6, frameRate: 3, repeat: -1 },
+      dash: { sheet: 'character2Dash', start: 0, end: 6, frameRate: 24, repeat: 0 },
       jumpAttack: { sheet: 'character2JumpAttack', start: 0, end: 6, frameRate: 18, repeat: 0 },
       attack: { sheet: 'character2Attack1', start: 0, end: 21, frameRate: 18, repeat: 0 },
       damage: { sheet: 'character2Damage', start: 0, end: 5, frameRate: 12, repeat: 0 },
@@ -45,6 +46,11 @@ export const CHARACTERS = {
         'character2Jump',
         '/img/animatics-player/character2Jump.png',
         { frameWidth: 32, frameHeight: 48 },
+      ],
+      [
+        'character2Dash',
+        '/img/animatics-player/character2dash.png',
+        { frameWidth: 32, frameHeight: 32 },
       ],
       [
         'character2JumpAttack',

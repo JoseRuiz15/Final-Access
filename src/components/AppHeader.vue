@@ -47,7 +47,7 @@ async function irLogin() {
     <!-- Acciones derecha -->
     <div class="header-actions ml-auto flex items-center gap-8">
       <div class="flex items-center gap-2">
-        <img src="/img/iconos/moneda.png" alt="puntos" class="h-[30px]" />
+        <img src="/img/iconos/moneda.png" alt="monedas" class="h-[30px]" />
         <h1 class="font-pixel text-[20px] text-[#FB00FF]">{{ profileStore.coins }}</h1>
       </div>
 

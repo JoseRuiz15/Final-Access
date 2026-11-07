@@ -130,7 +130,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section id="lobby-screen" class="relative isolate min-h-screen overflow-hidden bg-[#080e20]">
+  <section id="lobby-screen" class="lobby-screen relative isolate min-h-screen overflow-hidden bg-[#080e20]">
     <!--fondo del lobby-->
     <img
       src="/img/lobby/lobby2.webp"
@@ -141,16 +141,16 @@ onUnmounted(() => {
     />
 
     <!-- Contenido general -->
-    <div class="relative min-h-screen flex flex-col">
+    <div class="lobby-shell relative min-h-screen flex flex-col">
       <!-- Barra superior (compartida con tienda y personajes) -->
       <AppHeader />
 
       <!-- Contenido Izquierdo -->
       <main class="lobby-main flex justify-between px-10 pt-20 flex-1">
-        <section class="shrink-0">
+        <section class="lobby-left shrink-0">
           <!-- Misiones Diarias-->
           <div
-            class="self-start pause-panel relative overflow-hidden border border-[#00D9FF]/70 bg-[#07101f] px-2 py-2 text-white shadow-[0_0_60px_#00D9FF33] flex flex-col gap-4 mt-5"
+            class="lobby-missions self-start pause-panel relative overflow-hidden border border-[#00D9FF]/70 bg-[#07101f] px-2 py-2 text-white shadow-[0_0_60px_#00D9FF33] flex flex-col gap-4 mt-5"
           >
             <div class="border border-[#00D9FF]/15">
               <div class="border border-[#00D9FF]/15 py-2 px-5">
@@ -193,7 +193,7 @@ onUnmounted(() => {
 
           <div
             id="default-carousel"
-            class="relative w-80 h-52 border border-[#00D9FF]/70 bg-[#07101f] px-2 py-2 shadow-[0_0_60px_#00D9FF33] mt-20"
+            class="lobby-carousel relative w-80 h-52 border border-[#00D9FF]/70 bg-[#07101f] px-2 py-2 shadow-[0_0_60px_#00D9FF33] mt-20"
             data-carousel="slide"
           >
             <div class="relative w-full h-full overflow-hidden border border-[#00D9FF]/15">
@@ -250,7 +250,7 @@ onUnmounted(() => {
 
         <!-- Personaje equipado en el centro del lobby -->
         <div
-          class="pointer-events-none hidden min-w-0 flex-1 -translate-y-10 justify-center self-center xl:flex"
+          class="lobby-showcase pointer-events-none hidden min-w-0 flex-1 -translate-y-10 justify-center self-center xl:flex"
         >
           <CharacterShowcase :character-id="showcaseCharacterId" />
         </div>
@@ -261,7 +261,7 @@ onUnmounted(() => {
           <button
             v-if="!lobbyStore.isInLobby"
             type="button"
-            class="mt-134 cursor-pointer select-none w-80 bg-[#00D9FF] border border-[#00D9FF]/70 px-6 py-4 font-pixel text-[10px] text-[#050711] shadow-[0_0_60px_#00D9FF33] transition hover:bg-white hover:shadow-[0_0_24px_#00D9FF66]"
+            class="lobby-play-button cursor-pointer select-none w-80 bg-[#00D9FF] border border-[#00D9FF]/70 px-6 py-4 font-pixel text-[10px] text-[#050711] shadow-[0_0_60px_#00D9FF33] transition hover:bg-white hover:shadow-[0_0_24px_#00D9FF66]"
             @click="irGameMode"
           >
             JUGAR
@@ -271,3 +271,152 @@ onUnmounted(() => {
     </div>
   </section>
 </template>
+
+<style scoped>
+#lobby-screen {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.lobby-shell {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.lobby-main {
+  min-height: 0;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 3rem);
+  padding: clamp(1rem, 3vh, 2.5rem) clamp(1rem, 3vw, 3rem);
+  overflow: hidden;
+}
+
+.lobby-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(0.75rem, 2vh, 1.5rem);
+}
+
+.lobby-missions,
+.lobby-carousel {
+  width: clamp(15rem, 24vw, 20rem);
+  margin: 0 !important;
+}
+
+.lobby-carousel {
+  height: clamp(8rem, 24vh, 13rem);
+}
+
+.lobby-widgets {
+  justify-content: center;
+  gap: 0 !important;
+}
+
+.lobby-play-button {
+  width: clamp(15rem, 24vw, 20rem);
+  margin: 0 !important;
+}
+
+@media (max-width: 767px) {
+  #lobby-screen {
+    overflow: hidden;
+  }
+
+  #lobby-screen .lobby-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-content: stretch;
+    gap: clamp(0.4rem, 1.3vh, 0.7rem);
+    padding: clamp(0.4rem, 1.2vh, 0.7rem) clamp(0.55rem, 2.5vw, 0.85rem)
+      max(env(safe-area-inset-bottom), 0.45rem);
+  }
+
+  .lobby-left {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+    align-content: center;
+    align-items: stretch;
+    gap: clamp(0.35rem, 1.4vw, 0.6rem);
+    min-height: 0;
+  }
+
+  .lobby-missions {
+    width: 100%;
+    padding: clamp(0.25rem, 0.9vw, 0.45rem) !important;
+  }
+
+  .lobby-missions > div > div:first-child {
+    padding: clamp(0.3rem, 1vh, 0.45rem) clamp(0.35rem, 1.5vw, 0.55rem) !important;
+  }
+
+  .lobby-missions > div > div:first-child p {
+    font-size: clamp(6px, 1.8vw, 9px) !important;
+  }
+
+  .lobby-missions > div > div:last-child {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: clamp(0.3rem, 1vh, 0.55rem);
+    padding: clamp(0.3rem, 1.2vw, 0.55rem) !important;
+  }
+
+  .lobby-missions > div > div:last-child p {
+    font-size: clamp(5px, 1.45vw, 7px) !important;
+    line-height: 1.25;
+  }
+
+  .lobby-carousel {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 1.15 / 1;
+    padding: clamp(0.2rem, 0.7vw, 0.35rem) !important;
+  }
+
+  .lobby-widgets {
+    align-items: center;
+    min-height: 0;
+  }
+
+  .lobby-play-button {
+    width: min(72vw, 15rem);
+    min-height: clamp(2.35rem, 6vh, 2.9rem);
+    padding: 0.55rem 0.8rem !important;
+    font-size: clamp(8px, 2.3vw, 10px) !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .lobby-left {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.8fr);
+  }
+
+  .lobby-missions > div > div:last-child p {
+    font-size: clamp(5px, 1.55vw, 6px) !important;
+  }
+}
+
+@media (max-height: 520px) and (max-width: 767px) {
+  .lobby-main {
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 0.4rem;
+    padding-top: 0.4rem;
+  }
+
+  .lobby-carousel {
+    max-height: 38vh;
+  }
+
+  .lobby-play-button {
+    min-height: 2.15rem;
+    padding-block: 0.4rem !important;
+  }
+}
+</style>

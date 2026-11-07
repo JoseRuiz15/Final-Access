@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { characterApi } from '@/api/client'
+import { useProfileStore } from '@/stores/profile'
 
 export const useCharacterStore = defineStore('characters', () => {
+  const profileStore = useProfileStore()
   const catalog = ref([])
   const unlockedCharacters = ref([])
   const equippedCharacterId = ref(null)
@@ -115,6 +117,9 @@ export const useCharacterStore = defineStore('characters', () => {
     try {
       const response = await characterApi.unlock(characterId)
       if (response.data.ok) {
+        if (response.data.newCoinsBalance !== undefined) {
+          profileStore.setCoins(response.data.newCoinsBalance)
+        }
         if (!unlockedCharacters.value.includes(characterId)) {
           unlockedCharacters.value.push(characterId)
         }

@@ -38,6 +38,12 @@ export default class AnimationRegistry {
       repeat: 0,
     })
     scene.anims.create({
+      key: 'playerDash',
+      frames: scene.anims.generateFrameNumbers('playerDash', { start: 0, end: 6 }),
+      frameRate: 24,
+      repeat: 0,
+    })
+    scene.anims.create({
       key: 'atacar',
       frames: scene.anims.generateFrameNumbers('playerAttack', { start: 0, end: 12 }),
       frameRate: 18,
@@ -186,7 +192,7 @@ export default class AnimationRegistry {
       cosa3AttackEffect: ranges.attackEffect,
       cosa3Projectile: ranges.projectile,
       cosa3ChargeEffect: ranges.chargeEffect,
-      cosa3Dash: ranges.dash,
+      [`${characterConfig.id}Dash`]: ranges.dash,
       cosa3ChargedProjectile: ranges.chargedProjectile,
       playerDamage: ranges.damage,
       playerDead: ranges.dead,

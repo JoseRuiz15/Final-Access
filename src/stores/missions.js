@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { missionApi } from '@/api/client'
+import { useProfileStore } from '@/stores/profile'
 
 export const useMissionStore = defineStore('missions', () => {
+  const profileStore = useProfileStore()
   const missions = ref([])
   const isLoading = ref(false)
   const error = ref(null)
@@ -38,6 +40,9 @@ export const useMissionStore = defineStore('missions', () => {
     try {
       const response = await missionApi.claim(missionId)
       if (response.data.ok) {
+        if (response.data.newCoinsBalance !== undefined) {
+          profileStore.setCoins(response.data.newCoinsBalance)
+        }
         const mission = missions.value.find((m) => m.id === missionId)
         if (mission) {
           mission.claimed = true

@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 
 const CHARACTER_STORAGE_KEY = 'final-access-selected-character'
-const DASH_UNLOCK_STORAGE_KEY = 'final-access-dash-unlocked'
 const CHARACTER_IDS = ['cosa1', 'cosa2', 'cosa3']
 
 function getSavedCharacterId() {
@@ -16,16 +15,6 @@ function getSavedCharacterId() {
   }
 }
 
-function getSavedDashUnlock() {
-  if (typeof window === 'undefined') return false
-
-  try {
-    return window.localStorage.getItem(DASH_UNLOCK_STORAGE_KEY) === 'true'
-  } catch {
-    return false
-  }
-}
-
 export const useGameStore = defineStore('game', {
   state: () => ({
     vidas: 5,
@@ -33,7 +22,7 @@ export const useGameStore = defineStore('game', {
     llavesCorrectas: 0,
     enemigos: 0,
     selectedCharacterId: getSavedCharacterId(),
-    dashUnlocked: getSavedDashUnlock(),
+    dashUnlocked: false,
     nivelActual: 1,
     tutorialNivel1Visto: false,
     levelSummary: null,
@@ -54,11 +43,9 @@ export const useGameStore = defineStore('game', {
     },
     unlockDash() {
       this.dashUnlocked = true
-      try {
-        window.localStorage.setItem(DASH_UNLOCK_STORAGE_KEY, 'true')
-      } catch {
-        // El dash queda disponible durante esta sesión aunque no se pueda guardar.
-      }
+    },
+    setDashUnlocked(unlocked) {
+      this.dashUnlocked = Boolean(unlocked)
     },
     setLevelSummary(summary) {
       this.levelSummary = summary

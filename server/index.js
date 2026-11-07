@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import { randomBytes } from 'node:crypto';
 
 const PORT = Number(process.env.SOCKET_PORT || 3001);
 const app = express();
@@ -20,36 +21,45 @@ const io = new Server(httpServer, {
 
 // Estado global de las salas
 const rooms = new Map();
+const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+function normalizeUsername(username) {
+  return String(username || '').trim().slice(0, 24).toLocaleLowerCase();
+}
 
 function generateRoomCode() {
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const numbers = '0123456789';
   let roomCode;
 
   do {
-    // Formato: Letra + Número + Número + Letra (ej: R13W)
-    roomCode =
-      letters.charAt(Math.floor(Math.random() * letters.length)) +
-      numbers.charAt(Math.floor(Math.random() * numbers.length)) +
-      numbers.charAt(Math.floor(Math.random() * numbers.length)) +
-      letters.charAt(Math.floor(Math.random() * letters.length));
+    roomCode = Array.from(randomBytes(8), (byte) => ROOM_CODE_ALPHABET[byte % ROOM_CODE_ALPHABET.length]).join('');
   } while (rooms.has(roomCode));
 
   return roomCode;
 }
 
-function getAvailablePublicRooms() {
+function getAvailableRooms(filter = 'public', username = '') {
   return Array.from(rooms.values())
-    .filter((room) => !room.isPrivate && room.status === 'waiting' && room.players.length < 5)
+    .filter((room) => {
+      const available = room.status === 'waiting' && room.players.length < room.maxPlayers;
+      if (!available) return false;
+      if (filter === 'friends') {
+        return room.isPrivate && room.friendUsernames.includes(normalizeUsername(username));
+      }
+      return !room.isPrivate;
+    })
     .map((room) => ({
       code: room.code,
+      name: room.name,
       username: room.players[0]?.username || 'Jugador',
       playerCount: room.players.length,
+      maxPlayers: room.maxPlayers,
     }));
 }
 
-function broadcastPublicRooms() {
-  io.emit('publicRoomList', getAvailablePublicRooms());
+function broadcastRoomLists() {
+  for (const client of io.sockets.sockets.values()) {
+    client.emit('roomList', getAvailableRooms(client.data.roomFilter, client.data.username));
+  }
 }
 
 io.on('connection', (socket) => {
@@ -59,16 +69,30 @@ io.on('connection', (socket) => {
 
   socket.on('createRoom', (data = {}) => {
     const username = String(data.username || '').trim().slice(0, 24);
+    const name = String(data.name || '').trim().slice(0, 64);
     const isPrivate = data.isPrivate === true;
+    const requestedCapacity = Number(data.maxPlayers);
+    const maxPlayers = Number.isInteger(requestedCapacity) && requestedCapacity >= 2 && requestedCapacity <= 10
+      ? requestedCapacity
+      : 4;
+    const friendUsernames = Array.isArray(data.friendUsernames)
+      ? data.friendUsernames.map(normalizeUsername).filter(Boolean).slice(0, 20)
+      : [];
 
     if (!username) {
       return socket.emit('error', { message: 'Escribe un nombre antes de crear la sala.' });
+    }
+    if (!name) {
+      return socket.emit('error', { message: 'Escribe un nombre para la sala.' });
     }
 
     const roomCode = generateRoomCode();
 
     const newRoom = {
       code: roomCode,
+      name,
+      maxPlayers,
+      friendUsernames: [...new Set([normalizeUsername(username), ...friendUsernames])],
       isPrivate: isPrivate === true,
       players: [],
       status: 'waiting'
@@ -78,13 +102,21 @@ io.on('connection', (socket) => {
 
     // Unir al creador a la sala
     socket.join(roomCode);
+    socket.data.username = normalizeUsername(username);
+    socket.data.roomFilter = socket.data.roomFilter || 'public';
     const player = { id: socket.id, username, ready: false };
     newRoom.players.push(player);
 
     console.log(`Sala ${newRoom.isPrivate ? 'PRIVADA' : 'PÚBLICA'} creada: ${roomCode} por ${username}`);
 
-    socket.emit('roomCreated', { roomCode, players: newRoom.players, isPrivate: newRoom.isPrivate });
-    broadcastPublicRooms();
+    socket.emit('roomCreated', {
+      roomCode,
+      name: newRoom.name,
+      maxPlayers: newRoom.maxPlayers,
+      players: newRoom.players,
+      isPrivate: newRoom.isPrivate,
+    });
+    broadcastRoomLists();
   });
 
   socket.on('joinRoom', (data = {}) => {
@@ -101,19 +133,22 @@ io.on('connection', (socket) => {
       return socket.emit('error', { message: 'La sala no existe.' });
     }
 
-    if (room.players.length >= 5) {
+    if (room.players.length >= room.maxPlayers) {
       return socket.emit('error', { message: 'La sala está llena.' });
     }
 
     if (room.players.some((player) => player.id === socket.id)) {
       return socket.emit('roomJoined', {
         roomCode,
+        name: room.name,
+        maxPlayers: room.maxPlayers,
         players: room.players,
         isPrivate: room.isPrivate,
       });
     }
 
     socket.join(roomCode);
+    socket.data.username = normalizeUsername(username);
     const player = { id: socket.id, username, ready: false };
     room.players.push(player);
 
@@ -123,14 +158,23 @@ io.on('connection', (socket) => {
     io.to(roomCode).emit('playerJoined', { players: room.players });
     
     // Enviar datos iniciales al jugador que entró
-    socket.emit('roomJoined', { roomCode, players: room.players, isPrivate: room.isPrivate });
-    broadcastPublicRooms();
+    socket.emit('roomJoined', {
+      roomCode,
+      name: room.name,
+      maxPlayers: room.maxPlayers,
+      players: room.players,
+      isPrivate: room.isPrivate,
+    });
+    broadcastRoomLists();
   });
 
-  // --- LISTADO DE SALAS PÚBLICAS ---
-
-  socket.on('listPublicRooms', () => {
-    socket.emit('publicRoomList', getAvailablePublicRooms());
+  // --- LISTADO PÚBLICO Y SALAS PRIVADAS COMPARTIDAS CON AMIGOS ---
+  socket.on('listRooms', (data = {}) => {
+    const filter = data.filter === 'friends' ? 'friends' : 'public';
+    const username = normalizeUsername(data.username);
+    socket.data.username = username;
+    socket.data.roomFilter = filter;
+    socket.emit('roomList', getAvailableRooms(filter, username));
   });
 
   // --- LÓGICA DE LOBBY ---
@@ -150,7 +194,7 @@ io.on('connection', (socket) => {
         if (allReady && room.players.length >= 2) { // Mínimo 2 para empezar
           room.status = 'playing';
           io.to(roomCode).emit('startGame', { map: 'level6' }); 
-          broadcastPublicRooms();
+          broadcastRoomLists();
         }
       }
     }
@@ -193,7 +237,7 @@ io.on('connection', (socket) => {
       }
     });
 
-    broadcastPublicRooms();
+    broadcastRoomLists();
   });
 });
 

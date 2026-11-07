@@ -17,6 +17,7 @@ export default class AssetLoader {
       ...KEY_ASSETS,
       ['playerWalk', '/img/animatics-player/playerWalk.png', { frameWidth: 32, frameHeight: 32 }],
       ['playerJump', '/img/animatics-player/playerJump.png', { frameWidth: 32, frameHeight: 32 }],
+      ['playerDash', '/img/animatics-player/playerDash.png', { frameWidth: 32, frameHeight: 32 }],
       [
         'playerAttack',
         '/img/animatics-player/playerAttack.png',

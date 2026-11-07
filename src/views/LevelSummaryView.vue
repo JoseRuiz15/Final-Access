@@ -103,7 +103,7 @@ function backToLevelMap() {
       <section
         class="summary-panel my-auto mx-auto w-full max-w-4xl border border-cyan-100/30 bg-[#07101f]/90 px-5 py-7 shadow-[0_24px_90px_#030610aa] sm:px-10 sm:py-9"
       >
-        <div class="mb-7 text-center">
+        <div class="summary-heading mb-7 text-center">
           <p class="mb-3 font-mono text-[9px] uppercase tracking-[0.48em] text-fuchsia-200/80">
             Extracción confirmada
           </p>
@@ -130,7 +130,7 @@ function backToLevelMap() {
           </p>
         </div>
 
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div class="summary-stats grid grid-cols-1 gap-3 sm:grid-cols-3">
           <article class="summary-stat border-l-2 border-cyan-300 bg-cyan-950/25 px-4 py-4">
             <p class="font-mono text-[9px] uppercase tracking-[0.2em] text-cyan-100/60">
               Vidas restantes
@@ -181,7 +181,9 @@ function backToLevelMap() {
           </p>
         </div>
 
-        <div class="flex flex-col items-center border-y border-cyan-100/15 py-5 text-center">
+        <div
+          class="summary-rating flex flex-col items-center border-y border-cyan-100/15 py-5 text-center"
+        >
           <p class="font-mono text-[9px] uppercase tracking-[0.34em] text-amber-100/65">
             Calificación final
           </p>
@@ -208,7 +210,7 @@ function backToLevelMap() {
         </div>
 
         <section
-          class="my-4 border border-amber-200/25 bg-amber-950/20 px-4 py-4 sm:px-6"
+          class="summary-rewards my-4 border border-amber-200/25 bg-amber-950/20 px-4 py-4 sm:px-6"
           aria-live="polite"
         >
           <div class="flex flex-wrap items-center justify-between gap-3">
@@ -224,7 +226,8 @@ function backToLevelMap() {
               v-if="summary.coinsBalance !== undefined"
               class="font-mono text-[10px] text-white/60"
             >
-              Saldo guardado: {{ summary.coinsBalance }}
+              {{ summary.coinsSavedLocally ? 'Saldo guardado en este dispositivo:' : 'Saldo guardado:' }}
+              {{ summary.coinsBalance }}
             </p>
             <p v-else-if="summary.coinsSaved === false" class="font-mono text-[9px] text-rose-200">
               No se pudo confirmar el guardado. Revisa tu conexión.
@@ -345,6 +348,331 @@ function backToLevelMap() {
   to {
     opacity: 1;
     transform: scale(1) rotate(0);
+  }
+}
+
+/* Mantiene el resumen completo y desplazable en ventanas bajas o estrechas. */
+.summary-screen {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.summary-screen > .summary-scrim,
+.summary-screen > .summary-scanlines {
+  position: fixed !important;
+  inset: 0;
+  height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+.summary-screen .summary-content {
+  display: flex;
+  width: min(100%, 1200px);
+  max-width: 1200px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: auto !important;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: clamp(12px, 3vw, 36px) clamp(12px, 3.5vw, 40px) !important;
+  overflow: visible !important;
+}
+
+.summary-content > header {
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-bottom: clamp(8px, 1.5vh, 16px);
+}
+
+.summary-content > header > div:first-child {
+  min-width: 0;
+}
+
+.summary-content > header p:first-child {
+  font-size: clamp(8px, 0.8vw, 10px) !important;
+  line-height: 1.6;
+  letter-spacing: clamp(0.08em, 0.3vw, 0.42em) !important;
+}
+
+.summary-content > header p:last-child {
+  font-size: clamp(8px, 0.7vw, 9px) !important;
+  line-height: 1.6;
+}
+
+.summary-screen .summary-panel {
+  width: min(100%, 920px);
+  max-width: 920px;
+  min-width: 0;
+  height: auto !important;
+  min-height: 0;
+  flex: 0 0 auto;
+  margin: clamp(12px, 3vh, 28px) auto 0 !important;
+  padding: clamp(14px, 3vw, 36px) !important;
+  overflow: visible !important;
+}
+
+.summary-heading {
+  margin-bottom: clamp(12px, 2vh, 24px) !important;
+}
+
+.summary-heading > p:first-child {
+  font-size: clamp(8px, 0.9vw, 10px) !important;
+  line-height: 1.6;
+  letter-spacing: clamp(0.12em, 0.35vw, 0.48em) !important;
+}
+
+.summary-heading > h1 {
+  font-size: clamp(16px, 2.7vw, 36px) !important;
+  line-height: 1.6 !important;
+  overflow-wrap: anywhere;
+}
+
+.summary-heading > p:last-child {
+  font-size: clamp(8px, 0.85vw, 10px) !important;
+  line-height: 1.6;
+}
+
+.summary-screen .summary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)) !important;
+  gap: clamp(8px, 1.2vw, 14px);
+}
+
+.summary-screen .summary-stat {
+  min-width: 0;
+  padding: clamp(10px, 1.3vw, 16px) !important;
+}
+
+.summary-screen .summary-stat p:first-child {
+  font-size: clamp(8px, 0.75vw, 10px) !important;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.summary-screen .summary-stat p:last-child {
+  margin-top: 6px !important;
+  font-size: clamp(18px, 2.5vw, 32px) !important;
+  line-height: 1.35;
+}
+
+.summary-screen .summary-stat p:last-child span {
+  font-size: clamp(9px, 1vw, 14px) !important;
+}
+
+.summary-screen .key-result {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 18px);
+  margin-block: clamp(10px, 1.5vh, 16px) !important;
+  padding: clamp(10px, 1.5vw, 18px) !important;
+}
+
+.summary-screen .key-result > div {
+  min-width: 0;
+}
+
+.summary-screen .key-result p {
+  font-size: clamp(8px, 0.8vw, 10px) !important;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.summary-screen .key-result > div > p:last-child {
+  font-size: clamp(9px, 0.9vw, 12px) !important;
+}
+
+.summary-screen .summary-rating {
+  padding-block: clamp(10px, 2vh, 20px) !important;
+}
+
+.summary-screen .summary-rating > p {
+  font-size: clamp(8px, 0.8vw, 10px) !important;
+  line-height: 1.6;
+}
+
+.summary-screen .summary-rating > p:last-child {
+  font-size: clamp(8px, 0.8vw, 10px) !important;
+}
+
+.summary-screen .summary-star {
+  width: clamp(24px, 4vw, 44px) !important;
+  height: clamp(24px, 4vw, 44px) !important;
+}
+
+.summary-screen .summary-rewards {
+  margin-block: clamp(10px, 1.5vh, 16px) !important;
+  padding: clamp(10px, 1.5vw, 18px) !important;
+}
+
+.summary-screen .summary-rewards p,
+.summary-screen .summary-rewards span {
+  font-size: clamp(8px, 0.8vw, 10px) !important;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.summary-screen .summary-rewards p.font-pixel {
+  font-size: clamp(16px, 2vw, 24px) !important;
+}
+
+.summary-screen footer {
+  flex-wrap: wrap;
+  margin-top: clamp(12px, 2vh, 24px) !important;
+  gap: 10px;
+}
+
+.summary-screen footer button {
+  min-height: 42px;
+  max-width: 100%;
+  padding: clamp(10px, 1vw, 14px) clamp(12px, 1.8vw, 22px) !important;
+  font-size: clamp(8px, 0.85vw, 10px) !important;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.summary-content > p:last-child {
+  margin-top: clamp(10px, 1.5vh, 16px) !important;
+  font-size: clamp(7px, 0.7vw, 8px) !important;
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .summary-screen {
+    height: 100dvh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .summary-screen .summary-content {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100dvh !important;
+    padding: 6px clamp(6px, 2vw, 10px) !important;
+    overflow: visible !important;
+  }
+
+  .summary-screen .summary-panel {
+    width: 100% !important;
+    max-width: 560px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
+    margin: 6px auto !important;
+    padding: clamp(7px, 2.5vw, 12px) !important;
+    overflow: visible !important;
+  }
+
+  .summary-screen .summary-heading h1 {
+    font-size: clamp(10px, 3vw, 16px) !important;
+    line-height: 1.35 !important;
+    overflow-wrap: anywhere;
+  }
+
+  .summary-screen .summary-heading > p,
+  .summary-screen .summary-stat p,
+  .summary-screen .key-result p,
+  .summary-screen .summary-panel > section p,
+  .summary-screen .summary-panel > section span {
+    overflow-wrap: anywhere;
+  }
+
+  .summary-screen .summary-stat {
+    padding: clamp(5px, 1.5vw, 8px) !important;
+  }
+
+  .summary-screen .summary-stat p:first-child {
+    font-size: clamp(5px, 1.6vw, 7px) !important;
+  }
+
+  .summary-screen .summary-stat p:last-child {
+    font-size: clamp(10px, 3vw, 16px) !important;
+  }
+
+  .summary-screen .summary-panel footer {
+    flex-direction: column-reverse !important;
+  }
+
+  .summary-screen .summary-panel footer button {
+    width: 100% !important;
+    min-height: 30px;
+    padding: 6px !important;
+    font-size: clamp(5px, 1.6vw, 7px) !important;
+  }
+
+  .summary-content > header p:first-child {
+    max-width: calc(100vw - 88px);
+    letter-spacing: 0.12em !important;
+  }
+
+  .summary-screen .summary-panel {
+    margin-top: 10px !important;
+  }
+
+  .summary-screen .summary-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .summary-screen .summary-stat:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .summary-screen .key-result {
+    align-items: flex-start;
+  }
+
+  .summary-screen .summary-rewards > div:first-child {
+    gap: 8px;
+  }
+
+  .summary-screen .summary-rewards > div:last-child {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px 10px;
+  }
+
+  .summary-screen footer {
+    flex-direction: column-reverse;
+  }
+
+  .summary-screen footer button {
+    width: 100%;
+  }
+}
+
+@media (max-height: 620px) {
+  .summary-screen .summary-content {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  .summary-screen .summary-panel {
+    margin-top: 8px !important;
+    padding-block: clamp(10px, 2vh, 18px) !important;
+  }
+
+  .summary-heading {
+    margin-bottom: 10px !important;
+  }
+
+  .summary-screen .key-result {
+    margin-block: 8px !important;
+    padding-block: 8px !important;
+  }
+
+  .summary-screen .summary-rating {
+    padding-block: 8px !important;
+  }
+
+  .summary-screen footer {
+    margin-top: 10px !important;
   }
 }
 

@@ -40,6 +40,7 @@ const gameStarted = ref(false)
 const assetsReady = ref(false)
 const assetsProgress = ref(0)
 const isTouchDevice = ref(false)
+const hasCompletedLevel3 = ref(gameStore.dashUnlocked)
 let isUnmounted = false
 
 const touchActions = [
@@ -57,14 +58,15 @@ onMounted(() => {
 })
 
 async function initializeGame() {
-  if (!gameStore.dashUnlocked && progressionStore.gameProgress === null) {
-    try {
-      await progressionStore.fetchProgress()
-      if (progressionStore.isLevelCompleted(3)) gameStore.unlockDash()
-    } catch (err) {
-      // El juego puede iniciar sin conexión con el estado guardado localmente.
-      console.warn('No se pudo sincronizar el desbloqueo del dash.', err)
-    }
+  try {
+    const progress = await progressionStore.fetchProgress()
+    hasCompletedLevel3.value = Boolean(
+      progress.levelProgress?.some((item) => item.levelId === 3 && item.completed),
+    )
+    gameStore.setDashUnlocked(hasCompletedLevel3.value)
+  } catch (err) {
+    // El juego puede iniciar sin conexión; conserva el dash de esta sesión.
+    console.warn('No se pudo sincronizar el desbloqueo del dash.', err)
   }
 
   // Si se abre el juego directamente, recupera del perfil el personaje equipado.
@@ -211,9 +213,7 @@ async function handleLevelCompleted(sceneCompletada, stats) {
   const rendimiento = proporcionTiempo * 50 + proporcionVidas * 25 + proporcionEnemigos * 25
   const stars = 1 + Number(rendimiento >= 40) + Number(rendimiento >= 70)
   const nextLevelId = levelId < 3 ? levelId + 1 : null
-  const dashUnlocked = levelId >= 3 || gameStore.dashUnlocked
-
-  if (levelId >= 3) gameStore.unlockDash()
+  const firstLevel3Completion = levelId === 3 && !hasCompletedLevel3.value
 
   // Prepare level completion data
   const completionData = {
@@ -236,28 +236,31 @@ async function handleLevelCompleted(sceneCompletada, stats) {
     correctKeys: completionData.correctKeys,
     stars,
     nextLevelId,
-    dashUnlocked,
+    dashUnlocked: false,
   })
 
-  progressionStore
-    .completeLevel(levelId, completionData)
-    .then((result) => {
-      if (result?.coinsBalance !== undefined) {
-        profileStore.profile && (profileStore.profile.coins = result.coinsBalance)
-        authStore.user && (authStore.user.coins = result.coinsBalance)
-      }
-      gameStore.setLevelSummary({
-        ...gameStore.levelSummary,
-        coinGain: result?.coinGain ?? 0,
-        coinsBalance: result?.coinsBalance,
-        coinBreakdown: result?.coinBreakdown,
-        coinsSaved: true,
-      })
+  try {
+    const result = await progressionStore.completeLevel(levelId, completionData)
+    if (result?.coinsBalance !== undefined) {
+      profileStore.setCoins(result.coinsBalance)
+      authStore.user && (authStore.user.coins = result.coinsBalance)
+    }
+    if (levelId === 3) hasCompletedLevel3.value = true
+    if (levelId === 3) gameStore.unlockDash()
+    gameStore.setLevelSummary({
+      ...gameStore.levelSummary,
+      coinGain: result?.coinGain ?? 0,
+      coinsBalance: result?.coinsBalance,
+      coinBreakdown: result?.coinBreakdown,
+      coinsSaved: true,
+      dashUnlocked: firstLevel3Completion,
     })
-    .catch((err) => {
-      console.error('Error saving progress:', err)
-      gameStore.setLevelSummary({ ...gameStore.levelSummary, coinsSaved: false })
-    })
+  } catch (err) {
+    console.error('Error saving progress:', err)
+    // No inventar un saldo local: solo el servidor confirma el guardado en BD.
+    gameStore.setLevelSummary({ ...gameStore.levelSummary, coinsSaved: false })
+  }
+
   router.push({ name: 'level-summary' })
 }
 
@@ -406,7 +409,7 @@ function enfocarCanvasDelJuego() {
       v-if="
         isTouchDevice && gameStarted && !pausaAbierta && !tiempoFinalizado && gameStore.vidas > 0
       "
-      class="fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] left-[calc(env(safe-area-inset-left)+1.25rem)] z-30 flex items-end gap-3 select-none"
+      class="touch-move-pad fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] left-[calc(env(safe-area-inset-left)+1.25rem)] z-30 flex items-end gap-3 select-none"
       aria-label="Controles táctiles de movimiento"
     >
       <button
@@ -443,14 +446,14 @@ function enfocarCanvasDelJuego() {
       v-if="
         isTouchDevice && gameStarted && !pausaAbierta && !tiempoFinalizado && gameStore.vidas > 0
       "
-      class="touch-action-pad fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] right-[calc(env(safe-area-inset-right)+1rem)] z-30 grid grid-cols-2 gap-2 select-none"
+      class="touch-action-pad fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] right-[calc(env(safe-area-inset-right)+1rem)] z-30 grid gap-2 select-none"
       aria-label="Controles táctiles de acciones"
     >
       <button
         v-for="action in touchActions"
         :key="action.id"
         type="button"
-        class="touch-action-button"
+        :class="['touch-action-button', `touch-action-button--${action.id}`]"
         :aria-label="action.label"
         @pointerdown="beginTouchAction(action.id, $event)"
         @pointerup="endTouchAction(action.id, $event)"
@@ -575,8 +578,8 @@ function enfocarCanvasDelJuego() {
 }
 
 .touch-move-button {
-  width: 64px;
-  height: 64px;
+  width: 104px;
+  height: 104px;
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
@@ -592,8 +595,8 @@ function enfocarCanvasDelJuego() {
 
 .touch-action-button {
   display: flex;
-  width: 62px;
-  height: 62px;
+  width: 70px;
+  height: 70px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -611,6 +614,36 @@ function enfocarCanvasDelJuego() {
   box-shadow: 0 0 16px rgb(255 0 217 / 20%);
 }
 
+.touch-action-pad {
+  grid-template-columns: 70px 70px 116px;
+  grid-template-rows: 70px 70px 70px;
+}
+
+.touch-action-button--attack {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.touch-action-button--interact {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.touch-action-button--dropKey {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.touch-action-button--jump {
+  grid-column: 3;
+  grid-row: 2;
+  width: 116px;
+  height: 116px;
+  border-color: rgb(0 217 255 / 85%);
+  color: #9af5ff;
+  box-shadow: 0 0 22px rgb(0 217 255 / 38%);
+}
+
 .touch-action-button span {
   font-size: 6px;
   color: #ffc9f4;
@@ -621,6 +654,10 @@ function enfocarCanvasDelJuego() {
   transform: scale(0.94);
 }
 
+.touch-action-button--jump:active {
+  background: rgb(0 217 255 / 42%);
+}
+
 .touch-move-button:active {
   background: rgb(0 217 255 / 35%);
   transform: scale(0.94);
@@ -628,13 +665,24 @@ function enfocarCanvasDelJuego() {
 
 @media (max-width: 420px) {
   .touch-move-button {
-    width: 60px;
-    height: 60px;
+    width: 88px;
+    height: 88px;
   }
 
   .touch-action-button {
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
+  }
+
+  .touch-action-pad {
+    grid-template-columns: 64px 64px 100px;
+    grid-template-rows: 64px 64px 64px;
+    gap: 6px;
+  }
+
+  .touch-action-button--jump {
+    width: 100px;
+    height: 100px;
   }
 }
 
@@ -646,17 +694,88 @@ function enfocarCanvasDelJuego() {
 
 @media (max-height: 500px) and (orientation: landscape) {
   .touch-move-button {
-    width: 50px;
-    height: 50px;
+    width: 72px;
+    height: 72px;
   }
 
   .touch-action-button {
-    width: 48px;
-    height: 48px;
+    width: 54px;
+    height: 54px;
   }
 
   .touch-action-pad {
+    grid-template-columns: 54px 54px 84px;
+    grid-template-rows: 54px 54px 54px;
     gap: 4px;
+  }
+
+  .touch-action-button--jump {
+    width: 84px;
+    height: 84px;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 600px) {
+  .touch-move-button {
+    width: 60px;
+    height: 60px;
+    font-size: 18px;
+  }
+
+  .touch-action-pad {
+    grid-template-columns: 42px 42px 72px;
+    grid-template-rows: 42px 42px 42px;
+    gap: 4px;
+  }
+
+  .touch-action-button {
+    width: 42px;
+    height: 42px;
+    border-radius: 9px;
+    font-size: 10px;
+  }
+
+  .touch-action-button--jump {
+    width: 72px;
+    height: 72px;
+  }
+
+  .touch-action-button span {
+    font-size: 5px;
+  }
+
+  .touch-move-pad {
+    left: max(8px, env(safe-area-inset-left)) !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    gap: 6px;
+  }
+
+  .touch-action-pad {
+    right: max(8px, env(safe-area-inset-right)) !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 360px) {
+  .touch-move-button {
+    width: 52px;
+    height: 52px;
+  }
+
+  .touch-action-pad {
+    grid-template-columns: 36px 36px 64px;
+    grid-template-rows: 36px 36px 36px;
+    gap: 3px;
+  }
+
+  .touch-action-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .touch-action-button--jump {
+    width: 64px;
+    height: 64px;
   }
 }
 </style>

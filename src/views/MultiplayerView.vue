@@ -9,12 +9,15 @@ const authStore = useAuthStore()
 const multiplayerStore = useMultiplayerStore()
 
 const roomCodeInput = ref('')
-const privacyOption = ref('public')
+const roomFilter = ref('public')
 const username = computed(() => authStore.user?.username?.trim() || '')
-const hasPublicRooms = computed(() => multiplayerStore.publicRooms.length > 0)
+const hasRooms = computed(() => multiplayerStore.roomList.length > 0)
 
 onMounted(() => {
+  multiplayerStore.setUsername(username.value)
   multiplayerStore.connect()
+  roomFilter.value = 'public'
+  multiplayerStore.fetchRooms('public')
 })
 
 watch(
@@ -27,6 +30,10 @@ watch(
 function irLobby() {
   multiplayerStore.disconnect()
   router.push('/lobby')
+}
+
+function irCrearPartida() {
+  router.push('/create')
 }
 
 function joinRoom(roomCode = roomCodeInput.value) {
@@ -44,19 +51,15 @@ function joinRoom(roomCode = roomCodeInput.value) {
   multiplayerStore.joinRoom(roomCode, username.value)
 }
 
-function handleCreate() {
-  if (!username.value) {
-    alert('Por favor inicia sesión para crear una sala')
-    return
-  }
-
-  multiplayerStore.limpiarChat()
-  multiplayerStore.createRoom(username.value, privacyOption.value === 'private')
+function refreshRooms() {
+  multiplayerStore.fetchRooms(roomFilter.value)
 }
 
-function refreshPublicRooms() {
-  multiplayerStore.fetchPublicRooms()
+function selectRoomFilter(filter) {
+  roomFilter.value = filter
+  multiplayerStore.fetchRooms(filter)
 }
+
 </script>
 
 <template>
@@ -76,148 +79,581 @@ function refreshPublicRooms() {
       &lt;- VOLVER AL MENU
     </button>
 
-    <section
-      class="private-lobby-panel absolute left-[250px] top-[100px] flex w-[463px] flex-col rounded-lg bg-[#190C2D]/80 p-8 backdrop-blur-sm"
-      aria-labelledby="create-room-title"
-    >
-      <h1 id="create-room-title" class="mb-6 text-center font-pixel text-[#00f7ff]">
-        CREAR O UNIRSE
-      </h1>
+    <div class="multiplayer-layout">
+      <section
+        class="private-lobby-panel flex w-full min-w-0 flex-col rounded-lg bg-[#190C2D]/80 p-8 backdrop-blur-sm"
+        aria-labelledby="create-room-title"
+      >
+        <h1 id="create-room-title" class="mb-4 text-center font-pixel text-[#00f7ff]">
+          CREAR O UNIRSE
+        </h1>
 
-      <fieldset :disabled="!multiplayerStore.connected" class="flex flex-col gap-3">
-        <legend class="mb-3 font-pixel text-[12px] text-[#D1BCFF]">VISIBILIDAD DE LA SALA</legend>
+        <fieldset class="room-create-visibility">
+          <legend class="mb-2 font-pixel text-[9px] text-[#D1BCFF]">
+            VISIBILIDAD DE LA SALA
+          </legend>
+          <div class="grid gap-1.5">
+            <label
+              class="room-visibility-option flex cursor-pointer items-start gap-2 rounded border px-2 py-1.5 text-left transition"
+              :class="roomFilter === 'friends' ? 'is-selected is-private' : ''"
+            >
+              <input
+                type="radio"
+                name="room-filter"
+                value="friends"
+                class="room-radio mt-0.5"
+                :checked="roomFilter === 'friends'"
+                :disabled="!multiplayerStore.connected"
+                @change="selectRoomFilter('friends')"
+              />
+              <span class="min-w-0">
+                <span class="block font-pixel text-[8px]">PRIVADA</span>
+                <span class="mt-0.5 block font-mono text-[7px] leading-relaxed text-white/55">
+                  Solo salas privadas compartidas contigo.
+                </span>
+              </span>
+            </label>
+            <label
+              class="room-visibility-option flex cursor-pointer items-start gap-2 rounded border px-2 py-1.5 text-left transition"
+              :class="roomFilter === 'public' ? 'is-selected is-public' : ''"
+            >
+              <input
+                type="radio"
+                name="room-filter"
+                value="public"
+                class="room-radio mt-0.5"
+                :checked="roomFilter === 'public'"
+                :disabled="!multiplayerStore.connected"
+                @change="selectRoomFilter('public')"
+              />
+              <span class="min-w-0">
+                <span class="block font-pixel text-[8px]">PÚBLICA</span>
+                <span class="mt-0.5 block font-mono text-[7px] leading-relaxed text-white/55">
+                  Aparece en el buscador mientras tenga cupos.
+                </span>
+              </span>
+            </label>
+          </div>
+        </fieldset>
 
-        <label
-          class="cursor-pointer rounded-md border p-3 transition-colors"
-          :class="
-            privacyOption === 'private'
-              ? 'border-[#FF00D9] bg-[#FF00D9]/10'
-              : 'border-white/15 bg-black/20'
-          "
+        <button
+          class="room-create-button h-[42px] rounded border-2 border-[#53f4ff] font-pixel text-[10px] text-[#53f4ff] transition-all hover:bg-[#53f4ff] hover:text-[#080e20]"
+          @click="irCrearPartida"
         >
-          <span class="flex items-center gap-3 font-pixel text-sm text-white">
-            <input v-model="privacyOption" type="radio" name="privacy" value="private" />
-            PRIVADA
-          </span>
-          <span class="ml-7 mt-1 block text-xs text-[#D1BCFF]">
-            Solo se puede entrar con el código de invitación.
-          </span>
-        </label>
+          CREAR SALA
+        </button>
 
-        <label
-          class="cursor-pointer rounded-md border p-3 transition-colors"
-          :class="
-            privacyOption === 'public'
-              ? 'border-[#53f4ff] bg-[#53f4ff]/10'
-              : 'border-white/15 bg-black/20'
-          "
+        <p v-if="multiplayerStore.actionError" class="mt-2 text-center text-xs text-rose-200" role="alert">
+          {{ multiplayerStore.actionError }}
+        </p>
+
+        <div class="my-3 h-px bg-white/15"></div>
+
+        <label for="room-code" class="mb-2 font-pixel text-[12px] text-[#D1BCFF]">
+          CÓDIGO DE INVITACIÓN
+        </label>
+        <input
+          id="room-code"
+          v-model="roomCodeInput"
+          type="text"
+          maxlength="8"
+          autocomplete="off"
+          placeholder="CÓDIGO DE 8 CARACTERES"
+          class="login-input h-[45px] w-full rounded-[5px] border border-white/10 bg-[#06093d]/70 px-4 text-center font-orbitron text-white uppercase"
+          :disabled="!multiplayerStore.connected"
+          @keyup.enter="joinRoom()"
+        />
+        <button
+          class="mt-3 h-[48px] rounded-lg bg-[#53f4ff] font-pixel text-sm text-[#080e20] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50"
+          :disabled="!multiplayerStore.connected"
+          @click="joinRoom()"
         >
-          <span class="flex items-center gap-3 font-pixel text-sm text-white">
-            <input v-model="privacyOption" type="radio" name="privacy" value="public" />
-            PÚBLICA
-          </span>
-          <span class="ml-7 mt-1 block text-xs text-[#D1BCFF]">
-            Aparece en el buscador mientras tenga cupos.
-          </span>
-        </label>
-      </fieldset>
+          ENTRAR CON CÓDIGO
+        </button>
 
-      <button
-        class="mt-5 h-[54px] rounded-lg border-2 border-[#53f4ff] font-pixel text-sm text-[#53f4ff] transition-all hover:bg-[#53f4ff] hover:text-[#080e20] disabled:cursor-not-allowed disabled:opacity-50"
-        :disabled="!multiplayerStore.connected"
-        @click="handleCreate"
-      >
-        CREAR SALA {{ privacyOption === 'private' ? 'PRIVADA' : 'PÚBLICA' }}
-      </button>
-
-      <div class="my-5 h-px bg-white/15"></div>
-
-      <label for="room-code" class="mb-2 font-pixel text-[12px] text-[#D1BCFF]">
-        CÓDIGO DE INVITACIÓN
-      </label>
-      <input
-        id="room-code"
-        v-model="roomCodeInput"
-        type="text"
-        maxlength="4"
-        autocomplete="off"
-        placeholder="EJ: R13W"
-        class="login-input h-[45px] w-full rounded-[5px] border border-white/10 bg-[#06093d]/70 px-4 text-center font-orbitron text-white uppercase"
-        :disabled="!multiplayerStore.connected"
-        @keyup.enter="joinRoom()"
-      />
-      <button
-        class="mt-3 h-[48px] rounded-lg bg-[#53f4ff] font-pixel text-sm text-[#080e20] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50"
-        :disabled="!multiplayerStore.connected"
-        @click="joinRoom()"
-      >
-        ENTRAR CON CÓDIGO
-      </button>
-
-      <p
-        aria-live="polite"
-        class="mt-5 text-center text-xs"
-        :class="multiplayerStore.connected ? 'text-[#7DF4FF]' : 'text-[#FFB2B8]'"
-      >
-        {{
-          multiplayerStore.connected
-            ? 'SERVIDOR CONECTADO'
-            : multiplayerStore.connectionError || 'CONECTANDO…'
-        }}
-      </p>
-    </section>
-
-    <section
-      class="server-browser-panel absolute right-[200px] top-[80px] h-[720px] w-[793px] rounded-lg border border-[#3B494B] bg-[#190C2D]/80 p-5 backdrop-blur-sm"
-      aria-labelledby="public-rooms-title"
-    >
-      <div class="mb-4 border-b border-[#4A4A6A] pb-4">
-        <h2 id="public-rooms-title" class="font-pixel text-[20px] text-[#ECDCFF]">
-          BUSCADOR DE PARTIDAS
-        </h2>
-        <div class="mt-2 flex items-center justify-between gap-4">
-          <p class="text-xs text-[#B9CACB]">Solo salas públicas disponibles</p>
-          <button
-            class="font-pixel text-[10px] text-[#7DF4FF] transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-            :disabled="!multiplayerStore.connected"
-            @click="refreshPublicRooms"
-          >
-            ACTUALIZAR ↻
-          </button>
-        </div>
-      </div>
-
-      <div v-if="!hasPublicRooms" class="grid h-[590px] place-items-center text-center">
-        <p class="font-pixel text-sm text-[#B9CACB]">
+        <p
+          aria-live="polite"
+          class="mt-5 text-center text-xs"
+          :class="multiplayerStore.connected ? 'text-[#7DF4FF]' : 'text-[#FFB2B8]'"
+        >
           {{
             multiplayerStore.connected
-              ? 'NO HAY PARTIDAS PÚBLICAS DISPONIBLES'
-              : 'CONECTANDO CON EL SERVIDOR…'
+              ? 'SERVIDOR CONECTADO'
+              : multiplayerStore.connectionError || 'CONECTANDO…'
           }}
         </p>
-      </div>
+      </section>
 
-      <div v-else class="h-[590px] space-y-3 overflow-y-auto pr-2">
-        <article
-          v-for="room in multiplayerStore.publicRooms"
-          :key="room.code"
-          class="flex items-center justify-between rounded-md border border-[#53f4ff]/20 bg-[#080e20]/70 p-4"
-        >
-          <div>
-            <h3 class="font-pixel text-sm text-[#7DF4FF]">SALA {{ room.code }}</h3>
-            <p class="mt-2 text-xs text-[#B9CACB]">
-              {{ room.username }} · {{ room.playerCount }}/5 jugadores
+      <section
+        class="server-browser-panel flex w-full min-w-0 flex-col rounded-lg border border-[#3B494B] bg-[#190C2D]/80 p-5 backdrop-blur-sm"
+        aria-labelledby="public-rooms-title"
+      >
+        <div class="mb-4 border-b border-[#4A4A6A] pb-4">
+          <h2 id="public-rooms-title" class="font-pixel text-[20px] text-[#ECDCFF]">
+            BUSCADOR DE PARTIDAS
+          </h2>
+          <div class="mt-2 flex items-center justify-between gap-4">
+            <p class="font-mono text-[8px] text-[#B9CACB]">
+              {{ roomFilter === 'public' ? 'Solo salas públicas disponibles' : 'Salas privadas compartidas contigo' }}
             </p>
+            <button
+              class="font-pixel text-[10px] text-[#7DF4FF] transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              :disabled="!multiplayerStore.connected"
+              @click="refreshRooms"
+            >
+              ACTUALIZAR ↻
+            </button>
           </div>
-          <button
-            class="rounded border border-[#7DF4FF] px-4 py-2 font-pixel text-xs text-[#7DF4FF] transition-colors hover:bg-[#7DF4FF] hover:text-[#080e20] disabled:cursor-not-allowed disabled:opacity-50"
-            :disabled="!multiplayerStore.connected"
-            @click="joinRoom(room.code)"
+        </div>
+
+        <div
+          v-if="!hasRooms"
+          class="server-browser-empty grid h-[590px] place-items-center text-center"
+        >
+          <p class="font-pixel text-sm text-[#B9CACB]">
+            {{
+              multiplayerStore.connected
+                ? roomFilter === 'public'
+                  ? 'NO HAY SALAS PÚBLICAS DISPONIBLES'
+                  : 'NO HAY SALAS PRIVADAS COMPARTIDAS CONTIGO'
+                : 'CONECTANDO CON EL SERVIDOR…'
+            }}
+          </p>
+        </div>
+
+        <div v-else class="server-browser-list min-h-0 flex-1 space-y-3 overflow-y-auto pr-2">
+          <article
+            v-for="room in multiplayerStore.roomList"
+            :key="room.code"
+            class="flex items-center justify-between rounded-md border border-[#53f4ff]/20 bg-[#080e20]/70 p-4"
           >
-            UNIRSE
-          </button>
-        </article>
-      </div>
-    </section>
+            <div>
+              <h3 class="font-pixel text-sm text-[#7DF4FF]">{{ room.name }}</h3>
+              <p class="mt-2 text-xs text-[#B9CACB]">
+                CÓDIGO {{ room.code }} · {{ room.username }} · {{ room.playerCount }}/{{ room.maxPlayers }} jugadores
+              </p>
+            </div>
+            <button
+              class="rounded border border-[#7DF4FF] px-4 py-2 font-pixel text-xs text-[#7DF4FF] transition-colors hover:bg-[#7DF4FF] hover:text-[#080e20] disabled:cursor-not-allowed disabled:opacity-50"
+              :disabled="!multiplayerStore.connected"
+              @click="joinRoom(room.code)"
+            >
+              UNIRSE
+            </button>
+          </article>
+        </div>
+      </section>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.multiplayer-screen {
+  display: block !important;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 !important;
+}
+
+.multiplayer-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.65fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(24px, 7vw, 78px);
+  width: min(100%, 900px);
+  height: 100%;
+  margin-inline: auto;
+  padding: 34px clamp(18px, 8vw, 80px) 48px;
+}
+
+.private-lobby-panel,
+.server-browser-panel {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  min-width: 0;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  max-height: 100%;
+}
+
+.private-lobby-panel {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  height: fit-content !important;
+  max-height: calc(100dvh - 82px);
+  max-width: 330px;
+  padding: clamp(14px, 1.8vw, 20px) !important;
+}
+
+.server-browser-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  grid-column: 2;
+  justify-self: end;
+  height: calc(100dvh - 82px) !important;
+  padding: clamp(12px, 1.8vw, 18px) !important;
+}
+
+.room-radio {
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  flex: 0 0 12px;
+  appearance: none;
+  border: 2px solid rgb(255 255 255 / 75%);
+  border-radius: 50%;
+  background: transparent;
+}
+
+.room-radio:checked {
+  border-color: #53f4ff;
+  background: #53f4ff;
+  box-shadow: inset 0 0 0 2px #190c2d;
+}
+
+.room-radio:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.room-visibility-option.is-private:has(.room-radio:checked) .room-radio {
+  border-color: #e879f9;
+  background: #e879f9;
+}
+
+.room-create-button {
+  width: 100%;
+  flex: 0 0 auto;
+}
+
+.server-browser-panel > div:first-child {
+  flex: 0 0 auto;
+}
+
+.server-browser-empty,
+.server-browser-list {
+  width: 100%;
+  min-height: 0;
+  flex: 1 1 auto;
+  height: auto !important;
+  max-height: none;
+}
+
+.server-browser-empty {
+  display: grid;
+  place-items: center;
+}
+
+.server-browser-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.server-browser-list > article {
+  min-width: 0;
+  flex: 0 0 auto;
+  gap: 10px;
+  padding: clamp(8px, 1vw, 16px);
+}
+
+.server-browser-list > article > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.multiplayer-back {
+  top: clamp(12px, 2vh, 24px) !important;
+  left: clamp(14px, 2vw, 30px) !important;
+  font-size: clamp(8px, 0.9vw, 13px) !important;
+}
+
+.private-lobby-panel h1,
+.server-browser-panel h2 {
+  font-size: clamp(11px, 1.25vw, 18px);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.private-lobby-panel legend,
+.private-lobby-panel label,
+.private-lobby-panel button,
+.server-browser-panel button {
+  font-size: clamp(9px, 0.9vw, 13px);
+  line-height: 1.6;
+}
+
+.private-lobby-panel label > span + span,
+.private-lobby-panel > p,
+.server-browser-panel p {
+  font-size: clamp(10px, 0.9vw, 13px);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) and (min-width: 701px) {
+  .multiplayer-layout {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 12px;
+    padding: 64px 14px 14px;
+  }
+
+  .private-lobby-panel,
+  .server-browser-panel {
+    padding: clamp(12px, 2vw, 20px) !important;
+  }
+
+  .private-lobby-panel {
+    max-width: min(100%, 330px);
+  }
+
+  .private-lobby-panel h1,
+  .server-browser-panel h2 {
+    font-size: clamp(10px, 1.5vw, 14px);
+  }
+}
+
+@media (max-width: 700px) {
+  .multiplayer-screen {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    overflow-x: clip;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+  }
+
+  .multiplayer-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: clamp(10px, 2vh, 16px);
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    padding: clamp(56px, 9vh, 68px) clamp(10px, 3vw, 16px)
+      max(env(safe-area-inset-bottom), 12px);
+  }
+
+  .private-lobby-panel,
+  .server-browser-panel {
+    width: min(100%, 560px) !important;
+    max-width: 100%;
+    box-sizing: border-box;
+    height: auto !important;
+    flex: 0 0 auto;
+    margin-inline: auto !important;
+  }
+
+  .private-lobby-panel {
+    overflow: visible;
+    margin-top: clamp(24px, 5vh, 42px) !important;
+    padding: clamp(14px, 4vw, 22px) !important;
+    border: 1px solid rgb(83 244 255 / 24%);
+  }
+
+  .private-lobby-panel h1,
+  .server-browser-panel h2 {
+    margin-bottom: clamp(10px, 2.5vw, 16px) !important;
+    font-size: clamp(11px, 3.3vw, 15px) !important;
+    line-height: 1.45;
+  }
+
+  .private-lobby-panel > button {
+    width: 100% !important;
+    margin-left: 0 !important;
+    min-height: 42px;
+    font-size: clamp(8px, 2.4vw, 11px) !important;
+  }
+
+  .private-lobby-panel label,
+  .private-lobby-panel > p {
+    font-size: clamp(8px, 2.3vw, 10px) !important;
+    line-height: 1.5;
+  }
+
+  .private-lobby-panel input {
+    min-width: 0;
+    padding-inline: 8px !important;
+    font-size: 12px !important;
+  }
+
+  .server-browser-panel {
+    height: auto !important;
+    min-height: 220px !important;
+    overflow: hidden;
+    padding: clamp(12px, 3vw, 18px) !important;
+  }
+
+  .server-browser-empty,
+  .server-browser-list {
+    min-height: 120px;
+    max-height: 34dvh;
+    flex: 0 1 auto;
+  }
+
+  .server-browser-empty {
+    display: grid;
+  }
+
+  .server-browser-list > article {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: clamp(8px, 2.5vw, 12px) !important;
+  }
+
+  .server-browser-list > article h3 {
+    font-size: clamp(9px, 2.5vw, 12px) !important;
+    overflow-wrap: anywhere;
+  }
+
+  .server-browser-list > article p {
+    font-size: clamp(8px, 2.1vw, 10px) !important;
+    overflow-wrap: anywhere;
+  }
+
+  .server-browser-list > article button {
+    padding: 6px 8px !important;
+    font-size: clamp(7px, 1.9vw, 9px) !important;
+  }
+
+  .multiplayer-back {
+    font-size: clamp(8px, 2.2vw, 11px) !important;
+  }
+}
+
+@media (max-height: 620px) and (min-width: 701px) {
+  .multiplayer-screen {
+    overflow: hidden;
+  }
+
+  .multiplayer-layout {
+    padding-top: 52px;
+    padding-bottom: 12px;
+  }
+
+  .private-lobby-panel,
+  .server-browser-panel {
+    height: calc(100dvh - 76px) !important;
+    padding: 12px !important;
+  }
+
+  .private-lobby-panel h1 {
+    margin-bottom: 10px !important;
+  }
+
+  .private-lobby-panel fieldset {
+    gap: 6px;
+  }
+
+  .private-lobby-panel fieldset label {
+    padding: 8px;
+  }
+
+  .private-lobby-panel > button {
+    height: 40px !important;
+    margin-top: 8px !important;
+  }
+
+  .private-lobby-panel > div {
+    margin-block: 8px !important;
+  }
+}
+
+.room-visibility-option {
+  min-height: 48px;
+  border-color: rgb(255 255 255 / 15%);
+  background: rgb(0 0 0 / 20%);
+  color: rgb(255 255 255 / 78%);
+}
+
+.room-visibility-option:hover:not(:disabled) {
+  border-color: rgb(83 244 255 / 70%);
+}
+
+.room-visibility-option.is-selected.is-public {
+  border-color: #53f4ff;
+  background: rgb(83 244 255 / 10%);
+  color: #e8fcff;
+}
+
+.room-visibility-option.is-selected.is-private {
+  border-color: #e879f9;
+  background: rgb(232 121 249 / 10%);
+  color: #fce7ff;
+}
+
+.room-visibility-option:focus-visible {
+  outline: 2px solid #53f4ff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .multiplayer-screen .server-browser-panel {
+    position: relative !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: min(92vw, 360px) !important;
+    max-width: 360px !important;
+    height: auto !important;
+    max-height: 52dvh !important;
+    min-height: 0 !important;
+    margin: 0 2vw 0 auto !important;
+    padding: clamp(9px, 2.5vw, 14px) !important;
+  }
+
+  .multiplayer-screen .server-browser-panel > div:first-child {
+    width: 100% !important;
+    margin: 0 0 7px !important;
+    padding-bottom: 7px !important;
+  }
+
+  .multiplayer-screen .server-browser-panel h2 {
+    margin-bottom: 4px !important;
+    font-size: clamp(9px, 2.8vw, 12px) !important;
+  }
+
+  .multiplayer-screen .room-visibility-option {
+    min-height: 36px !important;
+    padding: 5px 7px !important;
+  }
+
+  .multiplayer-screen .room-visibility-option > span:last-child > span:first-child {
+    font-size: clamp(7px, 2vw, 9px) !important;
+  }
+
+  .multiplayer-screen .room-visibility-option > span:last-child > span:last-child {
+    margin-top: 2px !important;
+    font-size: clamp(6px, 1.7vw, 8px) !important;
+    line-height: 1.3 !important;
+  }
+
+  .multiplayer-screen .server-browser-empty {
+    height: auto !important;
+    min-height: 58px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .multiplayer-screen .server-browser-empty p {
+    font-size: clamp(7px, 2vw, 9px) !important;
+  }
+}
+</style>

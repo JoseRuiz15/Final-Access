@@ -7,6 +7,7 @@ const router = useRouter()
 const multiplayerStore = useMultiplayerStore()
 
 const newMessage = ref('')
+const copyStatus = ref('')
 
 onMounted(() => {
   // Asegurarnos de que esté conectado
@@ -24,6 +25,15 @@ const sendChat = () => {
 
 const toggleReady = () => {
   multiplayerStore.setReady()
+}
+
+async function copyRoomCode() {
+  try {
+    await navigator.clipboard.writeText(multiplayerStore.roomCode)
+    copyStatus.value = 'Código copiado'
+  } catch {
+    copyStatus.value = 'Copia el código mostrado arriba'
+  }
 }
 
 const salirMultiplayer = () => {
@@ -46,11 +56,25 @@ const currentPlayer = computed(() => {
     <div class="flex h-screen p-10 gap-10">
       <!-- Columna Izquierda: Jugadores -->
       <div class="w-1/3 bg-[#190C2D]/80 backdrop-blur-md rounded-lg p-6 border border-[#53f4ff]/30">
-        <div class="mb-6 flex items-center justify-center gap-3">
-          <h2 class="text-[#53f4ff] text-2xl text-center">SALA: {{ multiplayerStore.roomCode }}</h2>
-          <span class="rounded border border-[#53f4ff]/40 px-2 py-1 text-[10px] text-[#D1BCFF]">
+        <div class="mb-6 flex flex-col items-center gap-3 text-center">
+          <h1 class="break-words text-2xl text-[#53f4ff]">{{ multiplayerStore.roomName }}</h1>
+          <div class="flex flex-wrap items-center justify-center gap-2">
+            <button
+              type="button"
+              class="rounded border border-[#53f4ff]/50 bg-[#06093d]/70 px-3 py-2 text-sm text-white"
+              aria-label="Copiar código de invitación"
+              @click="copyRoomCode"
+            >
+              CÓDIGO: {{ multiplayerStore.roomCode }} · COPIAR
+            </button>
+            <span class="rounded border border-[#53f4ff]/40 px-2 py-1 text-[10px] text-[#D1BCFF]">
             {{ multiplayerStore.isPrivate ? 'PRIVADA' : 'PÚBLICA' }}
-          </span>
+            </span>
+          </div>
+          <p class="text-xs text-[#D1BCFF]" aria-live="polite">
+            {{ multiplayerStore.players.length }}/{{ multiplayerStore.maxPlayers }} jugadores
+            <span v-if="copyStatus">· {{ copyStatus }}</span>
+          </p>
         </div>
 
         <div class="flex flex-col gap-4">

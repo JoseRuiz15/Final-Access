@@ -1,4 +1,5 @@
 import type { Server as HttpServer } from 'node:http';
+import { randomBytes } from 'node:crypto';
 import { Server } from 'socket.io';
 import { allowedOrigins } from '../config/env.js';
 
@@ -10,6 +11,9 @@ interface MultiplayerPlayer {
 
 interface MultiplayerRoom {
   code: string;
+  name: string;
+  maxPlayers: number;
+  friendUsernames: string[];
   isPrivate: boolean;
   players: MultiplayerPlayer[];
   status: 'waiting' | 'playing';
@@ -25,52 +29,77 @@ export function attachMultiplayer(httpServer: HttpServer): Server {
   });
 
   const rooms = new Map<string, MultiplayerRoom>();
+  const codeAlphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+  function normalizeUsername(username: unknown): string {
+    return String(username || '').trim().slice(0, 24).toLocaleLowerCase();
+  }
 
   function generateRoomCode(): string {
-    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const numbers = '0123456789';
     let roomCode = '';
 
     do {
-      roomCode =
-        letters.charAt(Math.floor(Math.random() * letters.length)) +
-        numbers.charAt(Math.floor(Math.random() * numbers.length)) +
-        numbers.charAt(Math.floor(Math.random() * numbers.length)) +
-        letters.charAt(Math.floor(Math.random() * letters.length));
+      roomCode = Array.from(randomBytes(8), (byte) => codeAlphabet[byte % codeAlphabet.length]).join('');
     } while (rooms.has(roomCode));
 
     return roomCode;
   }
 
-  function getAvailablePublicRooms() {
+  function getAvailableRooms(filter = 'public', username = '') {
     return Array.from(rooms.values())
-      .filter((room) => !room.isPrivate && room.status === 'waiting' && room.players.length < 5)
+      .filter((room) => {
+        const available = room.status === 'waiting' && room.players.length < room.maxPlayers;
+        if (!available) return false;
+        if (filter === 'friends') {
+          return room.isPrivate && room.friendUsernames.includes(normalizeUsername(username));
+        }
+        return !room.isPrivate;
+      })
       .map((room) => ({
         code: room.code,
+        name: room.name,
         username: room.players[0]?.username || 'Jugador',
         playerCount: room.players.length,
+        maxPlayers: room.maxPlayers,
       }));
   }
 
-  function broadcastPublicRooms(): void {
-    io.emit('publicRoomList', getAvailablePublicRooms());
+  function broadcastRoomLists(): void {
+    for (const client of io.sockets.sockets.values()) {
+      client.emit('roomList', getAvailableRooms(client.data.roomFilter, client.data.username));
+    }
   }
 
   io.on('connection', (socket) => {
     console.log(`Usuario conectado: ${socket.id}`);
 
-    socket.on('createRoom', (data: { username?: unknown; isPrivate?: unknown } = {}) => {
+    socket.on('createRoom', (data: { username?: unknown; isPrivate?: unknown; name?: unknown; maxPlayers?: unknown; friendUsernames?: unknown } = {}) => {
       const username = String(data.username || '').trim().slice(0, 24);
+      const name = String(data.name || '').trim().slice(0, 64);
       const isPrivate = data.isPrivate === true;
+      const requestedCapacity = Number(data.maxPlayers);
+      const maxPlayers = Number.isInteger(requestedCapacity) && requestedCapacity >= 2 && requestedCapacity <= 10
+        ? requestedCapacity
+        : 4;
+      const friendUsernames = Array.isArray(data.friendUsernames)
+        ? data.friendUsernames.map(normalizeUsername).filter(Boolean).slice(0, 20)
+        : [];
 
       if (!username) {
         socket.emit('error', { message: 'Escribe un nombre antes de crear la sala.' });
+        return;
+      }
+      if (!name) {
+        socket.emit('error', { message: 'Escribe un nombre para la sala.' });
         return;
       }
 
       const roomCode = generateRoomCode();
       const room: MultiplayerRoom = {
         code: roomCode,
+        name,
+        maxPlayers,
+        friendUsernames: [...new Set([normalizeUsername(username), ...friendUsernames])],
         isPrivate,
         players: [],
         status: 'waiting',
@@ -78,11 +107,13 @@ export function attachMultiplayer(httpServer: HttpServer): Server {
 
       rooms.set(roomCode, room);
       void socket.join(roomCode);
+      socket.data.username = normalizeUsername(username);
+      socket.data.roomFilter = socket.data.roomFilter || 'public';
       room.players.push({ id: socket.id, username, ready: false });
 
       console.log(`Sala ${isPrivate ? 'PRIVADA' : 'PÚBLICA'} creada: ${roomCode} por ${username}`);
-      socket.emit('roomCreated', { roomCode, players: room.players, isPrivate });
-      broadcastPublicRooms();
+      socket.emit('roomCreated', { roomCode, name, maxPlayers, players: room.players, isPrivate });
+      broadcastRoomLists();
     });
 
     socket.on('joinRoom', (data: { roomCode?: unknown; username?: unknown } = {}) => {
@@ -100,27 +131,32 @@ export function attachMultiplayer(httpServer: HttpServer): Server {
         return;
       }
 
-      if (room.players.length >= 5) {
+      if (room.players.length >= room.maxPlayers) {
         socket.emit('error', { message: 'La sala está llena.' });
         return;
       }
 
       if (room.players.some((player) => player.id === socket.id)) {
-        socket.emit('roomJoined', { roomCode, players: room.players, isPrivate: room.isPrivate });
+        socket.emit('roomJoined', { roomCode, name: room.name, maxPlayers: room.maxPlayers, players: room.players, isPrivate: room.isPrivate });
         return;
       }
 
       void socket.join(roomCode);
+      socket.data.username = normalizeUsername(username);
       room.players.push({ id: socket.id, username, ready: false });
       console.log(`${username} se unió a la sala ${roomCode}`);
 
       io.to(roomCode).emit('playerJoined', { players: room.players });
-      socket.emit('roomJoined', { roomCode, players: room.players, isPrivate: room.isPrivate });
-      broadcastPublicRooms();
+      socket.emit('roomJoined', { roomCode, name: room.name, maxPlayers: room.maxPlayers, players: room.players, isPrivate: room.isPrivate });
+      broadcastRoomLists();
     });
 
-    socket.on('listPublicRooms', () => {
-      socket.emit('publicRoomList', getAvailablePublicRooms());
+    socket.on('listRooms', (data: { filter?: unknown; username?: unknown } = {}) => {
+      const filter = data.filter === 'friends' ? 'friends' : 'public';
+      const username = normalizeUsername(data.username);
+      socket.data.username = username;
+      socket.data.roomFilter = filter;
+      socket.emit('roomList', getAvailableRooms(filter, username));
     });
 
     socket.on('setReady', (data: { roomCode?: unknown } = {}) => {
@@ -136,7 +172,7 @@ export function attachMultiplayer(httpServer: HttpServer): Server {
       if (allReady && room.players.length >= 2) {
         room.status = 'playing';
         io.to(roomCode).emit('startGame', { map: 'level6' });
-        broadcastPublicRooms();
+        broadcastRoomLists();
       }
     });
 
@@ -167,7 +203,7 @@ export function attachMultiplayer(httpServer: HttpServer): Server {
         if (room.players.length === 0) rooms.delete(roomCode);
       });
 
-      broadcastPublicRooms();
+      broadcastRoomLists();
     });
   });
 

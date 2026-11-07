@@ -238,3 +238,28 @@ function volverASeleccionDeNivel() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.game-hud {
+  transform: scale(1.2);
+  transform-origin: top center;
+}
+
+@media (min-width: 769px) and (max-width: 1100px) {
+  .game-hud {
+    transform: scale(1.08);
+  }
+}
+
+@media (max-width: 768px) {
+  .game-hud {
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 480px) {
+  .game-hud {
+    transform: scale(0.72);
+  }
+}
+</style>
