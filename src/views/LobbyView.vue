@@ -250,7 +250,7 @@ onUnmounted(() => {
 
         <!-- Personaje equipado en el centro del lobby -->
         <div
-          class="lobby-showcase pointer-events-none hidden min-w-0 flex-1 -translate-y-10 justify-center self-center xl:flex"
+          class="lobby-showcase pointer-events-none hidden min-w-0 flex-1 -translate-y-2 justify-center self-center xl:flex"
         >
           <CharacterShowcase :character-id="showcaseCharacterId" />
         </div>

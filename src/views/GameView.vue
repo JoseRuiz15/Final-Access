@@ -446,7 +446,7 @@ function enfocarCanvasDelJuego() {
       v-if="
         isTouchDevice && gameStarted && !pausaAbierta && !tiempoFinalizado && gameStore.vidas > 0
       "
-      class="touch-action-pad fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] right-[calc(env(safe-area-inset-right)+1rem)] z-30 grid gap-2 select-none"
+      class="touch-action-pad fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] right-[calc(env(safe-area-inset-right)+1.75rem)] z-30 grid gap-2 select-none"
       aria-label="Controles táctiles de acciones"
     >
       <button
@@ -615,28 +615,34 @@ function enfocarCanvasDelJuego() {
 }
 
 .touch-action-pad {
-  grid-template-columns: 70px 70px 116px;
-  grid-template-rows: 70px 70px 70px;
+  grid-template-columns: 70px 90px 116px;
+  grid-template-rows: 70px 70px 90px;
 }
 
 .touch-action-button--attack {
   grid-column: 2;
   grid-row: 3;
+  width: 90px;
+  height: 90px;
+  transform: translateY(-44px);
 }
 
 .touch-action-button--interact {
   grid-column: 3;
   grid-row: 1;
+  transform: translateX(16px);
 }
 
 .touch-action-button--dropKey {
   grid-column: 2;
-  grid-row: 2;
+  grid-row: 1;
+  transform: translateX(16px);
 }
 
 .touch-action-button--jump {
   grid-column: 3;
   grid-row: 2;
+  transform: translateY(14px);
   width: 116px;
   height: 116px;
   border-color: rgb(0 217 255 / 85%);
@@ -675,9 +681,14 @@ function enfocarCanvasDelJuego() {
   }
 
   .touch-action-pad {
-    grid-template-columns: 64px 64px 100px;
-    grid-template-rows: 64px 64px 64px;
+    grid-template-columns: 64px 84px 100px;
+    grid-template-rows: 64px 64px 84px;
     gap: 6px;
+  }
+
+  .touch-action-button--attack {
+    width: 84px;
+    height: 84px;
   }
 
   .touch-action-button--jump {
@@ -704,14 +715,20 @@ function enfocarCanvasDelJuego() {
   }
 
   .touch-action-pad {
-    grid-template-columns: 54px 54px 84px;
-    grid-template-rows: 54px 54px 54px;
+    grid-template-columns: 54px 70px 84px;
+    grid-template-rows: 54px 54px 70px;
     gap: 4px;
+  }
+
+  .touch-action-button--attack {
+    width: 70px;
+    height: 70px;
   }
 
   .touch-action-button--jump {
     width: 84px;
     height: 84px;
+    transform: translateY(10px);
   }
 }
 
@@ -723,9 +740,15 @@ function enfocarCanvasDelJuego() {
   }
 
   .touch-action-pad {
-    grid-template-columns: 42px 42px 72px;
-    grid-template-rows: 42px 42px 42px;
+    grid-template-columns: 42px 62px 72px;
+    grid-template-rows: 42px 42px 62px;
     gap: 4px;
+  }
+
+  .touch-action-button--attack {
+    width: 62px;
+    height: 62px;
+    transform: translateY(-40px);
   }
 
   .touch-action-button {
@@ -738,6 +761,7 @@ function enfocarCanvasDelJuego() {
   .touch-action-button--jump {
     width: 72px;
     height: 72px;
+    transform: translateY(12px);
   }
 
   .touch-action-button span {
@@ -751,7 +775,7 @@ function enfocarCanvasDelJuego() {
   }
 
   .touch-action-pad {
-    right: max(8px, env(safe-area-inset-right)) !important;
+    right: max(20px, calc(env(safe-area-inset-right) + 12px)) !important;
     bottom: max(8px, env(safe-area-inset-bottom)) !important;
   }
 }
@@ -763,9 +787,15 @@ function enfocarCanvasDelJuego() {
   }
 
   .touch-action-pad {
-    grid-template-columns: 36px 36px 64px;
-    grid-template-rows: 36px 36px 36px;
+    grid-template-columns: 36px 54px 64px;
+    grid-template-rows: 36px 36px 54px;
     gap: 3px;
+  }
+
+  .touch-action-button--attack {
+    width: 54px;
+    height: 54px;
+    transform: translateY(-36px);
   }
 
   .touch-action-button {
@@ -776,6 +806,7 @@ function enfocarCanvasDelJuego() {
   .touch-action-button--jump {
     width: 64px;
     height: 64px;
+    transform: translateY(10px);
   }
 }
 </style>
