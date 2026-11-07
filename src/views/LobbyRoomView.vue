@@ -53,9 +53,9 @@ const currentPlayer = computed(() => {
       class="absolute inset-0 w-full h-full object-cover -z-10 opacity-50"
     />
 
-    <div class="flex h-screen p-10 gap-10">
+    <div class="lobby-room-layout flex h-screen p-10 gap-10">
       <!-- Columna Izquierda: Jugadores -->
-      <div class="w-1/3 bg-[#190C2D]/80 backdrop-blur-md rounded-lg p-6 border border-[#53f4ff]/30">
+      <div class="lobby-room-players w-1/3 bg-[#190C2D]/80 backdrop-blur-md rounded-lg p-6 border border-[#53f4ff]/30">
         <div class="mb-6 flex flex-col items-center gap-3 text-center">
           <h1 class="break-words text-2xl text-[#53f4ff]">{{ multiplayerStore.roomName }}</h1>
           <div class="flex flex-wrap items-center justify-center gap-2">
@@ -113,7 +113,7 @@ const currentPlayer = computed(() => {
 
       <!-- Columna Derecha: Chat -->
       <div
-        class="w-2/3 bg-[#190C2D]/80 backdrop-blur-md rounded-lg p-6 border border-[#53f4ff]/30 flex flex-col"
+        class="lobby-room-chat w-2/3 bg-[#190C2D]/80 backdrop-blur-md rounded-lg p-6 border border-[#53f4ff]/30 flex flex-col"
       >
         <h2 class="text-[#53f4ff] text-2xl mb-6 text-center">CHAT DE LA SALA</h2>
 
@@ -143,3 +143,100 @@ const currentPlayer = computed(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+@media (max-width: 768px), (pointer: coarse), (any-pointer: coarse) {
+  .lobby-room-screen {
+    width: 100%;
+    min-height: 100svh;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: max(8px, env(safe-area-inset-top)) 0 max(10px, env(safe-area-inset-bottom));
+  }
+
+  .lobby-room-layout {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    min-height: 100svh;
+    padding: 8px clamp(8px, 3vw, 14px) !important;
+    gap: clamp(10px, 2vh, 16px) !important;
+    box-sizing: border-box;
+  }
+
+  .lobby-room-players,
+  .lobby-room-chat {
+    width: 100% !important;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: clamp(12px, 3.5vw, 18px) !important;
+  }
+
+  .lobby-room-players {
+    flex: 0 0 auto;
+  }
+
+  .lobby-room-players h1 {
+    max-width: 100%;
+    font-size: clamp(13px, 4vw, 20px) !important;
+    overflow-wrap: anywhere;
+  }
+
+  .lobby-room-players > div > div button {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: clamp(8px, 2.5vw, 11px) !important;
+  }
+
+  .lobby-room-players > div:nth-of-type(2) > div {
+    gap: 8px;
+    padding: 8px !important;
+  }
+
+  .lobby-room-players > div:nth-of-type(2) > div span {
+    min-width: 0;
+    font-size: clamp(8px, 2.5vw, 11px) !important;
+    overflow-wrap: anywhere;
+  }
+
+  .lobby-room-chat {
+    height: min(52svh, 420px);
+    min-height: 260px;
+    flex: 0 0 auto;
+  }
+
+  .lobby-room-chat h2 {
+    margin-bottom: 12px !important;
+    font-size: clamp(12px, 3.8vw, 18px) !important;
+  }
+
+  .lobby-room-chat input {
+    min-width: 0;
+    font-size: 16px !important;
+  }
+
+  .lobby-room-chat > div:last-child button {
+    flex: 0 0 auto;
+    padding-inline: clamp(10px, 3vw, 18px) !important;
+    font-size: clamp(8px, 2.3vw, 10px) !important;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse),
+  (orientation: landscape) and (max-height: 500px) and (any-pointer: coarse) {
+  .lobby-room-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    align-items: stretch;
+    min-height: 100svh;
+  }
+
+  .lobby-room-players,
+  .lobby-room-chat {
+    height: calc(100svh - 16px);
+    min-height: 0;
+  }
+}
+</style>

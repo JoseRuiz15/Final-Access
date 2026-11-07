@@ -168,10 +168,6 @@ onMounted(() => {
   }
 
   startCountdown()
-  // Auto-focus first input
-  setTimeout(() => {
-    document.querySelector('input[type="text"]')?.focus()
-  }, 100)
 })
 
 onUnmounted(() => {
@@ -205,7 +201,7 @@ onUnmounted(() => {
 
         <div
           v-if="devCode"
-          class="mx-6 mt-4 rounded-lg border border-yellow-500 bg-yellow-900/40 p-3 text-center text-yellow-200"
+          class="verification-dev-code mx-6 mt-4 rounded-lg border border-yellow-500 bg-yellow-900/40 p-3 text-center text-yellow-200"
         >
           <p class="font-pixel text-xs">Código local de desarrollo (no se envió un correo):</p>
           <p class="mt-2 font-pixel text-2xl tracking-[0.3em]">{{ devCode }}</p>
@@ -254,7 +250,9 @@ onUnmounted(() => {
         </div>
 
         <!--texto-->
-        <p class="text-white text-1xl font-pixel text-center mt-[20px]">Introduce el código</p>
+        <p class="verification-code-label text-white text-1xl font-pixel text-center mt-[20px]">
+          Introduce el código
+        </p>
 
         <!--donde colocar el codigo-->
         <div class="verification-digits flex items-center justify-center gap-4 mt-5">

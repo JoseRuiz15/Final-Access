@@ -1,56 +1,69 @@
 export default class ParallaxBuilder {
-  static create(scene, layers, scale = 0.8) {
-    const fondoAncho = scene.scale.width / scale
-    const fondoAlto = scene.scale.height / scale
-    const fondoX = (scene.scale.width - fondoAncho) / 2
-    const fondoY = (scene.scale.height - fondoAlto) / 2
+  static create(scene, layers, zoom = scene.cameras.main.zoom || 0.8) {
+    const elements = layers.map((layer) => {
+      const bg = scene.add.tileSprite(0, 0, 1, 1, layer.key).setOrigin(0)
+      bg.setScrollFactor(0)
+      bg.setDepth(layer.depth ?? 0)
 
-    const elements = layers.map(
-      ({
-        key,
-        speed,
-        depth = 0,
-        offsetY = 0,
-        fit = false,
-        tileScale = 1,
-        contentHeight = null,
-        alignBottom = false,
-        tileOffsetY = 0,
-      }) => {
-        const bg = scene.add
-          .tileSprite(fondoX, fondoY + offsetY, fondoAncho, fondoAlto, key)
-          .setOrigin(0)
+      return {
+        bg,
+        speed: layer.speed,
+        offsetY: layer.offsetY ?? 0,
+        fit: layer.fit ?? false,
+        tileScale: layer.tileScale ?? 1,
+        contentHeight: layer.contentHeight ?? null,
+        alignBottom: layer.alignBottom ?? false,
+        tileOffsetY: layer.tileOffsetY ?? 0,
+      }
+    })
 
-        // Las imágenes que no coinciden con el tamaño de la vista se repiten.
-        // "fit" las ajusta al fondo completo; "tileScale" las amplía.
-        if (fit) {
-          bg.setTileScale(fondoAncho / bg.frame.width, fondoAlto / bg.frame.height)
-        } else if (typeof tileScale === 'number') {
-          bg.setTileScale(tileScale)
-        } else if (tileScale) {
-          bg.setTileScale(tileScale.x ?? 1, tileScale.y ?? 1)
-        }
+    const parallax = { elements }
+    this.resize(parallax, scene, zoom)
+    return parallax
+  }
 
-        // Algunas imágenes traen una base opaca que no debe verse (por ejemplo,
-        // la franja negra bajo la ciudad del nivel 4). "contentHeight" recorta
-        // esa base y, si "alignBottom" está activo, apoya el contenido en el
-        // borde inferior de la vista.
-        if (contentHeight !== null) {
-          const altoVisible = contentHeight * bg.tileScaleY
-          bg.setSize(fondoAncho, altoVisible)
-          if (alignBottom) {
-            bg.y = fondoY + offsetY + fondoAlto - altoVisible
-          }
-        }
+  static resize(parallax, scene, zoom = scene.cameras.main.zoom || 0.8) {
+    if (!parallax?.elements?.length) return
 
-        bg.tilePositionY = tileOffsetY
-        bg.setScrollFactor(0)
-        bg.setDepth(depth)
-        return { bg, speed }
-      },
-    )
+    const viewWidth = Math.max(1, scene.scale.width)
+    const viewHeight = Math.max(1, scene.scale.height)
+    const fondoAncho = viewWidth / zoom
+    const fondoAlto = viewHeight / zoom
+    const fondoX = (viewWidth - fondoAncho) / 2
+    const fondoY = (viewHeight - fondoAlto) / 2
 
-    return { elements }
+    parallax.elements.forEach((element) => {
+      const {
+        bg,
+        offsetY,
+        fit,
+        tileScale,
+        contentHeight,
+        alignBottom,
+        tileOffsetY,
+      } = element
+
+      bg.setPosition(fondoX, fondoY + offsetY)
+      bg.setSize(fondoAncho, fondoAlto)
+
+      // "fit" escala la imagen al fondo completo; las otras capas conservan
+      // su escala de mosaico y se extienden a todo el tamaño de la pantalla.
+      if (fit) {
+        bg.setTileScale(fondoAncho / bg.frame.width, fondoAlto / bg.frame.height)
+      } else if (typeof tileScale === 'number') {
+        bg.setTileScale(tileScale)
+      } else if (tileScale) {
+        bg.setTileScale(tileScale.x ?? 1, tileScale.y ?? 1)
+      }
+
+      if (contentHeight !== null) {
+        const altoVisible = contentHeight * bg.tileScaleY
+        bg.setSize(fondoAncho, altoVisible)
+        if (alignBottom) bg.y = fondoY + offsetY + fondoAlto - altoVisible
+      }
+
+      bg.tilePositionY = tileOffsetY
+    })
   }
 
   static update(parallax, scrollX) {
