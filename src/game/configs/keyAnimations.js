@@ -150,6 +150,14 @@ export const KEY_SPRITESHEETS = [
     frames: 25,
     frameRate: 12,
   },
+  {
+    texture: 'key6Silver',
+    path: '/img/keys-animation/Key6-SILVER.png',
+    frameWidth: 16,
+    frameHeight: 35,
+    frames: 1,
+    frameRate: 12,
+  },
 ]
 
 /**

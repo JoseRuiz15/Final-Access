@@ -64,14 +64,7 @@ export default class PatrolAI {
   }
 
   _detenerAnimacion() {
-    if (
-      this.enemy.animWalk &&
-      this.enemy.anims.isPlaying &&
-      this.enemy.anims.currentAnim?.key === this.enemy.animWalk
-    ) {
-      this.enemy.anims.stop()
-      this.enemy.setFrame(0)
-    }
+    this.enemy.stopWalkAnimation?.()
   }
 
   patrol() {

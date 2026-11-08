@@ -189,12 +189,25 @@ export default class Enemy extends Entity {
   }
 
   update(_delta) {
+    if (this.scene.isMultiplayerLevel && !this.scene.isMultiplayerAuthority) {
+      this._syncAttackEffect()
+      return
+    }
+
     this.ai.update()
     this._syncAttackEffect()
   }
 
   getType() {
     return 'enemy'
+  }
+
+  /** Detiene la animación de caminar y deja el frame inicial, como PatrolAI. */
+  stopWalkAnimation() {
+    if (this.animWalk && this.anims.isPlaying && this.anims.currentAnim?.key === this.animWalk) {
+      this.anims.stop()
+      this.setFrame(0)
+    }
   }
 
   atacar() {

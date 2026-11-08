@@ -6,6 +6,7 @@ class Key extends Entity {
 
     this.spawnX = Number.isFinite(datos?.spawnX) ? datos.spawnX : x
     this.spawnY = Number.isFinite(datos?.spawnY) ? datos.spawnY : y
+    this.multiplayerId = datos?.multiplayerId ?? null
     this.grupo = datos.grupo
     this.color = datos.color
     this.efecto = datos.efecto

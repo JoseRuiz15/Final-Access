@@ -41,10 +41,11 @@ class Box extends Entity {
     this.rompiendo = false
   }
 
-  break() {
+  break({ broadcast = true } = {}) {
     if (!this.active || this.rompiendo) return
 
     this.rompiendo = true
+    if (broadcast) this.scene.events?.emit('box-broken', this)
     playPlayerSoundEffect(this.scene, 'brokenBox')
     this.body.enable = false
     this.setTexture('crateBreak')

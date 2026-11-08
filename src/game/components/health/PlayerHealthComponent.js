@@ -58,6 +58,7 @@ export default class PlayerHealthComponent {
 
       this.gameRepository.vidas = this.vidas
       playPlayerSoundEffect(this.player.scene, 'lifeLost')
+      this.player.scene.events?.emit('player-life-lost', this.vidas)
 
       this.muerto = true
       this.player.movement?.cancelDash()

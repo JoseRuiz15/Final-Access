@@ -6,10 +6,18 @@ export default class EnemyHealthComponent {
     this.gameRepository = gameRepository
   }
 
-  takeDamage(amount) {
+  takeDamage(amount, { broadcast = true } = {}) {
     if (this.enemy.muerto || this.enemy.recibiendoDano) return false
 
     this.enemy.vida -= amount
+    if (broadcast) {
+      this.enemy.scene.events?.emit('enemy-damaged', {
+        enemy: this.enemy,
+        damage: amount,
+        health: Math.max(0, this.enemy.vida),
+        maxHealth: this.enemy.config?.vida ?? 40,
+      })
+    }
     if (this.enemy.vida <= 0) {
       this.enemy.vida = 0
       this.enemy.muerto = true
@@ -17,6 +25,7 @@ export default class EnemyHealthComponent {
       this.enemy.body.enable = false
 
       const scene = this.enemy.scene
+      if (broadcast) scene.events?.emit('enemy-defeated', this.enemy)
       const deathAnim = this.enemy.animDie
       const hasDeathAnim = deathAnim && scene.anims.exists(deathAnim)
 
@@ -56,5 +65,13 @@ export default class EnemyHealthComponent {
     }
 
     return false
+  }
+
+  applySynchronizedHealth(health) {
+    const nextHealth = Math.max(0, Number(health))
+    if (!Number.isFinite(nextHealth) || this.enemy.muerto || nextHealth >= this.enemy.vida) return false
+
+    this.enemy.recibiendoDano = false
+    return this.takeDamage(this.enemy.vida - nextHealth, { broadcast: false })
   }
 }

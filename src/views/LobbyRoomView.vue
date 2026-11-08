@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMultiplayerStore } from '@/stores/multiplayer'
 
@@ -15,6 +15,16 @@ onMounted(() => {
     multiplayerStore.connect()
   }
 })
+
+watch(
+  () => multiplayerStore.gameStarted,
+  (started) => {
+    if (started && multiplayerStore.gameMap === 'level6') {
+      router.replace({ name: 'multiplayer-game' })
+    }
+  },
+  { immediate: true },
+)
 
 const sendChat = () => {
   if (newMessage.value.trim()) {
@@ -99,6 +109,9 @@ const currentPlayer = computed(() => {
             {{ currentPlayer?.ready ? 'CANCELAR LISTO' : 'ESTOY LISTO' }}
           </button>
         </div>
+        <p class="mt-4 text-center text-xs text-[#D1BCFF]/80">
+          La partida empieza cuando todos estén listos (mínimo 2 jugadores).
+        </p>
 
         <!-- Botón de Salir añadido -->
         <div class="mt-6 flex justify-center">

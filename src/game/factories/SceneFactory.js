@@ -16,6 +16,8 @@ import Level2Scene from '../scenes/Level2Scene.js'
 import Level3Scene from '../scenes/Level3Scene.js'
 import Level4Scene from '../scenes/Level4Scene.js'
 import Level5Scene from '../scenes/Level5Scene.js'
+import Level6Scene from '../scenes/Level6Scene.js'
+import MultiplayerLevel6Scene from '../scenes/MultiplayerLevel6Scene.js'
 
 function createDependencies() {
   return {
@@ -64,6 +66,17 @@ export class SceneFactory {
     const deps = createDependencies()
     const scene = new Level5Scene(deps)
     return scene
+  }
+
+  static createLevel6Scene() {
+    const deps = createDependencies()
+    const scene = new Level6Scene(deps)
+    return scene
+  }
+
+  static createMultiplayerLevel6Scene(multiplayerStore) {
+    const deps = createDependencies()
+    return new MultiplayerLevel6Scene(deps, multiplayerStore)
   }
 }
 

@@ -39,12 +39,17 @@ export default class BaseScene extends Phaser.Scene {
 
   preload() {
     // Mantiene una pantalla de carga visible mientras Phaser descarga el nivel.
+    this.assetLoadProgress = 0
+    this.assetsLoaded = false
     if (this._onAssetLoadProgress) this.load.off('progress', this._onAssetLoadProgress)
     this._onAssetLoadProgress = (progress) => {
+      this.assetLoadProgress = progress
       this.game?.events?.emit('level-assets-progress', progress)
     }
     this.load.on('progress', this._onAssetLoadProgress)
     this.load.once('complete', () => {
+      this.assetLoadProgress = 1
+      this.assetsLoaded = true
       this.game?.events?.emit('level-assets-loaded')
     })
 
@@ -187,6 +192,10 @@ export default class BaseScene extends Phaser.Scene {
     if (this.keyManager?.getKeysGroup() && this.mapResult?.layers?.Ground) {
       this.physicsService.addCollider(this.keyManager.getKeysGroup(), this.mapResult.layers.Ground)
     }
+
+    // La vista también puede consultar este estado si el evento de carga ocurrió antes de suscribirse.
+    this.assetsLoaded = true
+    this.assetLoadProgress = 1
   }
 
   // Métodos a implementar por subclases
@@ -219,7 +228,7 @@ export default class BaseScene extends Phaser.Scene {
     }
 
     // Input del jugador
-    if (this.player?.active) {
+    if (this.player?.active && !this.isSpectating && !this.isEliminated) {
       this.playerController?.handleInput()
     }
 
@@ -232,8 +241,10 @@ export default class BaseScene extends Phaser.Scene {
 
     // Managers update
     this.movingPlatformManager?.update()
-    this.keyManager?.update(this.player, this.inputService)
-    this.doorManager?.checkProximity(this.player, this.inputService)
+    if (!this.isSpectating && !this.isEliminated) {
+      this.keyManager?.update(this.player, this.inputService)
+      this.doorManager?.checkProximity(this.player, this.inputService)
+    }
   }
 
   mostrarExplosion(x, y) {

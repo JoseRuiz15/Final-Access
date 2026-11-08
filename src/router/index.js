@@ -67,6 +67,12 @@ const router = createRouter({
       beforeEnter: requireAuth,
     },
     {
+      path: '/multiplayer-game',
+      name: 'multiplayer-game',
+      component: () => import('../views/MultiplayerGameView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
       path: '/store',
 
       name: 'store',
@@ -119,6 +125,7 @@ const routeBackgrounds = {
   store: '/img/lobby/lobby2.webp',
   levels: '/img/map/mapa.webp',
   multiplayer: '/img/multy-player/partida.webp',
+  'multiplayer-game': '/img/multy-player/partida.webp',
   create: '/img/multy-player/partida.webp',
   loading: '/img/present/loadingscene.webp',
   mission: '/img/present/loadingscene.webp',

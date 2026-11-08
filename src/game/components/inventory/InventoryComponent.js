@@ -17,6 +17,7 @@ export default class InventoryComponent {
       correcta: llave.correcta,
       spawnX: llave.spawnX,
       spawnY: llave.spawnY,
+      multiplayerId: llave.multiplayerId ?? null,
     }
 
     console.log('🔑 Llave recogida:', keyData, '| texture.key =', llave.texture.key)
@@ -24,6 +25,9 @@ export default class InventoryComponent {
     this.llaves.push(keyData)
     this._syncRepository()
     playPlayerSoundEffect(this.player.scene, 'getKey')
+    if (keyData.multiplayerId) {
+      this.player.scene.events?.emit('key-picked-up', keyData)
+    }
 
     console.log('Inventario:', this.llaves)
     llave.destroy()
@@ -49,7 +53,15 @@ export default class InventoryComponent {
     this.llaves.pop()
     this._syncRepository()
     playPlayerSoundEffect(scene, 'dropKey')
+    if (keyData.multiplayerId) {
+      scene.events?.emit('key-dropped', { keyData, x, y })
+    }
     return true
+  }
+
+  setSharedKeys(keys = []) {
+    this.llaves = keys.map((key) => ({ ...key }))
+    this._syncRepository()
   }
 
   getLlaves() {

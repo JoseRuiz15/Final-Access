@@ -1,0 +1,62 @@
+import EntityFactory from '../factories/EntityFactory.js'
+import PlayerController from '../controllers/PlayerController.js'
+import Key from '../entities/key.js'
+import { LEVEL6_CONFIG } from '../configs/level6Config.js'
+import BaseScene from './BaseScene.js'
+
+export default class Level6Scene extends BaseScene {
+  constructor(dependencies = {}) {
+    super('Level6Scene', LEVEL6_CONFIG, dependencies)
+  }
+
+  _createPlayer() {
+    const { x, y } = this.config.player
+    this.player = EntityFactory.createPlayer(
+      this,
+      x,
+      y,
+      this.characterConfig?.texture ?? 'player',
+      this.gameRepository,
+    )
+    this.playerController = new PlayerController(this.player, this.inputService)
+
+    this.cameras.main.startFollow(this.player)
+
+    this.player.on('animationcomplete-atacar', () => {
+      if (this.player.attack?.repetirAnimacionCargaCosa3()) return
+
+      this.player.ataque = false
+      if (!this.player.muerto) this.player.setTexture(this.player.idleTexture)
+    })
+  }
+
+  _createEnemies() {
+    this.enemies = this.add.group()
+
+    this.config.enemies.forEach((config) => {
+      const enemy = EntityFactory.createEnemy(
+        this,
+        config.x,
+        config.y,
+        config.texture,
+        config,
+        this.gameRepository,
+      )
+      enemy.target = this.player
+      this.enemies.add(enemy)
+    })
+  }
+
+  _createBoxes() {
+    this.boxes = this.add.group()
+
+    this.config.boxes.forEach(({ x, y, keyData }) => {
+      const box = EntityFactory.createBox(this, x, y, keyData)
+      this.boxes.add(box)
+    })
+  }
+
+  _getKeyClass() {
+    return Key
+  }
+}

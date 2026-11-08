@@ -117,6 +117,7 @@ export default class DoorManager {
           this.doorSprite.setTexture('greenDoor')
           puerta.abierta = true
           doorOpened = true
+          this.scene.events?.emit('door-opened')
           console.log('✅ PUERTA ABIERTA - VERDE')
           this.scene.game?.events?.emit('level-completed', this.scene, {
             keyAttempts: requiereLlave ? this.keyAttempts : 0,

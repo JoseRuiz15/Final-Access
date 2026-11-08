@@ -130,6 +130,32 @@ export default class DroneEnemy extends Enemy {
     this.attackEffect.play(this.attackEffectAnim)
   }
 
+  /**
+   * Aplica el frame de mira que calcula el servidor en multijugador. Mantiene
+   * el mismo frame y la misma altura de cañón que _updateAim() en los niveles
+   * normales.
+   */
+  applyNetworkAimFrame(frame) {
+    const numericFrame = Number(frame)
+    if (!Number.isFinite(numericFrame)) return
+
+    this.aiming = true
+    if (this._aimFrame === numericFrame) return
+
+    this._aimFrame = numericFrame
+    this.anims.stop()
+    this.setFrame(numericFrame)
+    this.muzzleOffsetY = this.aimMuzzleY[numericFrame] ?? this.muzzleOffsetY
+  }
+
+  /** Vuelve al estado de patrulla cuando el servidor deja de detectar al jugador. */
+  clearNetworkAim() {
+    if (!this.aiming && this._aimFrame === null) return
+
+    this.aiming = false
+    this._aimFrame = null
+  }
+
   _isTargetDetected(target) {
     if (!target?.active || target.muerto || this.muerto) return false
 
@@ -177,7 +203,9 @@ export default class DroneEnemy extends Enemy {
   }
 
   update(delta) {
-    this._updateAim()
+    if (!this.scene.isMultiplayerLevel || this.scene.isMultiplayerAuthority) {
+      this._updateAim()
+    }
     super.update(delta)
 
     const visible = this.active && !this.muerto
