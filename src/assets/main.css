@@ -3045,3 +3045,581 @@ button:disabled,
     transform: translateX(-50%) scale(0.35) !important;
   }
 }
+
+.lobby-rotate-notice {
+  display: none;
+}
+
+/* El lobby conserva en móviles la composición de escritorio en horizontal. */
+@media (any-pointer: coarse) and (orientation: landscape) {
+  #lobby-screen > .relative {
+    display: flex;
+    height: 100%;
+    min-height: 0 !important;
+    flex-direction: column;
+  }
+
+  #lobby-screen .lobby-main {
+    display: grid;
+    width: 100%;
+    min-height: 0;
+    flex: 1 1 auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: center;
+    gap: clamp(8px, 1.6vw, 20px);
+    overflow: hidden;
+    padding: clamp(8px, 1.8vh, 16px) clamp(10px, 2vw, 24px) !important;
+  }
+
+  #lobby-screen .lobby-feature-panels {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: clamp(18px, 7vh, 36px);
+    padding-top: clamp(26px, 11vh, 44px);
+  }
+
+  #lobby-screen .lobby-missions-card {
+    width: clamp(132px, 16.7vw, 320px);
+    height: clamp(88px, 23.3vh, 216px);
+    max-height: none;
+    min-height: 0;
+    flex: 0 1 auto;
+    margin: 0 !important;
+    overflow-y: auto !important;
+    padding: clamp(4px, 0.8vh, 7px) !important;
+    scrollbar-width: thin;
+  }
+
+  #lobby-screen .lobby-missions-card > div > div:first-child {
+    padding: clamp(4px, 0.8vh, 7px) clamp(6px, 1vw, 10px) !important;
+  }
+
+  #lobby-screen .lobby-missions-card > div > div:first-child p {
+    font-size: clamp(6px, 0.78vw, 8px) !important;
+    line-height: 1.4;
+  }
+
+  #lobby-screen .lobby-missions-card > div > div:last-child {
+    padding: clamp(5px, 1vh, 10px) !important;
+  }
+
+  #lobby-screen .lobby-missions-card > div > div:last-child > div:not(:first-child) {
+    margin-top: clamp(3px, 0.7vh, 6px) !important;
+  }
+
+  #lobby-screen .lobby-missions-card p {
+    font-size: clamp(5.5px, 0.72vw, 7px) !important;
+    line-height: 1.35;
+  }
+
+  #lobby-screen .lobby-missions-card [class~="h-[7px]"] {
+    height: 3px !important;
+  }
+
+  #lobby-screen .lobby-store-carousel {
+    width: clamp(132px, 16.7vw, 320px) !important;
+    height: auto !important;
+    aspect-ratio: 320 / 208;
+    min-height: 0;
+    flex: 0 0 auto;
+    margin: 0 !important;
+    padding: 5px !important;
+    align-self: flex-start;
+  }
+
+  #lobby-screen .lobby-store-carousel > div:last-child {
+    bottom: 5px;
+    gap: 5px;
+  }
+
+  #lobby-screen .lobby-store-carousel > div:last-child button {
+    width: 7px;
+    height: 7px;
+  }
+
+  #lobby-screen .lobby-character-stage {
+    display: flex !important;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    flex: 0 1 auto;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(clamp(24px, 8.2vh, 42px)) !important;
+  }
+
+  #lobby-screen .lobby-character-stage > .character-showcase {
+    transform: scale(0.56);
+    transform-origin: center center;
+  }
+
+  #lobby-screen .lobby-widgets {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 0 !important;
+  }
+
+  #lobby-screen .lobby-play-button {
+    width: min(16.7vw, 320px) !important;
+    min-height: 44px;
+    margin: 0 !important;
+    padding: 8px 6px !important;
+    font-size: clamp(7px, 0.82vw, 10px) !important;
+    align-self: flex-end;
+    transform: translateY(clamp(70px, 24vh, 120px));
+  }
+
+  #lobby-screen .lobby-rotate-notice {
+    display: none;
+  }
+}
+
+@media (any-pointer: coarse) and (orientation: landscape) and (max-height: 420px) {
+  #lobby-screen .lobby-character-stage > .character-showcase {
+    transform: scale(0.46);
+  }
+
+  #lobby-screen .lobby-play-button {
+    min-height: 40px;
+    padding-block: 8px !important;
+  }
+}
+
+/* En vertical, se pide girar el teléfono para mantener intacta la distribución. */
+@media (any-pointer: coarse) and (orientation: portrait) {
+  #lobby-screen {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  #lobby-screen > .relative > .app-header,
+  #lobby-screen .lobby-main {
+    display: none !important;
+  }
+
+  #lobby-screen .lobby-rotate-notice {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px;
+    background: rgb(5 8 20 / 72%);
+    color: #fff;
+    text-align: center;
+  }
+
+  #lobby-screen .lobby-rotate-icon {
+    color: #00d9ff;
+    font-family: sans-serif;
+    font-size: clamp(44px, 16vw, 76px);
+    line-height: 1;
+    text-shadow: 0 0 24px rgb(0 217 255 / 60%);
+  }
+
+  #lobby-screen .lobby-rotate-title {
+    margin: 0;
+    color: #00d9ff;
+    font-family: var(--font-pixel, monospace);
+    font-size: clamp(11px, 4vw, 16px);
+  }
+
+  #lobby-screen .lobby-rotate-copy {
+    max-width: 280px;
+    margin: 0;
+    font-size: clamp(13px, 4vw, 16px);
+    line-height: 1.5;
+  }
+}
+
+/* La pantalla de personajes mantiene en horizontal la escala y proporciones de PC. */
+@media (any-pointer: coarse) and (orientation: landscape) {
+  #lobby-screen:has(.character-layout) {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  #lobby-screen:has(.character-layout) > .relative.z-10 {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  #lobby-screen:has(.character-layout) .character-layout {
+    display: flex;
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(8px, 1vh, 12px) !important;
+    overflow: hidden;
+  }
+
+  #lobby-screen:has(.character-layout) .character-panel {
+    width: min(70.5vw, 1350px) !important;
+    height: min(51.7vh, 480px) !important;
+    min-height: 0 !important;
+    flex: 0 1 auto;
+    overflow: hidden !important;
+  }
+
+  #lobby-screen:has(.character-layout) .character-list {
+    width: 66.666% !important;
+    min-width: 0;
+    flex: 0 0 66.666%;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: clamp(10px, 2.1vw, 40px) !important;
+    padding: clamp(8px, 2.1vw, 40px) !important;
+  }
+
+  #lobby-screen:has(.character-layout) .character-list > button {
+    width: clamp(70px, 10.4vw, 200px) !important;
+    height: 68% !important;
+    min-width: 0;
+    flex: 0 0 auto;
+  }
+
+  #lobby-screen:has(.character-layout) .character-list > button > div > img {
+    object-fit: cover;
+  }
+
+  #lobby-screen:has(.character-layout) .character-list > button span {
+    font-size: clamp(24px, 3.1vw, 60px) !important;
+  }
+
+  #lobby-screen:has(.character-layout) .character-list > button > div > div.inset-0 span {
+    font-size: clamp(24px, 3.1vw, 60px) !important;
+  }
+
+  #lobby-screen:has(.character-layout) .character-list > button > div > div.top-2 {
+    top: clamp(4px, 0.8vh, 8px);
+    padding: clamp(2px, 0.3vw, 4px) clamp(3px, 0.5vw, 8px) !important;
+    font-size: clamp(5px, 0.63vw, 12px) !important;
+  }
+
+  #lobby-screen:has(.character-layout) .character-detail {
+    width: 33.334%;
+    min-width: 0;
+    min-height: 0;
+    flex: 0 0 33.334%;
+    border-top: 0 !important;
+    border-left: 1px solid rgba(251, 0, 255, 0.34) !important;
+  }
+
+  #lobby-screen:has(.character-layout) .character-detail > div:first-child {
+    min-height: 0;
+    flex: 0 0 50%;
+    border-bottom-width: 1px;
+  }
+
+  #lobby-screen:has(.character-layout) .character-detail > div:first-child > div {
+    max-height: 100%;
+  }
+
+  #lobby-screen:has(.character-layout) .character-detail > div:first-child > div > div {
+    width: clamp(48px, 6.8vw, 130px) !important;
+    height: clamp(48px, 6.8vw, 130px) !important;
+    border-width: 2px !important;
+  }
+
+  #lobby-screen:has(.character-layout) .character-detail h2 {
+    font-size: clamp(9px, 1.15vw, 22px) !important;
+  }
+
+  #lobby-screen:has(.character-layout) .character-detail > div:first-child > div:last-child {
+    gap: clamp(3px, 0.7vh, 6px) !important;
+    padding-inline: clamp(4px, 0.8vw, 16px) !important;
+  }
+
+  #lobby-screen:has(.character-layout) .character-detail button {
+    width: clamp(72px, 8.4vw, 160px) !important;
+    height: clamp(30px, 5.2vh, 48px) !important;
+    border-width: 2px !important;
+    font-size: clamp(6px, 0.63vw, 12px) !important;
+  }
+
+  #lobby-screen:has(.character-layout) .character-detail > div:last-child {
+    min-height: 0 !important;
+    flex: 1 1 auto;
+    gap: clamp(3px, 0.7vh, 6px) !important;
+    padding: clamp(8px, 1.67vw, 32px) !important;
+  }
+
+  #lobby-screen:has(.character-layout) .character-detail > div:last-child h3 {
+    margin-bottom: clamp(3px, 0.8vh, 16px) !important;
+    font-size: clamp(7px, 0.84vw, 16px) !important;
+  }
+
+  #lobby-screen:has(.character-layout) .character-detail > div:last-child p:first-of-type {
+    margin-bottom: clamp(4px, 1vh, 24px) !important;
+    font-size: clamp(6px, 0.73vw, 14px) !important;
+    line-height: 1.4;
+  }
+
+  #lobby-screen:has(.character-layout) .character-detail > div:last-child p:last-of-type {
+    font-size: clamp(5px, 0.63vw, 12px) !important;
+    line-height: 1.45 !important;
+  }
+}
+
+/* GameMode conserva su panel centrado y sus dos tarjetas a escala de PC. */
+@media (any-pointer: coarse) and (orientation: landscape) {
+  #game-mode-screen .game-mode-screen {
+    height: 100%;
+    min-height: 0;
+    padding: 0 !important;
+  }
+
+  #game-mode-screen .game-mode-back {
+    top: clamp(4px, 1vh, 24px) !important;
+    left: clamp(6px, 1.25vw, 24px) !important;
+    font-size: clamp(6px, 0.7vw, 13px) !important;
+  }
+
+  #game-mode-screen .game-mode-panel {
+    display: flex;
+    width: min(31.3vw, 600px) !important;
+    height: min(51.7vh, 480px) !important;
+    min-height: 0 !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    padding: clamp(10px, 3.6vh, 40px) clamp(8px, 1.56vw, 30px);
+    border-radius: clamp(4px, 0.42vw, 8px);
+  }
+
+  #game-mode-screen .game-mode-panel > p {
+    width: 100%;
+    margin-top: 0 !important;
+    font-size: clamp(6px, 0.94vw, 16px) !important;
+    line-height: 1.4;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  #game-mode-screen .game-mode-labels {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 !important;
+    margin-top: clamp(12px, 4.2vh, 40px) !important;
+  }
+
+  #game-mode-screen .game-mode-labels > p {
+    width: auto;
+    margin: 0 !important;
+    font-size: clamp(5.5px, 0.8vw, 16px) !important;
+    line-height: 1.4;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  #game-mode-screen .game-mode-cards {
+    width: 100%;
+    gap: clamp(8px, 4.2vw, 80px) !important;
+    margin-top: clamp(3px, 1vh, 5px) !important;
+  }
+
+  #game-mode-screen .game-mode-cards > button {
+    width: clamp(66px, 10.4vw, 200px) !important;
+    height: auto !important;
+    aspect-ratio: 5 / 7;
+    flex: 0 0 auto;
+    margin: 0 !important;
+    overflow: hidden;
+  }
+
+  #game-mode-screen .game-mode-cards > button img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+/* El modal de niveles conserva en móvil horizontal las proporciones de PC. */
+@media (any-pointer: coarse) and (orientation: landscape) {
+  .level-modal-overlay {
+    width: 100vw;
+    height: 100dvh;
+    overflow: auto !important;
+    padding: clamp(6px, 1vw, 16px) !important;
+  }
+
+  .level-modal-panel {
+    width: min(41.7vw, 800px) !important;
+    height: min(53.8vh, 500px) !important;
+    min-height: 0 !important;
+    flex: 0 0 auto;
+    overflow: auto !important;
+    border-width: clamp(2px, 0.21vw, 4px) !important;
+    border-radius: clamp(6px, 0.84vw, 16px) !important;
+    padding: clamp(6px, 1vw, 32px) clamp(8px, 1.35vw, 32px) !important;
+    scrollbar-width: thin;
+  }
+
+  .level-modal-title {
+    margin: 0 !important;
+    font-size: clamp(10px, 1.57vw, 30px) !important;
+    line-height: 1.4;
+  }
+
+  .level-modal-record {
+    margin-block: clamp(3px, 0.6vh, 12px) !important;
+  }
+
+  .level-modal-record .inline-flex {
+    gap: clamp(1px, 0.21vw, 4px) !important;
+  }
+
+  .level-modal-record svg {
+    width: clamp(8px, 1.04vw, 20px) !important;
+    height: clamp(8px, 1.04vw, 20px) !important;
+  }
+
+  .level-modal-record > span {
+    margin-left: clamp(5px, 1vw, 16px) !important;
+    font-size: clamp(6px, 0.73vw, 14px) !important;
+  }
+
+  .level-modal-content {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: clamp(8px, 1.67vw, 32px) !important;
+    margin-top: clamp(4px, 1.4vh, 32px) !important;
+  }
+
+  .level-modal-image {
+    width: clamp(100px, 15.65vw, 300px) !important;
+    height: clamp(78px, 26.9vh, 250px) !important;
+    flex: 0 0 auto;
+    border-width: 1px !important;
+  }
+
+  .level-modal-description {
+    min-width: 0;
+  }
+
+  .level-modal-description h2 {
+    font-size: clamp(8px, 1.04vw, 20px) !important;
+    line-height: 1.4;
+  }
+
+  .level-modal-description > p:first-of-type {
+    margin-top: clamp(5px, 1vw, 24px) !important;
+    font-size: clamp(6px, 0.73vw, 14px) !important;
+    line-height: 1.45 !important;
+  }
+
+  .level-modal-completion {
+    margin-top: clamp(4px, 0.8vw, 16px) !important;
+    padding: clamp(4px, 0.63vw, 12px) !important;
+    border-width: 1px !important;
+  }
+
+  .level-modal-completion p:first-child {
+    font-size: clamp(6px, 0.73vw, 14px) !important;
+    line-height: 1.4;
+  }
+
+  .level-modal-completion p:not(:first-child) {
+    margin-top: clamp(2px, 0.21vw, 4px) !important;
+    font-size: clamp(5px, 0.63vw, 12px) !important;
+    line-height: 1.4;
+  }
+
+  .level-modal-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: clamp(8px, 2.1vw, 40px) !important;
+    margin-top: clamp(5px, 1.8vh, 40px) !important;
+  }
+
+  .level-modal-action-button {
+    width: clamp(88px, 11.5vw, 220px) !important;
+    height: clamp(32px, 6vh, 56px) !important;
+    flex: 0 0 auto;
+    border-width: 1px !important;
+    border-radius: clamp(5px, 0.63vw, 12px) !important;
+    font-size: clamp(6px, 0.73vw, 14px) !important;
+  }
+}
+
+/* El personaje queda bajo el diálogo, a la misma altura horizontal en ambas pantallas. */
+@media (any-pointer: coarse) and (orientation: landscape) {
+  .mission-character,
+  .tutorial-character {
+    top: auto !important;
+    right: auto !important;
+    bottom: 0 !important;
+    left: 47% !important;
+    width: min(42vw, 50vh, 500px) !important;
+    max-height: 58vh !important;
+    transform: translateX(-50%) !important;
+    object-fit: contain;
+    object-position: bottom center;
+  }
+}
+
+@media (any-pointer: coarse) and (orientation: landscape) {
+  .mission-dialogue {
+    top: clamp(64px, 24vh, 150px) !important;
+    right: auto !important;
+    left: 40vw !important;
+    width: min(40vw, 760px) !important;
+    height: clamp(88px, 24vh, 220px) !important;
+  }
+
+  .tutorial-dialogue {
+    top: clamp(60px, 21vh, 140px) !important;
+    right: auto !important;
+    left: 44vw !important;
+    width: min(41vw, 780px) !important;
+    height: clamp(90px, 27vh, 250px) !important;
+  }
+
+  .mission-dialogue > div,
+  .tutorial-dialogue > div {
+    top: 10% !important;
+    right: 8% !important;
+    bottom: 12% !important;
+    left: 8% !important;
+  }
+
+  .mission-dialogue p {
+    font-size: clamp(7px, 1vw, 15px) !important;
+    line-height: 1.5 !important;
+  }
+
+  .tutorial-dialogue p {
+    font-size: clamp(7px, 1.05vw, 20px) !important;
+    line-height: 1.45 !important;
+  }
+}

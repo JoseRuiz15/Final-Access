@@ -103,6 +103,15 @@ async function initializeGame() {
   levelScene = crearEscena()
   levelScene.mobileLayout = isTouchDevice.value
 
+  const gameHeight = 720
+  const isMobileLandscape =
+    isTouchDevice.value && window.matchMedia('(orientation: landscape)').matches
+  const viewportAspectRatio = window.innerWidth / Math.max(1, window.innerHeight)
+  const gameWidth = isMobileLandscape
+    ? Math.ceil(gameHeight * viewportAspectRatio)
+    : 1280
+  levelScene.mobileLandscapeLayout = isMobileLandscape
+
   // El HUD y el jugador empiezan con las vidas que corresponden a este nivel.
   gameStore.vidas = levelScene.config.vidasIniciales ?? 5
   gameStore.llaves = 0
@@ -114,8 +123,8 @@ async function initializeGame() {
   const config = {
     type: Phaser.AUTO,
 
-    width: 1280,
-    height: 720,
+    width: gameWidth,
+    height: gameHeight,
 
     parent: 'game-container',
 
@@ -584,19 +593,19 @@ function enfocarCanvasDelJuego() {
 }
 
 .touch-move-button {
-  width: 104px;
-  height: 104px;
+  width: 80px;
+  height: 80px;
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
-  border: 2px solid rgb(0 217 255 / 70%);
+  border: 2px solid rgb(0 217 255 / 10%);
   border-radius: 12px;
-  background: rgb(5 12 25 / 72%);
+  background: rgb(5 12 25 / 10%);
   color: #00d9ff;
   font-size: 22px;
   font-weight: 700;
-  box-shadow: 0 0 18px rgb(0 217 255 / 24%);
+  box-shadow: 0 0 18px rgb(0 217 255 / 10%);
 }
 
 .touch-action-button {
@@ -611,13 +620,13 @@ function enfocarCanvasDelJuego() {
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
-  border: 2px solid rgb(255 0 217 / 68%);
+  border: 2px solid rgb(255 0 217 / 10%);
   border-radius: 12px;
-  background: rgb(7 10 24 / 82%);
+  background: rgb(7 10 24 / 60%);
   color: #fff;
   font-family: 'Press Start 2P', cursive;
   font-size: 16px;
-  box-shadow: 0 0 16px rgb(255 0 217 / 20%);
+  box-shadow: 0 0 16px rgb(255 0 217 / 50%);
 }
 
 .touch-action-pad {
@@ -703,6 +712,21 @@ function enfocarCanvasDelJuego() {
   }
 }
 
+@media (max-height: 500px) and (orientation: landscape) {
+  .touch-action-button--attack:active {
+    transform: translateY(-44px) scale(0.94);
+  }
+
+  .touch-action-button--interact:active,
+  .touch-action-button--dropKey:active {
+    transform: translateX(16px) scale(0.94);
+  }
+
+  .touch-action-button--jump:active {
+    transform: translateY(10px) scale(0.94);
+  }
+}
+
 @media (max-width: 480px) {
   .touch-dash-hint {
     display: none;
@@ -716,8 +740,8 @@ function enfocarCanvasDelJuego() {
   }
 
   .touch-action-button {
-    width: 54px;
-    height: 54px;
+    width: 50px;
+    height: 50px;
   }
 
   .touch-action-pad {
@@ -727,13 +751,13 @@ function enfocarCanvasDelJuego() {
   }
 
   .touch-action-button--attack {
-    width: 70px;
-    height: 70px;
+    width: 50px;
+    height: 50px;
   }
 
   .touch-action-button--jump {
-    width: 84px;
-    height: 84px;
+    width: 70px;
+    height: 70px;
     transform: translateY(10px);
   }
 }

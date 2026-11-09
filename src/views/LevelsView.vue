@@ -318,18 +318,18 @@ onMounted(async () => {
   <!--MODAL PARA MOSTRAR INFORMACIÓN DE LOS NIVELES-->
   <div
     v-if="mostrarModalNivel"
-    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/70 p-4"
+    class="level-modal-overlay fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/70 p-4"
   >
     <div
-      class="h-[min(500px,90vh)] w-[min(800px,90vw)] overflow-y-auto rounded-2xl border-4 border-[#585B7A] bg-black/70 p-4 sm:p-8"
+      class="level-modal-panel h-[min(500px,90vh)] w-[min(800px,90vw)] overflow-y-auto rounded-2xl border-4 border-[#585B7A] bg-black/70 p-4 sm:p-8"
     >
       <!-- Título -->
-      <h1 class="text-center font-pixel text-2xl text-[#00AAFF] sm:text-3xl">
+      <h1 class="level-modal-title text-center font-pixel text-2xl text-[#00AAFF] sm:text-3xl">
         NIVEL {{ nivelSeleccionado }}
       </h1>
 
       <!-- Stars -->
-      <div class="text-center my-3">
+      <div class="level-modal-record text-center my-3">
         <div class="inline-flex items-center gap-1">
           <PixelStar
             v-for="i in 3"
@@ -344,10 +344,10 @@ onMounted(async () => {
       </div>
 
       <!-- Contenido -->
-      <div class="mt-6 flex flex-col gap-4 sm:mt-8 sm:flex-row sm:gap-8">
+      <div class="level-modal-content mt-6 flex flex-col gap-4 sm:mt-8 sm:flex-row sm:gap-8">
         <!-- Imagen -->
         <div
-          class="h-[180px] w-full shrink-0 overflow-hidden rounded-lg border-2 border-[#585B7A] sm:h-[250px] sm:w-[300px]"
+          class="level-modal-image h-[180px] w-full shrink-0 overflow-hidden rounded-lg border-2 border-[#585B7A] sm:h-[250px] sm:w-[300px]"
         >
           <img
             :src="`/img/referencia-mapas/MAPA_${nivelSeleccionado}.png`"
@@ -356,7 +356,7 @@ onMounted(async () => {
         </div>
 
         <!-- Descripción -->
-        <div class="flex-1">
+        <div class="level-modal-description flex-1">
           <h2 class="font-pixel text-white text-xl">DESCRIPCIÓN</h2>
 
           <p class="text-white mt-6 leading-7 font-pixel text-sm">
@@ -365,7 +365,7 @@ onMounted(async () => {
 
           <div
             v-if="progressionStore.isLevelCompleted(nivelSeleccionado)"
-            class="mt-4 p-3 bg-green-900/30 border border-green-500 rounded-lg"
+            class="level-modal-completion mt-4 p-3 bg-green-900/30 border border-green-500 rounded-lg"
           >
             <p class="font-pixel text-green-300 text-sm">✓ Nivel completado</p>
             <p class="font-pixel text-green-400 text-xs mt-1">
@@ -379,18 +379,18 @@ onMounted(async () => {
       </div>
 
       <!-- Botones -->
-      <div class="mt-6 flex flex-col justify-center gap-4 sm:mt-10 sm:flex-row sm:gap-10">
+      <div class="level-modal-actions mt-6 flex flex-col justify-center gap-4 sm:mt-10 sm:flex-row sm:gap-10">
         <button
           @click="irLoadingScene"
           :disabled="!isLevelUnlocked(nivelSeleccionado) || isLoading"
-          class="h-14 w-full rounded-xl border-2 border-cyan-400 bg-[#00AAFF] font-pixel transition-all duration-300 hover:-translate-y-2 hover:border-cyan-400 hover:shadow-[0_0_20px_#00AAFF] sm:w-[220px] disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-500"
+          class="level-modal-action-button h-14 w-full rounded-xl border-2 border-cyan-400 bg-[#00AAFF] font-pixel transition-all duration-300 hover:-translate-y-2 hover:border-cyan-400 hover:shadow-[0_0_20px_#00AAFF] sm:w-[220px] disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-600 disabled:border-gray-500"
         >
           {{ isLevelUnlocked(nivelSeleccionado) ? 'JUGAR' : 'NIVEL BLOQUEADO' }}
         </button>
 
         <button
           @click="mostrarModalNivel = false"
-          class="h-14 w-full rounded-xl border-2 border-gray-500 bg-[#2B2E46] font-pixel text-white transition-all duration-300 hover:-translate-y-2 hover:border-cyan-400 hover:shadow-[0_0_20px_#00AAFF] sm:w-[220px]"
+          class="level-modal-action-button h-14 w-full rounded-xl border-2 border-gray-500 bg-[#2B2E46] font-pixel text-white transition-all duration-300 hover:-translate-y-2 hover:border-cyan-400 hover:shadow-[0_0_20px_#00AAFF] sm:w-[220px]"
         >
           CERRAR
         </button>

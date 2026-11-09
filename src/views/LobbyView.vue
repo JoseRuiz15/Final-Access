@@ -147,10 +147,10 @@ onUnmounted(() => {
 
       <!-- Contenido Izquierdo -->
       <main class="lobby-main flex justify-between px-10 pt-20 flex-1">
-        <section class="shrink-0">
+        <section class="lobby-feature-panels shrink-0">
           <!-- Misiones Diarias-->
           <div
-            class="self-start pause-panel relative overflow-hidden border border-[#00D9FF]/70 bg-[#07101f] px-2 py-2 text-white shadow-[0_0_60px_#00D9FF33] flex flex-col gap-4 mt-5"
+            class="lobby-missions-card self-start pause-panel relative overflow-hidden border border-[#00D9FF]/70 bg-[#07101f] px-2 py-2 text-white shadow-[0_0_60px_#00D9FF33] flex flex-col gap-4 mt-5"
           >
             <div class="border border-[#00D9FF]/15">
               <div class="border border-[#00D9FF]/15 py-2 px-5">
@@ -193,7 +193,7 @@ onUnmounted(() => {
 
           <div
             id="default-carousel"
-            class="relative w-80 h-52 border border-[#00D9FF]/70 bg-[#07101f] px-2 py-2 shadow-[0_0_60px_#00D9FF33] mt-20"
+            class="lobby-store-carousel relative w-80 h-52 border border-[#00D9FF]/70 bg-[#07101f] px-2 py-2 shadow-[0_0_60px_#00D9FF33] mt-20"
             data-carousel="slide"
           >
             <div class="relative w-full h-full overflow-hidden border border-[#00D9FF]/15">
@@ -250,7 +250,7 @@ onUnmounted(() => {
 
         <!-- Personaje equipado en el centro del lobby -->
         <div
-          class="pointer-events-none hidden min-w-0 flex-1 -translate-y-10 justify-center self-center xl:flex"
+          class="lobby-character-stage pointer-events-none hidden min-w-0 flex-1 -translate-y-10 justify-center self-center xl:flex"
         >
           <CharacterShowcase :character-id="showcaseCharacterId" />
         </div>
@@ -261,13 +261,19 @@ onUnmounted(() => {
           <button
             v-if="!lobbyStore.isInLobby"
             type="button"
-            class="mt-134 cursor-pointer select-none w-80 bg-[#00D9FF] border border-[#00D9FF]/70 px-6 py-4 font-pixel text-[10px] text-[#050711] shadow-[0_0_60px_#00D9FF33] transition hover:bg-white hover:shadow-[0_0_24px_#00D9FF66]"
+            class="lobby-play-button mt-134 cursor-pointer select-none w-80 bg-[#00D9FF] border border-[#00D9FF]/70 px-6 py-4 font-pixel text-[10px] text-[#050711] shadow-[0_0_60px_#00D9FF33] transition hover:bg-white hover:shadow-[0_0_24px_#00D9FF66]"
             @click="irGameMode"
           >
             JUGAR
           </button>
         </section>
       </main>
+
+      <div class="lobby-rotate-notice" role="status" aria-live="polite">
+        <span class="lobby-rotate-icon" aria-hidden="true">↻</span>
+        <p class="lobby-rotate-title">GIRA TU TELÉFONO</p>
+        <p class="lobby-rotate-copy">El lobby está preparado para jugar en horizontal.</p>
+      </div>
     </div>
   </section>
 </template>

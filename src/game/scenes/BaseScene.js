@@ -74,7 +74,17 @@ export default class BaseScene extends Phaser.Scene {
       data.vidas ?? this.config.vidasIniciales ?? this.gameRepository.vidas ?? 5
     this.gameRepository.vidas = vidasIniciales
 
-    this.cameras.main.setZoom(this.config.zoom || 0.8)
+    const baseZoom = this.config.zoom || 0.8
+    const baseAspectRatio = 1280 / 720
+    const viewportAspectRatio =
+      typeof window !== 'undefined' && window.innerHeight > 0
+        ? window.innerWidth / window.innerHeight
+        : baseAspectRatio
+    const mobileAspectCorrection =
+      this.mobileLandscapeLayout && viewportAspectRatio < baseAspectRatio
+        ? viewportAspectRatio / baseAspectRatio
+        : 1
+    this.cameras.main.setZoom(baseZoom * mobileAspectCorrection)
 
     // === INICIALIZAR SERVICIOS LAZY (reciben scene aquí) ===
     this.physicsService?.init(this)
@@ -102,7 +112,7 @@ export default class BaseScene extends Phaser.Scene {
       this.parallax = this.parallaxBuilder.create(
         this,
         this.config.parallax,
-        this.config.zoom || 0.8,
+        this.cameras.main.zoom,
       )
 
       this._resizeGameViewport = () => {

@@ -22,7 +22,11 @@ const configNivel = computed(() => {
   return LEVEL2_CONFIG
 })
 
-const textoCompleto = computed(() => configNivel.value.hud.pista ?? '')
+const textoCompleto = computed(() => {
+  const { pista, mision } = configNivel.value.hud
+  if (pista) return pista
+  return Array.isArray(mision) ? mision.filter(Boolean).join(' ') : ''
+})
 
 const textoMostrado = ref('')
 
