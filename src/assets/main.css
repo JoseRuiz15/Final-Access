@@ -3607,10 +3607,29 @@ button:disabled,
 
   .mission-dialogue > div,
   .tutorial-dialogue > div {
-    top: 10% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    top: 0% !important;
     right: 8% !important;
-    bottom: 12% !important;
+    bottom: 20% !important;
     left: 8% !important;
+    overflow: hidden !important;
+  }
+
+  .mission-dialogue p,
+  .tutorial-dialogue p {
+    display: flex !important;
+    flex: 1 1 auto;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    transform: none !important;
+    --tw-translate-x: 0px !important;
+    --tw-translate-y: 0px !important;
   }
 
   .mission-dialogue p {
