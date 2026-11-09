@@ -24,6 +24,7 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
     this.isEliminated = false
     this.isSpectating = false
     this.spectatorTargetId = null
+    this.defeatedEnemyIds = new Set()
   }
 
   preload() {
@@ -49,16 +50,13 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
         queuedTextureKeys.add(key)
       })
 
-      const walkSheet = character.animFrames?.walk?.sheet
-      const walkAsset = character.spritesheets?.find(([key]) => key === walkSheet)
-      if (
-        walkAsset &&
-        !queuedTextureKeys.has(walkAsset[0]) &&
-        !this.textures.exists(walkAsset[0])
-      ) {
-        this.load.spritesheet(walkAsset[0], walkAsset[1], walkAsset[2])
-        queuedTextureKeys.add(walkAsset[0])
-      }
+      // Carga todas las spritesheets del personaje remoto (caminar, ataque, daño, muerte, etc.)
+      character.spritesheets?.forEach(([key, path, size]) => {
+        if (!queuedTextureKeys.has(key) && !this.textures.exists(key)) {
+          this.load.spritesheet(key, path, size)
+          queuedTextureKeys.add(key)
+        }
+      })
     })
   }
 
@@ -73,10 +71,12 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
     this.events.on('key-picked-up', this._handleKeyPickedUp, this)
     this.events.off('key-dropped', this._handleKeyDropped, this)
     this.events.on('key-dropped', this._handleKeyDropped, this)
+    this.events.off('box-key-spawned', this._handleBoxKeySpawned, this)
+    this.events.on('box-key-spawned', this._handleBoxKeySpawned, this)
     this.events.off('player-life-lost', this._handlePlayerLifeLost, this)
     this.events.on('player-life-lost', this._handlePlayerLifeLost, this)
-    this.events.off('door-opened', this._handleDoorOpened, this)
-    this.events.on('door-opened', this._handleDoorOpened, this)
+    this.events.off('door-open-request', this._handleDoorOpenRequest, this)
+    this.events.on('door-open-request', this._handleDoorOpenRequest, this)
     super.create(data)
     this.remotePlayers.clear()
     this.remoteProjectiles.clear()
@@ -87,11 +87,13 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
     this.isSpectating = false
     this.spectatorTargetId = null
     this.isMultiplayerLevel = true
-    this.isMultiplayerAuthority = false
+    this.defeatedEnemyIds.clear()
     this.enemies?.getChildren().forEach((enemy) => {
       if (!enemy.body) return
-      enemy.body.setAllowGravity(enemy.config?.tipo !== 'dron')
-      enemy.body.setVelocity(0, 0)
+      enemy.body.setAllowGravity(false)
+      enemy.body.setImmovable(true)
+      enemy.body.moves = false
+      enemy.setVelocity(0, 0)
     })
     this._syncRemoteRoster()
     this._syncLevelState()
@@ -109,6 +111,7 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
     this.player.body.reset(spawnX, SPAWN_Y)
     this.player.spawnX = spawnX
     this.player.spawnY = SPAWN_Y
+    this.player.multiplayerPlayerId = this.multiplayerStore?.socket?.id
   }
 
   _createEnemies() {
@@ -133,18 +136,23 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
 
     const now = this.time.now
     if (this.player?.active && now - this.lastPlayerStateAt >= 50) {
-      this.multiplayerStore?.sendPlayerState({
+      this.multiplayerStore?.sendPlayerState?.({
         x: this.player.x,
         y: this.player.y,
         flipX: this.player.flipX,
         moving: Math.abs(this.player.body?.velocity?.x ?? 0) > 1,
         dead: this.player.muerto,
+        attacking: !!this.player.ataque,
+        damaged: !!this.player.recibiendoDano,
+        attackAnimation: this.player.ataque
+          ? this.player.anims?.currentAnim?.key
+          : undefined,
       })
       this.lastPlayerStateAt = now
     }
 
     this._syncLevelState()
-    this._syncEnemyPositions(delta)
+    this._syncEnemyPositions()
     this._syncEnemyProjectiles()
     this._syncDefeatedEnemies()
     const interpolation = Math.min(1, Math.max(0.12, delta / 80))
@@ -154,32 +162,62 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
       if (state) {
         remote.targetX = state.x
         remote.targetY = state.y
-        remote.sprite.muerto = state.dead === true
         remote.sprite.setFlipX(state.flipX)
 
-        const dañado = now < remote.dañadoHasta
-
-        if (dañado) {
-          // Durante el daño no se pisa la animación con caminar/quieto.
-          if (remote.isWalking) {
+        if (state.dead) {
+          if (!remote.isDead) {
             remote.sprite.stop()
             remote.isWalking = false
+            remote.sprite.play(remote.deadAnimation, true)
+            remote.isDead = true
           }
+          remote.sprite.muerto = true
         } else {
-          // El daño terminó: restaurar textura base si quedó en el frame de daño.
-          const currentAnim = remote.sprite.anims?.currentAnim
-          if (currentAnim && currentAnim.key === 'playerDamage') {
-            remote.sprite.stop()
-            remote.sprite.setTexture(remote.texture)
-          }
+          remote.sprite.muerto = false
+          remote.isDead = false
 
-          if (state.moving && !remote.isWalking) {
-            remote.sprite.play(remote.walkAnimation, true)
-            remote.isWalking = true
-          } else if (!state.moving && remote.isWalking) {
-            remote.sprite.stop()
-            remote.sprite.setTexture(remote.texture)
-            remote.isWalking = false
+          if (state.damaged) {
+            if (!remote.isDamaged) {
+              remote.sprite.stop()
+              remote.isWalking = false
+              remote.isAttacking = false
+              remote.sprite.play(remote.damageAnimation, true)
+              remote.isDamaged = true
+            }
+          } else if (state.attacking) {
+            const attackVariant = remote.attackAnimations?.[state.attackAnimation]
+              ? state.attackAnimation
+              : 'atacar'
+            const attackAnimation = remote.attackAnimations?.[attackVariant]
+            const currentAnim = remote.sprite.anims?.currentAnim
+            if (attackAnimation && (!remote.isAttacking || currentAnim?.key !== attackAnimation)) {
+              remote.sprite.stop()
+              remote.isWalking = false
+              remote.isDamaged = false
+              remote.sprite.play(attackAnimation, true)
+            }
+            remote.isAttacking = true
+          } else {
+            const currentAnim = remote.sprite.anims?.currentAnim
+            if (
+              remote.isDamaged ||
+              remote.isAttacking ||
+              currentAnim?.key === remote.deadAnimation
+            ) {
+              remote.sprite.stop()
+              remote.sprite.setTexture(remote.texture)
+            }
+            remote.isDamaged = false
+            remote.isAttacking = false
+
+            if (state.moving && !remote.isWalking) {
+              remote.sprite.play(remote.walkAnimation, true)
+              remote.isWalking = true
+            } else if (!state.moving && remote.isWalking) {
+              remote.sprite.stop()
+              remote.sprite.setTexture(remote.texture)
+              remote.isWalking = false
+            }
           }
         }
       }
@@ -205,25 +243,43 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
 
   _handleLocalEnemyDefeated(enemy) {
     if (!enemy?.multiplayerId) return
-    this.multiplayerStore?.reportEnemyDefeated(enemy.multiplayerId)
+    this.defeatedEnemyIds.add(enemy.multiplayerId)
+    this.multiplayerStore?.reportEnemyDefeated?.(enemy.multiplayerId)
   }
 
-  _handleEnemyDamaged({ enemy, damage, maxHealth }) {
+  _handleEnemyDamaged({ enemy, health, maxHealth }) {
     if (!enemy?.multiplayerId) return
-    this.multiplayerStore?.reportEnemyDamage(enemy.multiplayerId, damage, maxHealth)
+    this.multiplayerStore?.reportEnemyDamage?.(enemy.multiplayerId, health, maxHealth)
   }
 
   _handleBoxBroken(box) {
     if (!box?.multiplayerId) return
-    this.multiplayerStore?.reportBoxBroken(box.multiplayerId)
+    this.multiplayerStore?.reportBoxBroken?.(box.multiplayerId)
   }
 
   _handleKeyPickedUp(keyData) {
-    this.multiplayerStore?.reportKeyPickedUp(keyData)
+    this.multiplayerStore?.reportKeyPickedUp?.(keyData)
   }
 
   _handleKeyDropped({ keyData, x, y }) {
-    this.multiplayerStore?.reportKeyDropped(keyData, x, y)
+    this.multiplayerStore?.reportKeyDropped?.(keyData, x, y)
+  }
+
+  _handleBoxKeySpawned(key) {
+    const keyId = key?.multiplayerId
+    if (!keyId) return
+
+    const state = this.multiplayerStore?.levelState || {}
+    if ((state.collectedKeys || []).some((entry) => entry.multiplayerId === keyId)) {
+      key.destroy()
+      return
+    }
+
+    const droppedKey = (state.droppedKeys || []).find((entry) => entry.multiplayerId === keyId)
+    if (droppedKey) {
+      key.setPosition(droppedKey.x, droppedKey.y)
+      key.body?.reset(droppedKey.x, droppedKey.y)
+    }
   }
 
   _handlePlayerLifeLost(vidas) {
@@ -232,11 +288,11 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
       this.gameRepository.vidas = Math.max(0, vidasRestantes)
       if (vidasRestantes <= 0) this.isEliminated = true
     }
-    this.multiplayerStore?.reportLifeLost()
+    this.multiplayerStore?.reportLifeLost?.(vidasRestantes)
   }
 
-  _handleDoorOpened() {
-    this.multiplayerStore?.reportDoorOpened()
+  _handleDoorOpenRequest() {
+    this.multiplayerStore?.requestDoorOpen?.()
   }
 
   onPlayerDeath() {
@@ -280,7 +336,7 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
 
     const player = this.player
     if (player) {
-      this.multiplayerStore?.sendPlayerState({
+      this.multiplayerStore?.sendPlayerState?.({
         x: player.x,
         y: player.y,
         flipX: player.flipX,
@@ -322,18 +378,11 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
 
   _applyIncomingPlayerHits() {
     const hits = this.multiplayerStore?.incomingPlayerHits || []
-    const now = this.time.now
     for (let index = this.lastAppliedPlayerHitCount; index < hits.length; index++) {
       const hit = hits[index]
       if (!hit) continue
       if (hit?.playerId === this.multiplayerStore?.socket?.id && this.player?.active) {
         this.player.recibirDano(hit.damage)
-      } else {
-        const remote = this.remotePlayers.get(hit.playerId)
-        if (remote?.sprite && remote.sprite.active && !remote.sprite.muerto) {
-          remote.dañadoHasta = now + 1500
-          remote.sprite.play('playerDamage', true)
-        }
       }
     }
     this.lastAppliedPlayerHitCount = hits.length
@@ -402,22 +451,104 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
     }
   }
 
-  _syncEnemyPositions(delta) {
-    const enemies = this.multiplayerStore?.enemySnapshot?.enemies || {}
-    const interpolation = Math.min(1, Math.max(0.12, delta / 100))
+  _getRenderedEnemySnapshot() {
+    const history = (this.multiplayerStore?.enemySnapshotHistory || []).filter((snapshot) =>
+      Number.isFinite(Number(snapshot?.sentAt)),
+    )
+    const latest = this.multiplayerStore?.enemySnapshot
+    if (!history.length) return latest
+
+    // Todas las pantallas representan el mismo instante del servidor, con
+    // 100 ms de margen para interpolar entre los mismos dos snapshots.
+    const renderAt = Date.now() + (Number(this.multiplayerStore?.serverClockOffsetMs) || 0) - 100
+    let before = history[0]
+    let after = history[0]
+    for (const snapshot of history) {
+      if (Number(snapshot.sentAt) <= renderAt) {
+        before = snapshot
+      } else {
+        after = snapshot
+        break
+      }
+    }
+
+    if (before === after) {
+      const extrapolation = Math.min(50, Math.max(0, renderAt - Number(before.sentAt))) / 1000
+      if (!extrapolation) return before
+      return {
+        ...before,
+        enemies: Object.fromEntries(
+          Object.entries(before.enemies || {}).map(([id, state]) => [
+            id,
+            {
+              ...state,
+              x: Number(state.x) + (Number(state.vx) || 0) * extrapolation,
+              y: Number(state.y) + (Number(state.vy) || 0) * extrapolation,
+            },
+          ]),
+        ),
+        projectiles: (before.projectiles || []).map((projectile) => ({
+          ...projectile,
+          x: Number(projectile.x) + (Number(projectile.vx) || 0) * extrapolation,
+          y: Number(projectile.y) + (Number(projectile.vy) || 0) * extrapolation,
+        })),
+      }
+    }
+
+    const span = Math.max(1, Number(after.sentAt) - Number(before.sentAt))
+    const alpha = Math.min(1, Math.max(0, (renderAt - Number(before.sentAt)) / span))
+    const mixStates = (previous, current) => {
+      if (!previous) return current
+      if (!current) return previous
+      const selected = alpha < 0.5 ? previous : current
+      return {
+        ...selected,
+        x: Number(previous.x) + (Number(current.x) - Number(previous.x)) * alpha,
+        y: Number(previous.y) + (Number(current.y) - Number(previous.y)) * alpha,
+      }
+    }
+    const enemyIds = new Set([
+      ...Object.keys(before.enemies || {}),
+      ...Object.keys(after.enemies || {}),
+    ])
+    const enemies = {}
+    enemyIds.forEach((id) => {
+      enemies[id] = mixStates(before.enemies?.[id], after.enemies?.[id])
+    })
+
+    const previousProjectiles = new Map((before.projectiles || []).map((p) => [p.id, p]))
+    const currentProjectiles = new Map((after.projectiles || []).map((p) => [p.id, p]))
+    const projectileIds = new Set([...previousProjectiles.keys(), ...currentProjectiles.keys()])
+    const projectiles = []
+    projectileIds.forEach((id) => {
+      const previous = previousProjectiles.get(id)
+      const current = currentProjectiles.get(id)
+      const state = mixStates(previous, current)
+      if (state) projectiles.push(state)
+    })
+
+    return {
+      ...after,
+      enemies,
+      projectiles,
+      defeatedEnemyIds: alpha < 0.5 ? before.defeatedEnemyIds : after.defeatedEnemyIds,
+    }
+  }
+
+  _syncEnemyPositions() {
+    const enemies = this._getRenderedEnemySnapshot()?.enemies || {}
     this.enemies?.getChildren().forEach((enemy) => {
       const state = enemies[enemy.multiplayerId]
       if (!state || !enemy.active) return
 
-      const x = enemy.x + (state.x - enemy.x) * interpolation
-      const y = enemy.y + (state.y - enemy.y) * interpolation
-      enemy.setPosition(x, y)
+      enemy.setPosition(state.x, state.y)
+      enemy.setVelocity(0, 0)
       enemy.body?.updateFromGameObject()
       enemy.setFlipX(state.flipX)
       enemy.health?.applySynchronizedHealth(state.health)
 
       // Un enemigo muerto ya está reproduciendo su animación de muerte; no
-      // hay que pisarla con el frame de mira.
+      // hay que pisarla con el frame de mira ni con la de daño.
       if (enemy.muerto) return
 
       const isDrone = enemy.config?.tipo === 'dron'
@@ -429,34 +560,39 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
         enemy.clearNetworkAim?.()
       }
 
-      if (enemy.recibiendoDano) return
-
-      const isAttacking = state.attacking === true
-      if (isAttacking && !enemy._networkAttacking) {
-        enemy.playAttackAnimation?.()
-      } else if (!isAttacking && enemy._networkAttacking) {
-        enemy.attackEffect?.setVisible(false)
-      }
-      enemy._networkAttacking = isAttacking
-
-      if (isAttacking) return
-
-      // El dron solo camina cuando no tiene objetivo; con objetivo se queda
-      // quieto apuntando, como en los niveles normales.
-      if (isDrone && state.targetId) return
-
-      if (state.moving && enemy.animWalk) {
-        if (enemy.anims.currentAnim?.key !== enemy.animWalk || !enemy.anims.isPlaying) {
-          enemy.play(enemy.animWalk, true)
+      // Si el enemigo está recibiendo daño, no se pisan sus animaciones con
+      // caminar/ataque; EnemyAnimationComponent resetea recibiendoDano al
+      // terminar la animación, igual que en los niveles normales.
+      if (!enemy.recibiendoDano) {
+        const isAttacking = state.attacking === true
+        if (isAttacking && !enemy._networkAttacking) {
+          enemy.playAttackAnimation?.()
+        } else if (!isAttacking && enemy._networkAttacking) {
+          enemy.attackEffect?.setVisible(false)
         }
-      } else if (!state.moving) {
-        enemy.stopWalkAnimation?.()
+        enemy._networkAttacking = isAttacking
+
+        if (isAttacking) {
+          // Durante el ataque no se aplica movimiento de caminar.
+        } else {
+          // El dron solo camina cuando no tiene objetivo; con objetivo se queda
+          // quieto apuntando, como en los niveles normales.
+          if (isDrone && state.targetId) {
+            // se queda quieto apuntando
+          } else if (state.moving && enemy.animWalk) {
+            if (enemy.anims.currentAnim?.key !== enemy.animWalk || !enemy.anims.isPlaying) {
+              enemy.play(enemy.animWalk, true)
+            }
+          } else if (!state.moving) {
+            enemy.stopWalkAnimation?.()
+          }
+        }
       }
     })
   }
 
   _syncEnemyProjectiles() {
-    const projectiles = this.multiplayerStore?.enemySnapshot?.projectiles || []
+    const projectiles = this._getRenderedEnemySnapshot()?.projectiles || []
     const activeIds = new Set(projectiles.map((projectile) => projectile.id))
 
     this.remoteProjectiles.forEach((sprite, id) => {
@@ -488,8 +624,12 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
   }
 
   _syncDefeatedEnemies() {
-    const defeatedIds = this.multiplayerStore?.defeatedEnemyIds || []
-    if (!defeatedIds.length || !this.enemies) return
+    const defeatedIds = new Set([
+      ...this.defeatedEnemyIds,
+      ...(this.multiplayerStore?.defeatedEnemyIds || []),
+      ...(this.multiplayerStore?.enemySnapshot?.defeatedEnemyIds || []),
+    ])
+    if (!defeatedIds.size || !this.enemies) return
 
     const enemies = this.enemies.getChildren()
     defeatedIds.forEach((enemyId) => {
@@ -528,6 +668,7 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
       const x = initialState?.x ?? spawnX
       const y = initialState?.y ?? SPAWN_Y
       const sprite = this.add.sprite(x, y, texture).setDisplaySize(48, 48).setDepth(2)
+      sprite.multiplayerPlayerId = player.id
       const nameTag = this.add
         .text(x, y - 34, player.username || 'Jugador', {
           fontFamily: 'Press Start 2P',
@@ -540,14 +681,22 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
         .setDepth(20)
 
       this._ensureRemoteWalkAnimation(character, walkAnimation)
+      const attackAnimations = this._ensureRemoteAttackAnimations(character)
+      this._ensureRemoteDamageAnimation(character)
+      this._ensureRemoteDeadAnimation(character)
 
       this.remotePlayers.set(player.id, {
         sprite,
         nameTag,
         texture,
         walkAnimation,
+        attackAnimations,
+        damageAnimation: `remoteDamage-${character.id}`,
+        deadAnimation: `remoteDead-${character.id}`,
         isWalking: false,
-        dañadoHasta: 0,
+        isDamaged: false,
+        isAttacking: false,
+        isDead: false,
         targetX: x,
         targetY: y,
       })
@@ -569,6 +718,78 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
       }),
       frameRate: walk?.frameRate ?? 10,
       repeat: -1,
+    })
+  }
+
+  _ensureRemoteAttackAnimations(character) {
+    const attack = character.animFrames?.attack
+    const attackIdle = character.animFrames?.attackIdle || attack
+    const attackAir = character.animFrames?.jumpAttack || attack
+    const defaultAttack = character.id === 'cosa1'
+      ? { sheet: 'playerAttack', start: 0, end: 12, frameRate: 18, repeat: 0 }
+      : null
+    const definitions = {
+      atacar: attack || defaultAttack,
+      atacarQuieto: attackIdle || defaultAttack,
+      atacarAereo: attackAir || defaultAttack,
+    }
+    const animations = {}
+
+    Object.entries(definitions).forEach(([variant, frames]) => {
+      if (!frames?.sheet || !this.textures.exists(frames.sheet)) return
+      const key = `remoteAttack-${character.id}-${variant}`
+      if (!this.anims.exists(key)) {
+        this.anims.create({
+          key,
+          frames: this.anims.generateFrameNumbers(frames.sheet, {
+            start: frames.start ?? 0,
+            end: frames.end ?? 7,
+          }),
+          frameRate: frames.frameRate ?? 18,
+          repeat: 0,
+        })
+      }
+      animations[variant] = key
+    })
+
+    return animations
+  }
+
+  _ensureRemoteDamageAnimation(character) {
+    const key = `remoteDamage-${character.id}`
+    if (this.anims.exists(key)) return
+
+    const animFrames = character.animFrames?.damage
+    const sheet = animFrames?.sheet ?? (character.id === 'cosa1' ? 'playerDamage' : null)
+    if (!sheet || !this.textures.exists(sheet)) return
+
+    this.anims.create({
+      key,
+      frames: this.anims.generateFrameNumbers(sheet, {
+        start: animFrames?.start ?? 0,
+        end: animFrames?.end ?? 5,
+      }),
+      frameRate: animFrames?.frameRate ?? 12,
+      repeat: 0,
+    })
+  }
+
+  _ensureRemoteDeadAnimation(character) {
+    const key = `remoteDead-${character.id}`
+    if (this.anims.exists(key)) return
+
+    const animFrames = character.animFrames?.dead
+    const sheet = animFrames?.sheet ?? (character.id === 'cosa1' ? 'playerDead' : null)
+    if (!sheet || !this.textures.exists(sheet)) return
+
+    this.anims.create({
+      key,
+      frames: this.anims.generateFrameNumbers(sheet, {
+        start: animFrames?.start ?? 0,
+        end: animFrames?.end ?? 5,
+      }),
+      frameRate: animFrames?.frameRate ?? 12,
+      repeat: 0,
     })
   }
 }

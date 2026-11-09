@@ -3,21 +3,45 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useMultiplayerStore } from '@/stores/multiplayer'
+import { useCharacterStore } from '@/stores/characters'
+import { useGameStore } from '@/stores/game'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const multiplayerStore = useMultiplayerStore()
+const characterStore = useCharacterStore()
+const gameStore = useGameStore()
 
 const roomCodeInput = ref('')
 const roomFilter = ref('public')
 const username = computed(() => authStore.user?.username?.trim() || '')
 const hasRooms = computed(() => multiplayerStore.roomList.length > 0)
+let characterLoadPromise = Promise.resolve()
+
+async function getEquippedCharacterId() {
+  await characterLoadPromise
+  const characterId = characterStore.equippedCharacterId || gameStore.selectedCharacterId
+  const validCharacterId = ['cosa1', 'cosa2', 'cosa3'].includes(characterId)
+    ? characterId
+    : 'cosa1'
+  gameStore.equipCharacter(validCharacterId)
+  return validCharacterId
+}
 
 onMounted(() => {
   multiplayerStore.setUsername(username.value)
   multiplayerStore.connect()
   roomFilter.value = 'public'
   multiplayerStore.fetchRooms('public')
+  characterLoadPromise = characterStore
+    .fetchUnlocked()
+    .then(() => {
+      const characterId = characterStore.equippedCharacterId
+      if (['cosa1', 'cosa2', 'cosa3'].includes(characterId)) {
+        gameStore.equipCharacter(characterId)
+      }
+    })
+    .catch(() => null)
 })
 
 watch(
@@ -32,11 +56,27 @@ function irLobby() {
   router.push('/lobby')
 }
 
-function irCrearPartida() {
-  router.push('/create')
+async function crearSala() {
+  if (!username.value) {
+    alert('Por favor inicia sesión para crear una sala')
+    return
+  }
+
+  if (!multiplayerStore.connected) {
+    multiplayerStore.actionError = 'El servidor no está conectado. Espera la conexión e inténtalo de nuevo.'
+    multiplayerStore.connect()
+    return
+  }
+
+  const isPrivate = roomFilter.value === 'friends'
+  const roomName = `${isPrivate ? 'Sala privada' : 'Sala'} de ${username.value}`
+  const characterId = await getEquippedCharacterId()
+
+  multiplayerStore.limpiarChat()
+  multiplayerStore.createRoom(username.value, isPrivate, roomName, 4, [], characterId)
 }
 
-function joinRoom(roomCode = roomCodeInput.value) {
+async function joinRoom(roomCode = roomCodeInput.value) {
   if (!username.value) {
     alert('Por favor inicia sesión para entrar a una sala')
     return
@@ -48,7 +88,8 @@ function joinRoom(roomCode = roomCodeInput.value) {
   }
 
   multiplayerStore.limpiarChat()
-  multiplayerStore.joinRoom(roomCode, username.value)
+  const characterId = await getEquippedCharacterId()
+  multiplayerStore.joinRoom(roomCode, username.value, characterId)
 }
 
 function refreshRooms() {
@@ -88,7 +129,7 @@ function selectRoomFilter(filter) {
           CREAR O UNIRSE
         </h1>
 
-        <fieldset class="room-create-visibility">
+        <fieldset class="mt-8 room-create-visibility">
           <legend class="mb-2 font-pixel text-[9px] text-[#D1BCFF]">
             VISIBILIDAD DE LA SALA
           </legend>
@@ -107,9 +148,9 @@ function selectRoomFilter(filter) {
                 @change="selectRoomFilter('friends')"
               />
               <span class="min-w-0">
-                <span class="block font-pixel text-[8px]">PRIVADA</span>
+                <span class="block font-pixel text-[10px]">PRIVADA</span>
                 <span class="mt-0.5 block font-mono text-[7px] leading-relaxed text-white/55">
-                  Solo salas privadas compartidas contigo.
+                  No aparece en públicas; comparte el código para entrar.
                 </span>
               </span>
             </label>
@@ -127,7 +168,7 @@ function selectRoomFilter(filter) {
                 @change="selectRoomFilter('public')"
               />
               <span class="min-w-0">
-                <span class="block font-pixel text-[8px]">PÚBLICA</span>
+                <span class="block font-pixel text-[10px]">PÚBLICA</span>
                 <span class="mt-0.5 block font-mono text-[7px] leading-relaxed text-white/55">
                   Aparece en el buscador mientras tenga cupos.
                 </span>
@@ -137,10 +178,11 @@ function selectRoomFilter(filter) {
         </fieldset>
 
         <button
-          class="room-create-button h-[42px] rounded border-2 border-[#53f4ff] font-pixel text-[10px] text-[#53f4ff] transition-all hover:bg-[#53f4ff] hover:text-[#080e20]"
-          @click="irCrearPartida"
+          class="room-create-button h-[42px] rounded border-2 border-[#53f4ff] font-pixel text-[10px] text-[#53f4ff] transition-all hover:bg-[#53f4ff] hover:text-[#080e20] disabled:cursor-not-allowed disabled:opacity-50"
+          :disabled="!multiplayerStore.connected"
+          @click="crearSala"
         >
-          CREAR SALA
+          CREAR SALA {{ roomFilter === 'friends' ? 'PRIVADA' : 'PÚBLICA' }}
         </button>
 
         <p v-if="multiplayerStore.actionError" class="mt-2 text-center text-xs text-rose-200" role="alert">
@@ -149,7 +191,7 @@ function selectRoomFilter(filter) {
 
         <div class="my-3 h-px bg-white/15"></div>
 
-        <label for="room-code" class="mb-2 font-pixel text-[12px] text-[#D1BCFF]">
+        <label for="room-code" class="mt-10 mb-2 font-pixel text-[12px] text-[#D1BCFF]">
           CÓDIGO DE INVITACIÓN
         </label>
         <input
@@ -250,6 +292,7 @@ function selectRoomFilter(filter) {
 <style scoped>
 .multiplayer-screen {
   display: block !important;
+  position: relative;
   width: 100%;
   height: 100vh;
   height: 100dvh;
@@ -259,45 +302,39 @@ function selectRoomFilter(filter) {
 }
 
 .multiplayer-layout {
-  display: grid;
-  grid-template-columns: minmax(220px, 0.65fr) minmax(0, 1fr);
-  align-items: start;
-  gap: clamp(24px, 7vw, 78px);
-  width: min(100%, 900px);
-  height: 100%;
-  margin-inline: auto;
-  padding: 34px clamp(18px, 8vw, 80px) 48px;
+  display: contents;
 }
 
-.private-lobby-panel,
-.server-browser-panel {
-  position: relative !important;
+.multiplayer-screen .private-lobby-panel {
+  position: absolute !important;
   inset: auto !important;
-  width: 100% !important;
-  min-width: 0;
-  height: 100% !important;
-  min-height: 0 !important;
+  top: 100px !important;
+  left: 250px !important;
+  right: auto !important;
+  width: 463px !important;
+  min-width: 463px;
+  height: 720px !important;
+  max-height: calc(100dvh - 100px);
   margin: 0 !important;
-  max-height: 100%;
-}
-
-.private-lobby-panel {
   overflow-y: auto;
   overscroll-behavior: contain;
-  height: fit-content !important;
-  max-height: calc(100dvh - 82px);
-  max-width: 330px;
-  padding: clamp(14px, 1.8vw, 20px) !important;
+  padding: 32px !important;
 }
 
-.server-browser-panel {
+.multiplayer-screen .server-browser-panel {
+  position: absolute !important;
+  inset: auto !important;
+  top: 80px !important;
+  right: 200px !important;
+  left: auto !important;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  grid-column: 2;
-  justify-self: end;
-  height: calc(100dvh - 82px) !important;
-  padding: clamp(12px, 1.8vw, 18px) !important;
+  width: 793px !important;
+  min-width: 793px;
+  height: 720px !important;
+  max-height: calc(100dvh - 100px);
+  padding: 20px !important;
 }
 
 .room-radio {
@@ -362,7 +399,7 @@ function selectRoomFilter(filter) {
   min-width: 0;
   flex: 0 0 auto;
   gap: 10px;
-  padding: clamp(8px, 1vw, 16px);
+  padding: 16px;
 }
 
 .server-browser-list > article > div {
@@ -371,53 +408,68 @@ function selectRoomFilter(filter) {
 }
 
 .multiplayer-back {
-  top: clamp(12px, 2vh, 24px) !important;
-  left: clamp(14px, 2vw, 30px) !important;
-  font-size: clamp(8px, 0.9vw, 13px) !important;
+  top: 24px !important;
+  left: 24px !important;
+  font-size: 13px !important;
 }
 
 .private-lobby-panel h1,
 .server-browser-panel h2 {
-  font-size: clamp(11px, 1.25vw, 18px);
-  line-height: 1.6;
+  font-size: 16px;
+  line-height: normal;
   overflow-wrap: anywhere;
 }
 
-.private-lobby-panel legend,
-.private-lobby-panel label,
-.private-lobby-panel button,
-.server-browser-panel button {
-  font-size: clamp(9px, 0.9vw, 13px);
-  line-height: 1.6;
+.server-browser-panel h2 {
+  font-size: 20px;
 }
 
-.private-lobby-panel label > span + span,
-.private-lobby-panel > p,
-.server-browser-panel p {
-  font-size: clamp(10px, 0.9vw, 13px);
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-}
+@media (max-width: 1706px) and (min-width: 701px) {
+  .multiplayer-screen {
+    overflow: hidden;
+  }
 
-@media (max-width: 900px) and (min-width: 701px) {
   .multiplayer-layout {
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-    gap: 12px;
-    padding: 64px 14px 14px;
+    display: grid;
+    grid-template-columns: minmax(0, 463px) minmax(0, 793px);
+    align-items: start;
+    justify-content: center;
+    gap: clamp(12px, 2vw, 36px);
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 64px 18px 18px;
   }
 
-  .private-lobby-panel,
-  .server-browser-panel {
-    padding: clamp(12px, 2vw, 20px) !important;
+  .multiplayer-screen .private-lobby-panel,
+  .multiplayer-screen .server-browser-panel {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    min-width: 0;
+    max-width: none;
+    margin: 0 !important;
+    padding: clamp(12px, 2vw, 22px) !important;
   }
 
-  .private-lobby-panel {
-    max-width: min(100%, 330px);
+  .multiplayer-screen .private-lobby-panel {
+    height: min(720px, calc(100dvh - 82px)) !important;
+    max-height: calc(100dvh - 82px);
+    overflow-y: auto;
+  }
+
+  .multiplayer-screen .server-browser-panel {
+    height: min(720px, calc(100dvh - 82px)) !important;
+    max-height: calc(100dvh - 82px);
   }
 
   .private-lobby-panel h1,
   .server-browser-panel h2 {
-    font-size: clamp(10px, 1.5vw, 14px);
+    font-size: clamp(12px, 1.5vw, 18px);
+  }
+
+  .server-browser-panel h2 {
+    font-size: clamp(14px, 1.7vw, 20px);
   }
 }
 
@@ -448,8 +500,10 @@ function selectRoomFilter(filter) {
       max(env(safe-area-inset-bottom), 12px);
   }
 
-  .private-lobby-panel,
-  .server-browser-panel {
+  .multiplayer-screen .private-lobby-panel,
+  .multiplayer-screen .server-browser-panel {
+    position: relative !important;
+    inset: auto !important;
     width: min(100%, 560px) !important;
     max-width: 100%;
     box-sizing: border-box;
@@ -458,7 +512,7 @@ function selectRoomFilter(filter) {
     margin-inline: auto !important;
   }
 
-  .private-lobby-panel {
+  .multiplayer-screen .private-lobby-panel {
     overflow: visible;
     margin-top: clamp(24px, 5vh, 42px) !important;
     padding: clamp(14px, 4vw, 22px) !important;
@@ -491,7 +545,7 @@ function selectRoomFilter(filter) {
     font-size: 12px !important;
   }
 
-  .server-browser-panel {
+  .multiplayer-screen .server-browser-panel {
     height: auto !important;
     min-height: 220px !important;
     overflow: hidden;

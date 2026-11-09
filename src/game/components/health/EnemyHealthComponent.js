@@ -54,6 +54,11 @@ export default class EnemyHealthComponent {
     const damageAnim = this.enemy.animDamage
     if (damageAnim && scene.anims.exists(damageAnim)) {
       this.enemy.play(damageAnim)
+      this.enemy.once(`animationcomplete-${damageAnim}`, () => {
+        if (this.enemy.active && !this.enemy.muerto) {
+          this.enemy.recibiendoDano = false
+        }
+      })
     } else {
       // Enemigos sin animación de daño (por ejemplo, el dron) se recuperan
       // tras un breve tiempo para evitar recibir todos los golpes seguidos.
@@ -69,7 +74,8 @@ export default class EnemyHealthComponent {
 
   applySynchronizedHealth(health) {
     const nextHealth = Math.max(0, Number(health))
-    if (!Number.isFinite(nextHealth) || this.enemy.muerto || nextHealth >= this.enemy.vida) return false
+    if (!Number.isFinite(nextHealth) || this.enemy.muerto || nextHealth >= this.enemy.vida)
+      return false
 
     this.enemy.recibiendoDano = false
     return this.takeDamage(this.enemy.vida - nextHealth, { broadcast: false })

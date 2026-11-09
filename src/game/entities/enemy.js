@@ -189,7 +189,7 @@ export default class Enemy extends Entity {
   }
 
   update(_delta) {
-    if (this.scene.isMultiplayerLevel && !this.scene.isMultiplayerAuthority) {
+    if (this.scene.isMultiplayerLevel) {
       this._syncAttackEffect()
       return
     }

@@ -203,7 +203,7 @@ export default class DroneEnemy extends Enemy {
   }
 
   update(delta) {
-    if (!this.scene.isMultiplayerLevel || this.scene.isMultiplayerAuthority) {
+    if (!this.scene.isMultiplayerLevel) {
       this._updateAim()
     }
     super.update(delta)

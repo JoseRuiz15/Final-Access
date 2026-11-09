@@ -1,6 +1,18 @@
 import { defineStore } from 'pinia'
 import { io } from 'socket.io-client'
 
+const createEmptyLevelState = () => ({
+  startedAt: 0,
+  playerLives: {},
+  playerDeaths: {},
+  enemyHealth: {},
+  defeatedEnemyIds: [],
+  brokenBoxIds: [],
+  collectedKeys: [],
+  droppedKeys: [],
+  doorOpen: false,
+})
+
 export const useMultiplayerStore = defineStore('multiplayer', {
   state: () => ({
     socket: null,
@@ -10,6 +22,16 @@ export const useMultiplayerStore = defineStore('multiplayer', {
     roomCode: null,
     roomName: '',
     maxPlayers: 4,
+    matchResult: null,
+    gameMap: null,
+    levelState: createEmptyLevelState(),
+    levelStateRevision: 0,
+    defeatedEnemyIds: [],
+    playerStates: {},
+    enemySnapshot: { enemies: {}, projectiles: [], defeatedEnemyIds: [] },
+    enemySnapshotHistory: [],
+    serverClockOffsetMs: 0,
+    incomingPlayerHits: [],
     username: '',
     players: [],
     messages: [],
@@ -25,10 +47,10 @@ export const useMultiplayerStore = defineStore('multiplayer', {
         return
       }
 
-      const fallbackSocketUrl = import.meta.env.VITE_API_URL
-        ? import.meta.env.VITE_API_URL
+      const fallbackSocketUrl = import.meta.env.VITE_SOCKET_URL
+        ? import.meta.env.VITE_SOCKET_URL
         : `${window.location.protocol}//${window.location.hostname}:3001`
-      const configuredSocketUrl = import.meta.env.VITE_SOCKET_URL || fallbackSocketUrl
+      const configuredSocketUrl = fallbackSocketUrl
       const socketUrl = configuredSocketUrl
         .trim()
         .replace(/[\s,]+$/, '')
@@ -38,6 +60,18 @@ export const useMultiplayerStore = defineStore('multiplayer', {
       this.socket.on('connect', () => {
         this.connected = true
         this.fetchRooms()
+        this.socket.emit('clockPing', { clientSentAt: Date.now() })
+      })
+
+      this.socket.on('clockPong', ({ clientSentAt, serverAt } = {}) => {
+        const sentAt = Number(clientSentAt)
+        const serverTime = Number(serverAt)
+        if (!Number.isFinite(sentAt) || !Number.isFinite(serverTime)) return
+        const midpoint = (sentAt + Date.now()) / 2
+        const offset = serverTime - midpoint
+        this.serverClockOffsetMs = this.serverClockOffsetMs
+          ? this.serverClockOffsetMs * 0.75 + offset * 0.25
+          : offset
       })
 
       this.socket.on('disconnect', () => {
@@ -57,6 +91,16 @@ export const useMultiplayerStore = defineStore('multiplayer', {
         this.roomCode = data.roomCode
         this.roomName = data.name
         this.maxPlayers = data.maxPlayers
+        this.matchResult = null
+        this.gameStarted = false
+        this.gameMap = null
+        this.levelState = createEmptyLevelState()
+        this.levelStateRevision = 0
+        this.defeatedEnemyIds = []
+        this.incomingPlayerHits = []
+        this.playerStates = data.playerStates || {}
+        this.enemySnapshot = data.enemySnapshot || { enemies: {}, projectiles: [], defeatedEnemyIds: [] }
+        this.enemySnapshotHistory = data.enemySnapshot?.sequence ? [data.enemySnapshot] : []
         this.players = data.players
         this.isPrivate = data.isPrivate // Guardar si es privada o pública
       })
@@ -65,12 +109,23 @@ export const useMultiplayerStore = defineStore('multiplayer', {
         this.roomCode = data.roomCode
         this.roomName = data.name
         this.maxPlayers = data.maxPlayers
+        this.matchResult = null
+        this.gameStarted = false
+        this.gameMap = null
+        this.levelState = createEmptyLevelState()
+        this.levelStateRevision = 0
+        this.defeatedEnemyIds = []
+        this.incomingPlayerHits = []
+        this.playerStates = data.playerStates || {}
+        this.enemySnapshot = data.enemySnapshot || { enemies: {}, projectiles: [], defeatedEnemyIds: [] }
+        this.enemySnapshotHistory = data.enemySnapshot?.sequence ? [data.enemySnapshot] : []
         this.players = data.players
         this.isPrivate = data.isPrivate
       })
 
       this.socket.on('playerJoined', (data) => {
         this.players = data.players
+        this.playerStates = { ...this.playerStates, ...(data.playerStates || {}) }
       })
 
       this.socket.on('playerReadyChange', (data) => {
@@ -79,34 +134,127 @@ export const useMultiplayerStore = defineStore('multiplayer', {
 
       this.socket.on('playerLeft', (data) => {
         this.players = data.players
+        this.playerStates = data.playerStates || Object.fromEntries(
+          Object.entries(this.playerStates).filter(([id]) => data.players.some((player) => player.id === id)),
+        )
+      })
+
+      this.socket.on('playerStateUpdate', ({ playerId, state } = {}) => {
+        if (!playerId || !state) return
+        this.playerStates = { ...this.playerStates, [playerId]: state }
+      })
+
+      this.socket.on('enemySnapshot', (snapshot) => {
+        if (!snapshot || typeof snapshot !== 'object') return
+        this.enemySnapshot = snapshot
+        const history = this.enemySnapshotHistory
+        const last = history[history.length - 1]
+        if (!last || Number(snapshot.sequence) > Number(last.sequence)) {
+          this.enemySnapshotHistory = [...history, snapshot].slice(-6)
+        }
+        this.defeatedEnemyIds = snapshot.defeatedEnemyIds || this.defeatedEnemyIds
+      })
+
+      this.socket.on('levelStateUpdate', ({ levelState, revision } = {}) => {
+        if (!levelState) return
+        this.levelState = levelState
+        this.levelStateRevision = Number(revision) || this.levelStateRevision + 1
+        this.defeatedEnemyIds = levelState.defeatedEnemyIds || []
+      })
+
+      this.socket.on('playerDamaged', (hit) => {
+        if (!hit || hit.playerId !== this.socket?.id) return
+        this.incomingPlayerHits.push(hit)
+      })
+
+      this.socket.on('matchEnded', (result) => {
+        if (!result?.winnerId) return
+        this.matchResult = result
       })
 
       this.socket.on('newMessage', (msg) => {
         this.messages.push(msg)
       })
 
-      this.socket.on('startGame', (data) => {
+      this.socket.on('startGame', (data = {}) => {
+        this.gameMap = data.map || 'level6'
+        if (data.enemySnapshot) {
+          this.enemySnapshot = data.enemySnapshot
+          this.enemySnapshotHistory = [data.enemySnapshot]
+        }
+        this.levelState = {
+          ...this.levelState,
+          ...(data.levelState || {}),
+          startedAt: Number(data.startedAt) || Date.now(),
+        }
+        this.levelStateRevision = Number(data.levelStateRevision) || this.levelStateRevision
+        this.defeatedEnemyIds = this.levelState.defeatedEnemyIds || []
+        this.matchResult = null
         this.gameStarted = true
-        console.log('El juego comienza en:', data.map)
+        console.log('El juego comienza en:', this.gameMap)
       })
 
       this.socket.on('roomList', (rooms) => {
         this.roomList = rooms
       })
     },
-    createRoom(username, isPrivate, name, maxPlayers, friendUsernames = []) {
+    createRoom(username, isPrivate, name, maxPlayers, friendUsernames = [], characterId = 'cosa1') {
       this.username = username
       this.isPrivate = isPrivate
       this.actionError = ''
-      this.socket.emit('createRoom', { username, isPrivate, name, maxPlayers, friendUsernames })
+      this.socket.emit('createRoom', {
+        username,
+        isPrivate,
+        name,
+        maxPlayers,
+        friendUsernames,
+        characterId,
+      })
     },
-    joinRoom(roomCode, username) {
+    joinRoom(roomCode, username, characterId = 'cosa1') {
       this.username = username
       this.actionError = ''
-      this.socket.emit('joinRoom', { roomCode: roomCode.trim().toUpperCase(), username })
+      this.socket.emit('joinRoom', {
+        roomCode: roomCode.trim().toUpperCase(),
+        username,
+        characterId,
+      })
     },
     setReady() {
       this.socket.emit('setReady', { roomCode: this.roomCode })
+    },
+    sendPlayerState(state) {
+      if (!this.socket?.connected || !this.roomCode) return
+      this.playerStates = { ...this.playerStates, [this.socket.id]: state }
+      this.socket.emit('playerState', { roomCode: this.roomCode, state })
+    },
+    reportEnemyDamage(enemyId, health, maxHealth) {
+      if (!this.socket?.connected || !this.roomCode) return
+      this.socket.emit('enemyDamage', { roomCode: this.roomCode, enemyId, health, maxHealth })
+    },
+    reportEnemyDefeated(enemyId) {
+      if (!this.socket?.connected || !this.roomCode) return
+      this.socket.emit('enemyDefeated', { roomCode: this.roomCode, enemyId })
+    },
+    reportBoxBroken(boxId) {
+      if (!this.socket?.connected || !this.roomCode) return
+      this.socket.emit('boxBroken', { roomCode: this.roomCode, boxId })
+    },
+    reportKeyPickedUp(keyData) {
+      if (!this.socket?.connected || !this.roomCode || !keyData?.multiplayerId) return
+      this.socket.emit('keyPickedUp', { roomCode: this.roomCode, keyData })
+    },
+    reportKeyDropped(keyData, x, y) {
+      if (!this.socket?.connected || !this.roomCode || !keyData?.multiplayerId) return
+      this.socket.emit('keyDropped', { roomCode: this.roomCode, keyData, x, y })
+    },
+    reportLifeLost(livesRemaining) {
+      if (!this.socket?.connected || !this.roomCode) return
+      this.socket.emit('playerLifeLost', { roomCode: this.roomCode, livesRemaining })
+    },
+    requestDoorOpen() {
+      if (!this.socket?.connected || !this.roomCode || this.matchResult) return
+      this.socket.emit('doorOpenRequest', { roomCode: this.roomCode })
     },
     sendMessage(message) {
       this.socket.emit('sendMessage', {
@@ -128,9 +276,19 @@ export const useMultiplayerStore = defineStore('multiplayer', {
         this.roomCode = null
         this.roomName = ''
         this.maxPlayers = 4
+        this.matchResult = null
         this.players = []
         this.messages = []
         this.gameStarted = false
+        this.gameMap = null
+        this.levelState = createEmptyLevelState()
+        this.levelStateRevision = 0
+        this.defeatedEnemyIds = []
+        this.playerStates = {}
+        this.enemySnapshot = { enemies: {}, projectiles: [], defeatedEnemyIds: [] }
+        this.enemySnapshotHistory = []
+        this.serverClockOffsetMs = 0
+        this.incomingPlayerHits = []
         this.isPrivate = false
         this.roomList = []
       }

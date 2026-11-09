@@ -31,6 +31,7 @@ class Box extends Entity {
           llave.setVelocityX(0)
         })
         this.scene.keys.add(llave)
+        this.scene.events?.emit('box-key-spawned', llave)
       }
       this.destroy()
     })

@@ -15,6 +15,7 @@ export default class DoorManager {
     this._initialized = false
     this.keyAttempts = 0
     this.lastAttemptFrame = -1
+    this.lastMultiplayerOpenRequestAt = Number.NEGATIVE_INFINITY
   }
 
   init(scene) {
@@ -33,6 +34,7 @@ export default class DoorManager {
     this._ensureInit()
     this.keyAttempts = 0
     this.lastAttemptFrame = -1
+    this.lastMultiplayerOpenRequestAt = Number.NEGATIVE_INFINITY
     this.scene.keyAttempts = 0
 
     // Cada mapa tiene una capa de puerta registrada en su propia configuración.
@@ -111,7 +113,25 @@ export default class DoorManager {
             const soloTieneLlavesRequeridas = llavesDelJugador.every((llave) =>
               llavesRequeridas.includes(llave.texture),
             )
-            if (!tieneTodas || !soloTieneLlavesRequeridas) return
+            if (
+              !tieneTodas ||
+              (!this.scene.isMultiplayerLevel && !soloTieneLlavesRequeridas)
+            ) return
+          }
+
+          const completionData = {
+            keyAttempts: requiereLlave ? this.keyAttempts : 0,
+            correctKeyFirstTry: requiereLlave && this.keyAttempts === 1,
+            correctKeys: llavesRequeridas.length,
+          }
+
+          if (this.scene.isMultiplayerLevel) {
+            const now = this.scene.time?.now ?? Date.now()
+            if (now - this.lastMultiplayerOpenRequestAt >= 1000) {
+              this.lastMultiplayerOpenRequestAt = now
+              this.scene.events?.emit('door-open-request')
+            }
+            return
           }
 
           this.doorSprite.setTexture('greenDoor')
@@ -119,11 +139,7 @@ export default class DoorManager {
           doorOpened = true
           this.scene.events?.emit('door-opened')
           console.log('✅ PUERTA ABIERTA - VERDE')
-          this.scene.game?.events?.emit('level-completed', this.scene, {
-            keyAttempts: requiereLlave ? this.keyAttempts : 0,
-            correctKeyFirstTry: requiereLlave && this.keyAttempts === 1,
-            correctKeys: llavesRequeridas.length,
-          })
+          this.scene.game?.events?.emit('level-completed', this.scene, completionData)
         }
       }
     })

@@ -42,6 +42,11 @@ export default class RangedAttackComponent {
         this.enemy.projectileTexture ?? 'enemy2Bullet',
         this.enemy.projectileOptions ?? {},
       )
+      const projectileSequence = (this.enemy.multiplayerProjectileSequence || 0) + 1
+      this.enemy.multiplayerProjectileSequence = projectileSequence
+      bala.isEnemyProjectile = true
+      bala.enemyMultiplayerId = this.enemy.multiplayerId
+      bala.multiplayerProjectileId = `${this.enemy.multiplayerId || 'enemy'}-${projectileSequence}`
 
       if (this.enemy.aimAtTarget) {
         bala.dispararHacia(target.x, target.y)

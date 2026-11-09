@@ -109,11 +109,13 @@ async function initializeGame() {
   gameStore.llavesCorrectas = 0
   gameStore.enemigos = 0
 
+  const levelId = Number(gameStore.nivelActual)
+
   const config = {
     type: Phaser.AUTO,
 
-    width: Math.max(1, window.innerWidth),
-    height: Math.max(1, window.innerHeight),
+    width: 1280,
+    height: 720,
 
     parent: 'game-container',
 
@@ -124,8 +126,12 @@ async function initializeGame() {
     },
 
     scale: {
-      // RESIZE adapta el área de juego a cualquier pantalla y orientación.
-      mode: Phaser.Scale.RESIZE,
+      // Conserva el viewport lógico original para que los niveles mantengan su encuadre.
+      mode: isTouchDevice.value
+        ? Phaser.Scale.FIT
+        : levelId === 4
+          ? Phaser.Scale.EXPAND
+          : Phaser.Scale.ENVELOP,
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
 

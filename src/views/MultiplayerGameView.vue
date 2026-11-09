@@ -11,6 +11,17 @@ const router = useRouter()
 const gameStore = useGameStore()
 const multiplayerStore = useMultiplayerStore()
 const previousLevelId = gameStore.nivelActual
+const matchResult = computed(() => multiplayerStore.matchResult)
+const localPlayerWon = computed(
+  () => matchResult.value?.winnerId === multiplayerStore.socket?.id,
+)
+const matchDuration = computed(() => {
+  const seconds = Math.max(0, Number(matchResult.value?.durationSeconds) || 0)
+  return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
+})
+const localDeaths = computed(
+  () => Number(matchResult.value?.deathsByPlayer?.[multiplayerStore.socket?.id]) || 0,
+)
 const assetsReady = ref(false)
 const assetsProgress = ref(0)
 const isTouchDevice = ref(false)
@@ -28,6 +39,13 @@ let game
 let levelScene
 let isUnmounted = false
 
+watch(matchResult, (result) => {
+  if (!result) return
+  gameOver.value = false
+  isSpectating.value = false
+  levelScene?.scene.pause()
+})
+
 onMounted(() => {
   isTouchDevice.value = 'ontouchstart' in window || (navigator.maxTouchPoints || 0) > 0
 
@@ -42,6 +60,12 @@ onMounted(() => {
   }
 
   gameStore.nivelActual = 6
+  const localPlayer = multiplayerStore.players.find(
+    (player) => player.id === multiplayerStore.socket?.id,
+  )
+  if (['cosa1', 'cosa2', 'cosa3'].includes(localPlayer?.characterId)) {
+    gameStore.equipCharacter(localPlayer.characterId)
+  }
   gameStore.vidas = 3
   gameStore.llaves = 0
   gameStore.llavesCorrectas = 0
@@ -156,6 +180,10 @@ function exitGame() {
   router.replace('/multiplayer')
 }
 
+function returnToLobby() {
+  router.replace('/lobby')
+}
+
 function stopForTimeout() {
   levelScene?.scene.pause()
 }
@@ -185,7 +213,59 @@ function stopForTimeout() {
       </div>
     </div>
 
+    <section
+      v-if="matchResult"
+      class="multiplayer-result-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="multiplayer-result-title"
+    >
+      <div class="multiplayer-result-panel">
+        <p class="multiplayer-result-eyebrow">FINAL ACCESS · RESUMEN MULTIJUGADOR</p>
+        <h1
+          id="multiplayer-result-title"
+          :class="localPlayerWon ? 'is-winner' : 'is-loser'"
+        >
+          {{ localPlayerWon ? 'YOU WIN' : 'GAME OVER' }}
+        </h1>
+        <p class="multiplayer-result-message">
+          {{ localPlayerWon
+            ? 'Abriste primero la puerta con la llave correcta.'
+            : `${matchResult.winnerUsername} abrió primero la puerta con la llave correcta.` }}
+        </p>
+
+        <dl class="multiplayer-result-stats">
+          <div>
+            <dt>TIEMPO</dt>
+            <dd>{{ matchDuration }}</dd>
+          </div>
+          <div>
+            <dt>ENEMIGOS</dt>
+            <dd>{{ matchResult.enemiesDefeated }}</dd>
+          </div>
+          <div>
+            <dt>CAJAS</dt>
+            <dd>{{ matchResult.boxesBroken }}</dd>
+          </div>
+          <div>
+            <dt>MUERTES</dt>
+            <dd>{{ localDeaths }}</dd>
+          </div>
+        </dl>
+
+        <div class="multiplayer-result-actions">
+          <button type="button" class="result-lobby-button" @click="returnToLobby">
+            VOLVER AL LOBBY
+          </button>
+          <button type="button" class="result-multiplayer-button" @click="exitGame">
+            MULTIJUGADOR
+          </button>
+        </div>
+      </div>
+    </section>
+
     <Hud
+      v-if="!matchResult"
       :started="assetsReady"
       :shared-started-at="multiplayerStore.levelState.startedAt"
       :lives="localLives"
@@ -199,7 +279,7 @@ function stopForTimeout() {
       @spectate="enterSpectatorMode"
     />
 
-    <header class="multiplayer-game-header">
+    <header v-if="!matchResult" class="multiplayer-game-header">
       <div>
         <p class="multiplayer-room-label">SALA {{ multiplayerStore.roomCode }}</p>
         <p class="multiplayer-player-list">
@@ -211,12 +291,12 @@ function stopForTimeout() {
       </button>
     </header>
 
-    <div v-if="isSpectating" class="multiplayer-spectator-banner">
+    <div v-if="isSpectating && !matchResult" class="multiplayer-spectator-banner">
       <span>MODO ESPECTADOR · SIGUIENDO A UN COMPAÑERO</span>
       <button type="button" @click="exitGame">VOLVER AL LOBBY</button>
     </div>
 
-    <p v-if="!isSpectating" class="multiplayer-controls-hint">
+    <p v-if="!isSpectating && !matchResult" class="multiplayer-controls-hint">
       A/D o ←/→ mover · ESPACIO saltar · L atacar · G interactuar
     </p>
   </main>
@@ -236,6 +316,120 @@ function stopForTimeout() {
 .multiplayer-game-canvas {
   width: 100%;
   height: 100%;
+}
+
+.multiplayer-result-overlay {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
+  background:
+    linear-gradient(180deg, rgb(4 9 22 / 48%), rgb(2 6 14 / 88%)),
+    url('/img/lobby/pantalla_resumen.webp') center / cover,
+    #080e20;
+}
+
+.multiplayer-result-panel {
+  width: min(100%, 680px);
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  border: 1px solid rgb(83 244 255 / 55%);
+  background: rgb(7 12 32 / 94%);
+  box-shadow: 0 0 48px rgb(0 217 255 / 18%), 0 18px 60px rgb(0 0 0 / 45%);
+  color: #fff;
+  text-align: center;
+}
+
+.multiplayer-result-eyebrow {
+  color: #d1bcff;
+  font-family: 'Press Start 2P', cursive;
+  font-size: clamp(7px, 1.6vw, 10px);
+  letter-spacing: 0.14em;
+  line-height: 1.8;
+}
+
+.multiplayer-result-panel h1 {
+  margin-top: 1.25rem;
+  font-family: 'Press Start 2P', cursive;
+  font-size: clamp(1.5rem, 7vw, 3.5rem);
+  line-height: 1.4;
+  text-shadow: 0 0 24px currentcolor;
+}
+
+.multiplayer-result-panel h1.is-winner {
+  color: #53f4ff;
+}
+
+.multiplayer-result-panel h1.is-loser {
+  color: #ff6b9d;
+}
+
+.multiplayer-result-message {
+  margin: 0.9rem auto 0;
+  max-width: 34rem;
+  color: rgb(255 255 255 / 78%);
+  font-family: 'Press Start 2P', cursive;
+  font-size: clamp(8px, 1.7vw, 11px);
+  line-height: 2;
+}
+
+.multiplayer-result-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 1.7rem 0;
+}
+
+.multiplayer-result-stats > div {
+  padding: 0.9rem 0.5rem;
+  border: 1px solid rgb(83 244 255 / 20%);
+  background: rgb(255 255 255 / 4%);
+}
+
+.multiplayer-result-stats dt {
+  color: rgb(209 188 255 / 75%);
+  font-family: 'Press Start 2P', cursive;
+  font-size: clamp(6px, 1.3vw, 8px);
+}
+
+.multiplayer-result-stats dd {
+  margin-top: 0.7rem;
+  color: #fff;
+  font-family: 'Press Start 2P', cursive;
+  font-size: clamp(10px, 2vw, 14px);
+}
+
+.multiplayer-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.multiplayer-result-actions button {
+  min-height: 46px;
+  padding: 0.75rem 1rem;
+  border: 1px solid #53f4ff;
+  font-family: 'Press Start 2P', cursive;
+  font-size: clamp(7px, 1.5vw, 9px);
+  cursor: pointer;
+}
+
+.result-lobby-button {
+  background: #53f4ff;
+  color: #080e20;
+}
+
+.result-multiplayer-button {
+  background: transparent;
+  color: #53f4ff;
+}
+
+.multiplayer-result-actions button:hover {
+  border-color: #fff;
+  filter: brightness(1.15);
 }
 
 .multiplayer-game-header {

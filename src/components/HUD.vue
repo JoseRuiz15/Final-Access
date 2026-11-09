@@ -114,6 +114,7 @@ function volverASeleccionDeNivel() {
 <template>
   <div
     id="game-hud"
+    :class="{ 'game-hud-level1-before-mobile': nivelActual === 1 }"
     class="game-hud absolute top-5 left-0 w-full flex justify-center items-center gap-12"
   >
     <div class="relative">
@@ -134,18 +135,35 @@ function volverASeleccionDeNivel() {
     <div class="relative">
       <img src="/img/hud/hudObjetivo.png" class="w-72" />
 
+      <img
+        v-if="hudConfig.imagenLlave"
+        :src="hudConfig.imagenLlave"
+        class="absolute w-[18.64px] h-[31.75px] mt-[-70px] ml-[190px] rotate-40"
+      />
+
       <!-- Aquí irá la misión -->
       <p
         class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold ml-[-150px] mt-[-50px] text-[#00D9FF] text-shadow-[0_0_40px_#00D9FF]"
       >
         OBJETIVO
       </p>
+      <template v-if="hudConfig.mision">
+        <p
+          v-for="(linea, indice) in hudConfig.mision"
+          :key="linea"
+          class="font-pixel absolute inset-0 flex text-[8px] font-bold ml-[20px] text-white text-shadow-[0_0_40px_#CF56D2]"
+          :style="{ marginTop: `${50 + indice * 10}px` }"
+        >
+          {{ linea }}
+        </p>
+      </template>
       <p
+        v-else
         class="font-pixel absolute top-[58px] left-[20px] right-[60px] text-[7px] leading-[9px] font-bold text-white text-shadow-[0_0_40px_#CF56D2]"
       >
         {{ hudConfig.pista }}
       </p>
-      <template v-if="llavesObjetivo > 0">
+      <template v-if="hudConfig.imagenLlave || llavesObjetivo > 0">
         <p
           class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold ml-[150px] mt-[-50px] text-[#00D9FF] text-shadow-[0_0_40px_#00D9FF]"
         >
@@ -154,7 +172,9 @@ function volverASeleccionDeNivel() {
         <p
           class="font-pixel absolute inset-0 flex items-center justify-center text-[10px] font-bold ml-[190px] mt-[10px] text-white text-shadow-[0_0_40px_#00D9FF]"
         >
-          {{ llavesCorrectas }}/{{ llavesObjetivo }}
+          {{ hudConfig.imagenLlave ? llaves : llavesCorrectas }}/{{
+            hudConfig.imagenLlave ? 1 : llavesObjetivo
+          }}
         </p>
         <button
           type="button"

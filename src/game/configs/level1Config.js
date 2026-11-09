@@ -2,8 +2,13 @@ export const LEVEL1_CONFIG = {
   vidasIniciales: 5,
   hud: {
     tiempoInicial: 300,
-    llavesObjetivo: 1,
-    pista: 'Consigue una llave plateada con brillo rojo para avanzar de nivel. Solo podras avanzar si recoges e introduces la llave correcta.',
+    imagenLlave: '/img/keys/Key1-SILVER.png',
+    mision: [
+      'CONSIGUE UNA LLAVE',
+      'NORMAL DE COLOR',
+      'PLATEADO PARA PASAR',
+      'AL SIGUIENTE NIVEL',
+    ],
   },
   assets: {
     tilemaps: [['level1', '/maps/Mapa_level_1.json']],
@@ -29,11 +34,11 @@ export const LEVEL1_CONFIG = {
   },
 
   parallax: [
-    { key: 'parallax', speed: 0.08, depth: -5 },
-    { key: 'parallax2', speed: 0.15, depth: -4 },
-    { key: 'parallax3', speed: 0.25, depth: -3 },
-    { key: 'parallax4', speed: 0.4, depth: -2, offsetY: 110 },
-    { key: 'parallax5', speed: 0.6, depth: -1, offsetY: 100 },
+    { key: 'parallax', speed: 0.08, depth: -5, fit: true },
+    { key: 'parallax2', speed: 0.15, depth: -4, fit: true },
+    { key: 'parallax3', speed: 0.25, depth: -3, fit: true },
+    { key: 'parallax4', speed: 0.4, depth: -2, fit:true, offsetY: 110 },
+    { key: 'parallax5', speed: 0.6, depth: -1, fit:true, offsetY: 100 },
   ],
 
   map: {
@@ -75,10 +80,10 @@ export const LEVEL1_CONFIG = {
     { x: 844, y: 435 },
     { x: 812, y: 403 },
     { x: 920, y: 660 },
-    { x: 340, y: 752, keyData: { texture: 'key4Bronze', grupo: 'keys', color: 'bronze', efecto: 'ninguno', correcta: false } },
+    { x: 340, y: 752, keyData: { texture: 'key11Gold', grupo: 'keys', color: 'gold', efecto: 'ninguno', correcta: false } },
   ],
 
-  player: { x: 200, y: 650 },
+  player: { x: 230, y: 600 },
 
   collisionRules: [
     'PlayerGroundRule',
