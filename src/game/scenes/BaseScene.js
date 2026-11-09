@@ -83,8 +83,9 @@ export default class BaseScene extends Phaser.Scene {
     const mobileAspectCorrection =
       this.mobileLandscapeLayout && viewportAspectRatio < baseAspectRatio
         ? viewportAspectRatio / baseAspectRatio
-        : 1.1
-    this.cameras.main.setZoom(baseZoom * mobileAspectCorrection)
+        : 1
+    const mobileZoomFactor = this.mobileLandscapeLayout ? 1.3 : 1
+    this.cameras.main.setZoom(baseZoom * mobileAspectCorrection * mobileZoomFactor)
 
     // === INICIALIZAR SERVICIOS LAZY (reciben scene aquí) ===
     this.physicsService?.init(this)

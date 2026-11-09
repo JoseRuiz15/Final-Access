@@ -9,7 +9,19 @@ const props = defineProps({
 })
 
 const worldLayer = ref(null)
+const MOBILE_ZOOM_FACTOR = 1.3
 let game = null
+
+function markerStyle(item) {
+  const isMobileLandscape = props.scene?.mobileLandscapeLayout === true
+  const scale = isMobileLandscape ? MOBILE_ZOOM_FACTOR : 1
+
+  return {
+    left: `${isMobileLandscape ? (item.mobileX ?? item.x / scale) : item.x}px`,
+    top: `${isMobileLandscape ? (item.mobileY ?? item.y / scale) : item.y}px`,
+    width: `${isMobileLandscape ? (item.mobileWidth ?? item.width / scale) : item.width}px`,
+  }
+}
 
 function syncWorldLayer() {
   const layer = worldLayer.value
@@ -58,11 +70,7 @@ onBeforeUnmount(() => {
         v-for="item in items"
         :key="item.id"
         class="level1-tutorial__marker"
-        :style="{
-          left: `${item.x}px`,
-          top: `${item.y}px`,
-          width: `${item.width}px`,
-        }"
+        :style="markerStyle(item)"
         role="group"
         :aria-label="item.label"
       >

@@ -59,12 +59,12 @@ export const LEVEL1_CONFIG = {
 
   // Marcadores DOM separados. x/y indican la esquina superior izquierda en coordenadas del mapa.
   tutorialOverlays: [
-    { id: 'movement-wasd', src: '/img/tutorial/teclas_WASD.png', alt: 'Teclas W, A, S y D', label: 'MOVERSE CON W S D', x: 250, y: 650, width: 100 },
+    { id: 'movement-wasd', src: '/img/tutorial/teclas_WASD.png', alt: 'Teclas W, A, S y D', label: 'MOVERSE CON W S D', x: 250, y: 650, width: 100, mobileX:120, mobileY: 500, mobileWidth: 80 },
     { id: 'movement-arrows', src: '/img/tutorial/teclas_flecha.png', alt: 'Teclas de flecha', label: 'O CON FLECHAS', x: 450, y: 658, width: 100 },
-    { id: 'jump-space', src: '/img/tutorial/tecla_espacio.png', alt: 'Tecla Espacio', label: 'SALTAR · W / ↑', x: 640, y: 900, width: 100 },
+    { id: 'jump-space', src: '/img/tutorial/tecla_espacio.png', alt: 'Tecla Espacio', label: 'SALTAR · W / ↑', x: 640, y: 900, width: 100, mobileX: 465, mobileY: 750 },
     { id: 'attack-l', src: '/img/tutorial/tecla_L.png', alt: 'Tecla L', label: 'ATACAR', x: 900, y: 762, width: 30 },
-    { id: 'interact-g', src: '/img/tutorial/tecla_G.png', alt: 'Tecla G', label: 'RECOGER LLAVE', x: 840, y: 410, width: 30 },
-    { id: 'drop-key', src: '/img/tutorial/tecla_k.png', alt: 'Tecla K', label: 'SOLTAR LLAVE', x: 1150, y: 410, width: 30 },
+    { id: 'interact-g', src: '/img/tutorial/tecla_G.png', alt: 'Tecla G', label: 'RECOGER LLAVE', x: 840, y: 410, width: 30, mobileX: 611, mobileY: 400 },
+    { id: 'drop-key', src: '/img/tutorial/tecla_k.png', alt: 'Tecla K', label: 'SOLTAR LLAVE', x: 1150, y: 410, width: 30, mobileX: 1000, mobileY: 400 },
     { id: 'interact-g', src: '/img/tutorial/tecla_G.png', alt: 'Tecla G', label: 'ABRIR PUERTA', x: 2220, y: 750, width: 30 },
   ],
 
