@@ -1958,7 +1958,8 @@ button:disabled,
   }
 
   .server-browser-panel > div:first-child,
-  .server-browser-panel > div:nth-child(2) {
+  .server-browser-panel > .server-browser-empty,
+  .server-browser-panel > .server-browser-list {
     width: 100% !important;
     margin: 0 0 6px !important;
   }
@@ -1971,11 +1972,7 @@ button:disabled,
     width: 100% !important;
   }
 
-  .server-browser-panel > div:nth-child(2) {
-    display: none;
-  }
-
-  .server-browser-panel > div:nth-child(3) {
+  .server-browser-panel > .server-browser-list {
     display: flex;
     width: 100% !important;
     height: calc(100% - 28px) !important;
@@ -1986,36 +1983,57 @@ button:disabled,
     overflow-y: auto;
   }
 
-  .server-browser-panel > div:nth-child(3) > div {
+  .server-browser-panel > .server-browser-list > article {
     display: grid;
     width: 100% !important;
-    height: clamp(38px, 8vh, 52px) !important;
-    min-height: 36px;
+    height: auto !important;
+    min-height: 52px;
     flex: 0 0 auto;
-    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    gap: clamp(4px, 0.8vw, 10px);
+    gap: clamp(6px, 1vw, 10px);
     margin: 0 !important;
-    padding: 4px 6px;
+    padding: 6px 8px;
     overflow: hidden;
   }
 
-  .server-browser-panel > div:nth-child(3) > div > * {
+  .server-browser-panel > .server-browser-list > article > * {
     min-width: 0;
     margin: 0 !important;
-    font-size: clamp(5px, 0.62vw, 8px) !important;
     line-height: 1.4;
   }
 
-  .server-browser-panel > div:nth-child(3) > div > div {
-    width: auto !important;
+  .server-browser-panel > .server-browser-list > article > div {
+    width: 100% !important;
     height: auto !important;
-    padding: 3px 4px;
+    padding: 0 4px !important;
+    overflow: hidden;
   }
 
-  .server-browser-panel > div:nth-child(3) > div > button {
-    width: clamp(38px, 5vw, 56px) !important;
-    height: 28px !important;
+  .server-browser-panel > .server-browser-list > article h3 {
+    overflow: hidden;
+    font-size: clamp(8px, 1.4vw, 12px) !important;
+    line-height: 1.5;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .server-browser-panel > .server-browser-list > article p {
+    margin-top: 3px !important;
+    overflow: hidden;
+    font-size: clamp(6px, 0.9vw, 8px) !important;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .server-browser-panel > .server-browser-list > article > button {
+    width: clamp(68px, 8vw, 88px) !important;
+    min-width: 68px;
+    height: 32px !important;
+    padding: 4px 6px !important;
+    font-size: clamp(6px, 0.9vw, 8px) !important;
+    line-height: 1.2;
     white-space: nowrap;
   }
 

@@ -57,10 +57,10 @@ const currentPlayer = computed(() => {
 </script>
 
 <template>
-  <div class="lobby-room-screen relative min-h-screen bg-[#080e20] text-white font-pixel">
+  <div class="lobby-room-screen relative isolate min-h-screen bg-[#080e20] text-white font-pixel">
     <img
       src="/img/multy-player/partida.webp"
-      class="absolute inset-0 w-full h-full object-cover -z-10 opacity-50"
+      class="absolute inset-0 w-full h-full object-cover -z-10"
     />
 
     <div class="lobby-room-layout flex h-screen p-10 gap-10">
@@ -250,6 +250,158 @@ const currentPlayer = computed(() => {
   .lobby-room-chat {
     height: calc(100svh - 16px);
     min-height: 0;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse),
+  (orientation: landscape) and (max-height: 500px) and (any-pointer: coarse) {
+  .lobby-room-screen {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+  }
+
+  .lobby-room-layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    gap: clamp(8px, 1.8vw, 16px) !important;
+    box-sizing: border-box;
+    padding: clamp(8px, 2vh, 14px) clamp(8px, 1.5vw, 16px) !important;
+  }
+
+  .lobby-room-players,
+  .lobby-room-chat {
+    width: auto !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    box-sizing: border-box;
+    padding: clamp(8px, 1.4vw, 14px) !important;
+  }
+
+  .lobby-room-players {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .lobby-room-players > div:first-child {
+    gap: clamp(4px, 1vh, 7px) !important;
+    margin-bottom: clamp(6px, 1.5vh, 10px) !important;
+  }
+
+  .lobby-room-players h1 {
+    font-size: clamp(10px, 1.65vw, 15px) !important;
+    line-height: 1.2 !important;
+  }
+
+  .lobby-room-players > div:first-child > div:nth-child(2) {
+    gap: 5px !important;
+  }
+
+  .lobby-room-players > div:first-child > div:nth-child(2) button {
+    max-width: 100%;
+    padding: 4px 7px !important;
+    font-size: clamp(6px, 0.95vw, 9px) !important;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .lobby-room-players > div:first-child > div:nth-child(2) span {
+    padding: 3px 5px !important;
+    font-size: clamp(6px, 0.8vw, 8px) !important;
+  }
+
+  .lobby-room-players > div:first-child > p {
+    font-size: clamp(7px, 1vw, 9px) !important;
+  }
+
+  .lobby-room-players > div:nth-child(2) {
+    gap: clamp(4px, 1vh, 7px) !important;
+  }
+
+  .lobby-room-players > div:nth-child(2) > div {
+    gap: 6px !important;
+    padding: 5px 7px !important;
+  }
+
+  .lobby-room-players > div:nth-child(2) > div span:first-child {
+    font-size: clamp(8px, 1.2vw, 11px) !important;
+  }
+
+  .lobby-room-players > div:nth-child(2) > div span:last-child {
+    font-size: clamp(7px, 0.95vw, 9px) !important;
+  }
+
+  .lobby-room-players > div:nth-child(3) {
+    padding-top: 0 !important;
+  }
+
+  .lobby-room-players > div:nth-child(3) button,
+  .lobby-room-players > div:nth-child(5) button {
+    padding: 5px 10px !important;
+    font-size: clamp(8px, 1.15vw, 10px) !important;
+    line-height: 1.2;
+  }
+
+  .lobby-room-players > p {
+    margin-top: 6px !important;
+    font-size: clamp(6px, 0.95vw, 8px) !important;
+    line-height: 1.25 !important;
+  }
+
+  .lobby-room-players > div:nth-child(5) {
+    margin-top: 6px !important;
+  }
+
+  .lobby-room-chat {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .lobby-room-chat h2 {
+    margin-bottom: clamp(6px, 1.5vh, 10px) !important;
+    font-size: clamp(11px, 1.8vw, 16px) !important;
+    line-height: 1.2 !important;
+  }
+
+  .lobby-room-chat > div:nth-child(2) {
+    min-height: 0 !important;
+    margin-bottom: 8px !important;
+    padding: 8px !important;
+    flex: 1 1 auto;
+  }
+
+  .lobby-room-chat > div:nth-child(2) > div {
+    font-size: clamp(7px, 1vw, 9px) !important;
+    line-height: 1.35;
+  }
+
+  .lobby-room-chat > div:last-child {
+    gap: 6px !important;
+  }
+
+  .lobby-room-chat input {
+    min-width: 0;
+    min-height: 32px;
+    padding: 6px 8px !important;
+    font-size: clamp(9px, 1.2vw, 11px) !important;
+  }
+
+  .lobby-room-chat > div:last-child button {
+    min-height: 32px;
+    padding: 5px 10px !important;
+    font-size: clamp(7px, 0.95vw, 9px) !important;
   }
 }
 </style>

@@ -91,9 +91,14 @@ export function attachMultiplayer(httpServer: HttpServer): Server {
       origin: allowedOrigins,
       methods: ['GET', 'POST'],
     },
+    connectionStateRecovery: {
+      maxDisconnectionDuration: 45_000,
+      skipMiddlewares: true,
+    },
   })
 
   const rooms = new Map<string, MultiplayerRoom>()
+  const pendingDisconnects = new Map<string, ReturnType<typeof setTimeout>>()
   const codeAlphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 
   const simulationTimer = setInterval(() => {
@@ -184,6 +189,22 @@ export function attachMultiplayer(httpServer: HttpServer): Server {
     }
   }
 
+  function removeDisconnectedPlayer(roomCode: string, playerId: string): void {
+    const room = rooms.get(roomCode)
+    if (!room) return
+    const playerIndex = room.players.findIndex((player) => player.id === playerId)
+    if (playerIndex === -1) return
+
+    room.players.splice(playerIndex, 1)
+    delete room.playerStates[playerId]
+    io.to(roomCode).emit('playerLeft', {
+      players: room.players,
+      playerStates: room.playerStates,
+    })
+    if (room.players.length === 0) rooms.delete(roomCode)
+    broadcastRoomLists()
+  }
+
   function broadcastLevelState(roomCode: string, room: MultiplayerRoom): void {
     room.levelStateRevision += 1
     io.to(roomCode).emit('levelStateUpdate', {
@@ -194,6 +215,12 @@ export function attachMultiplayer(httpServer: HttpServer): Server {
 
   io.on('connection', (socket) => {
     console.log(`Usuario conectado: ${socket.id}`)
+
+    const pendingDisconnect = pendingDisconnects.get(socket.id)
+    if (pendingDisconnect) {
+      clearTimeout(pendingDisconnect)
+      pendingDisconnects.delete(socket.id)
+    }
 
     socket.on('clockPing', (data: { clientSentAt?: unknown } = {}) => {
       socket.emit('clockPong', {
@@ -272,6 +299,15 @@ export function attachMultiplayer(httpServer: HttpServer): Server {
         socket.data.username = normalizeUsername(username)
         socket.data.roomFilter = socket.data.roomFilter || 'public'
         room.players.push({ id: socket.id, username, ready: false, characterId })
+        room.playerStates[socket.id] = {
+          x: 58,
+          y: 736,
+          flipX: false,
+          moving: false,
+          dead: false,
+          attacking: false,
+          damaged: false,
+        }
 
         console.log(`Sala ${isPrivate ? 'PRIVADA' : 'PÚBLICA'} creada: ${roomCode} por ${username}`)
         socket.emit('roomCreated', {
@@ -332,6 +368,16 @@ export function attachMultiplayer(httpServer: HttpServer): Server {
       void socket.join(roomCode)
       socket.data.username = normalizeUsername(username)
       room.players.push({ id: socket.id, username, ready: false, characterId })
+      const spawnX = 58 + (room.players.length - 1) * 40
+      room.playerStates[socket.id] = {
+        x: spawnX,
+        y: 736,
+        flipX: false,
+        moving: false,
+        dead: false,
+        attacking: false,
+        damaged: false,
+      }
       console.log(`${username} se unió a la sala ${roomCode}`)
 
       io.to(roomCode).emit('playerJoined', {
@@ -356,6 +402,31 @@ export function attachMultiplayer(httpServer: HttpServer): Server {
       socket.data.username = username
       socket.data.roomFilter = filter
       socket.emit('roomList', getAvailableRooms(filter, username))
+    })
+
+    socket.on('syncRoom', (data: { roomCode?: unknown } = {}) => {
+      const roomCode = String(data.roomCode || '').trim().toUpperCase()
+      const room = rooms.get(roomCode)
+      if (!room?.players.some((player) => player.id === socket.id)) return
+
+      void socket.join(roomCode)
+      io.to(roomCode).emit('playerJoined', {
+        players: room.players,
+        playerStates: room.playerStates,
+      })
+      socket.emit('roomSync', {
+        roomCode,
+        name: room.name,
+        maxPlayers: room.maxPlayers,
+        players: room.players,
+        isPrivate: room.isPrivate,
+        status: room.status,
+        playerStates: room.playerStates,
+        enemySnapshot: room.enemySnapshot,
+        levelState: room.levelState,
+        levelStateRevision: room.levelStateRevision,
+        matchResult: room.matchResult,
+      })
     })
 
     socket.on('setReady', (data: { roomCode?: unknown } = {}) => {
@@ -675,23 +746,27 @@ export function attachMultiplayer(httpServer: HttpServer): Server {
       })
     })
 
-    socket.on('disconnect', () => {
-      console.log(`Usuario desconectado: ${socket.id}`)
+    socket.on('disconnect', (reason) => {
+      console.log(`Usuario desconectado: ${socket.id} (${reason})`)
 
+      const mayReconnect = ['ping timeout', 'transport close', 'transport error'].includes(reason)
       rooms.forEach((room, roomCode) => {
-        const playerIndex = room.players.findIndex((player) => player.id === socket.id)
-        if (playerIndex === -1) return
+        if (!room.players.some((player) => player.id === socket.id)) return
 
-        room.players.splice(playerIndex, 1)
         delete room.playerStates[socket.id]
-        io.to(roomCode).emit('playerLeft', {
-          players: room.players,
-          playerStates: room.playerStates,
-        })
-        if (room.players.length === 0) rooms.delete(roomCode)
-      })
+        if (!mayReconnect) {
+          removeDisconnectedPlayer(roomCode, socket.id)
+          return
+        }
 
-      broadcastRoomLists()
+        const existingTimer = pendingDisconnects.get(socket.id)
+        if (existingTimer) clearTimeout(existingTimer)
+        const timer = setTimeout(() => {
+          pendingDisconnects.delete(socket.id)
+          removeDisconnectedPlayer(roomCode, socket.id)
+        }, 50_000)
+        pendingDisconnects.set(socket.id, timer)
+      })
     })
   })
 

@@ -6,6 +6,13 @@ import Hud from '@/components/HUD.vue'
 import SceneFactory from '@/game/factories/SceneFactory.js'
 import { useGameStore } from '@/stores/game.js'
 import { useMultiplayerStore } from '@/stores/multiplayer'
+import {
+  clearTouchControls,
+  pressTouchAction,
+  pressTouchDirection,
+  releaseTouchAction,
+  releaseTouchDirection,
+} from '@/game/services/TouchControls.js'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -27,6 +34,12 @@ const assetsProgress = ref(0)
 const isTouchDevice = ref(false)
 const isSpectating = ref(false)
 const gameOver = ref(false)
+const touchActions = [
+  { id: 'jump', icon: '↑', shortLabel: 'SALTO', label: 'Saltar' },
+  { id: 'attack', icon: '✦', shortLabel: 'ATACAR', label: 'Atacar' },
+  { id: 'interact', icon: 'G', shortLabel: 'USAR', label: 'Recoger llave o abrir puerta' },
+  { id: 'dropKey', icon: 'K', shortLabel: 'SOLTAR', label: 'Soltar llave' },
+]
 
 const localLives = computed(() => {
   const localId = multiplayerStore.socket?.id
@@ -41,13 +54,19 @@ let isUnmounted = false
 
 watch(matchResult, (result) => {
   if (!result) return
+  clearTouchControls()
   gameOver.value = false
   isSpectating.value = false
   levelScene?.scene.pause()
 })
 
+watch([localLives, isSpectating, gameOver], ([lives, spectating, isOver]) => {
+  if (lives <= 0 || spectating || isOver) clearTouchControls()
+})
+
 onMounted(() => {
   isTouchDevice.value = 'ontouchstart' in window || (navigator.maxTouchPoints || 0) > 0
+  clearTouchControls()
 
   if (
     !multiplayerStore.connected ||
@@ -72,10 +91,20 @@ onMounted(() => {
   gameStore.enemigos = 0
 
   levelScene = SceneFactory.createMultiplayerLevel6Scene(multiplayerStore)
+  const gameHeight = 720
+  const isMobileLandscape =
+    isTouchDevice.value && window.matchMedia('(orientation: landscape)').matches
+  const viewportAspectRatio = window.innerWidth / Math.max(1, window.innerHeight)
+  const gameWidth = isMobileLandscape
+    ? Math.ceil(gameHeight * viewportAspectRatio)
+    : 1280
+  levelScene.mobileLayout = isTouchDevice.value
+  levelScene.mobileLandscapeLayout = isMobileLandscape
+
   game = new Phaser.Game({
     type: Phaser.AUTO,
-    width: 1280,
-    height: 720,
+    width: gameWidth,
+    height: gameHeight,
     parent: 'multiplayer-game-container',
     pixelArt: true,
     render: { antialias: false },
@@ -118,6 +147,7 @@ watch(
 
 onBeforeUnmount(() => {
   isUnmounted = true
+  clearTouchControls()
   levelScene?.events.off('game-over', handleGameOver)
   game?.events.off('level-assets-progress', handleAssetsProgress)
   game?.events.off('level-assets-loaded', handleAssetsLoaded)
@@ -161,11 +191,13 @@ function resetLevelForRoom() {
 
 function handleGameOver() {
   if (isUnmounted) return
+  clearTouchControls()
   gameOver.value = true
 }
 
 function enterSpectatorMode() {
   if (!levelScene?.enterSpectatorMode?.()) return
+  clearTouchControls()
   isSpectating.value = true
   gameOver.value = false
   focusGameCanvas()
@@ -174,6 +206,26 @@ function enterSpectatorMode() {
 function dropKey() {
   levelScene?.player?.soltarLlave()
   focusGameCanvas()
+}
+
+function beginTouchMove(direction, event) {
+  event.preventDefault()
+  event.currentTarget.setPointerCapture?.(event.pointerId)
+  pressTouchDirection(direction, event.pointerId)
+}
+
+function endTouchMove(direction, event) {
+  releaseTouchDirection(direction, event.pointerId)
+}
+
+function beginTouchAction(action, event) {
+  event.preventDefault()
+  event.currentTarget.setPointerCapture?.(event.pointerId)
+  pressTouchAction(action, event.pointerId)
+}
+
+function endTouchAction(action, event) {
+  releaseTouchAction(action, event.pointerId)
 }
 
 function exitGame() {
@@ -278,6 +330,62 @@ function stopForTimeout() {
       @exit-lobby="exitGame"
       @spectate="enterSpectatorMode"
     />
+
+    <div
+      v-if="isTouchDevice && assetsReady && !matchResult && !isSpectating && !gameOver && localLives > 0"
+      class="multiplayer-touch-move-pad fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] left-[calc(env(safe-area-inset-left)+1.25rem)] z-30 flex items-end gap-3 select-none"
+      aria-label="Controles táctiles de movimiento"
+    >
+      <button
+        type="button"
+        aria-label="Mover a la izquierda; pulsa dos veces para dash"
+        class="multiplayer-touch-move-button"
+        @pointerdown="beginTouchMove('left', $event)"
+        @pointerup="endTouchMove('left', $event)"
+        @pointercancel="endTouchMove('left', $event)"
+        @lostpointercapture="endTouchMove('left', $event)"
+      >
+        ◀
+      </button>
+      <button
+        type="button"
+        aria-label="Mover a la derecha; pulsa dos veces para dash"
+        class="multiplayer-touch-move-button"
+        @pointerdown="beginTouchMove('right', $event)"
+        @pointerup="endTouchMove('right', $event)"
+        @pointercancel="endTouchMove('right', $event)"
+        @lostpointercapture="endTouchMove('right', $event)"
+      >
+        ▶
+      </button>
+      <span
+        v-if="gameStore.dashUnlocked"
+        class="multiplayer-touch-dash-hint mb-1 ml-1 max-w-20 font-pixel text-[7px] leading-relaxed text-white/65"
+      >
+        DOBLE TOQUE: DASH
+      </span>
+    </div>
+
+    <div
+      v-if="isTouchDevice && assetsReady && !matchResult && !isSpectating && !gameOver && localLives > 0"
+      class="multiplayer-touch-action-pad fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] right-[calc(env(safe-area-inset-right)+1.75rem)] z-30 grid gap-2 select-none"
+      aria-label="Controles táctiles de acciones"
+    >
+      <button
+        v-for="action in touchActions"
+        :key="action.id"
+        type="button"
+        :class="['multiplayer-touch-action-button', `multiplayer-touch-action-button--${action.id}`]"
+        :aria-label="action.label"
+        @pointerdown="beginTouchAction(action.id, $event)"
+        @pointerup="endTouchAction(action.id, $event)"
+        @pointercancel="endTouchAction(action.id, $event)"
+        @lostpointercapture="endTouchAction(action.id, $event)"
+      >
+        {{ action.icon }}
+        <span>{{ action.shortLabel }}</span>
+      </button>
+    </div>
 
     <header v-if="!matchResult" class="multiplayer-game-header">
       <div>
@@ -554,6 +662,269 @@ function stopForTimeout() {
 
   .multiplayer-exit-button {
     font-size: 7px;
+  }
+}
+
+.multiplayer-touch-move-button {
+  width: 80px;
+  height: 80px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border: 2px solid rgb(0 217 255 / 25%);
+  border-radius: 12px;
+  background: rgb(5 12 25 / 55%);
+  color: #00d9ff;
+  font-size: 22px;
+  font-weight: 700;
+  box-shadow: 0 0 18px rgb(0 217 255 / 20%);
+}
+
+.multiplayer-touch-action-button {
+  display: flex;
+  width: 70px;
+  height: 70px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border: 2px solid rgb(255 0 217 / 45%);
+  border-radius: 12px;
+  background: rgb(7 10 24 / 75%);
+  color: #fff;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 16px;
+  box-shadow: 0 0 16px rgb(255 0 217 / 35%);
+}
+
+.multiplayer-touch-action-pad {
+  grid-template-columns: 70px 90px 116px;
+  grid-template-rows: 70px 70px 90px;
+}
+
+.multiplayer-touch-action-button--attack {
+  grid-column: 2;
+  grid-row: 3;
+  width: 90px;
+  height: 90px;
+  transform: translateY(-44px);
+}
+
+.multiplayer-touch-action-button--interact {
+  grid-column: 3;
+  grid-row: 1;
+  transform: translateX(16px);
+}
+
+.multiplayer-touch-action-button--dropKey {
+  grid-column: 2;
+  grid-row: 1;
+  transform: translateX(16px);
+}
+
+.multiplayer-touch-action-button--jump {
+  grid-column: 3;
+  grid-row: 2;
+  width: 116px;
+  height: 116px;
+  transform: translateY(14px);
+  border-color: rgb(0 217 255 / 85%);
+  color: #9af5ff;
+  box-shadow: 0 0 22px rgb(0 217 255 / 38%);
+}
+
+.multiplayer-touch-action-button span {
+  color: #ffc9f4;
+  font-size: 6px;
+}
+
+.multiplayer-touch-action-button:active,
+.multiplayer-touch-move-button:active {
+  background: rgb(255 0 217 / 38%);
+  transform: scale(0.94);
+}
+
+.multiplayer-touch-action-button--jump:active {
+  background: rgb(0 217 255 / 42%);
+}
+
+@media (max-width: 420px) {
+  .multiplayer-touch-move-button {
+    width: 88px;
+    height: 88px;
+  }
+
+  .multiplayer-touch-action-button {
+    width: 64px;
+    height: 64px;
+  }
+
+  .multiplayer-touch-action-pad {
+    grid-template-columns: 64px 84px 100px;
+    grid-template-rows: 64px 64px 84px;
+    gap: 6px;
+  }
+
+  .multiplayer-touch-action-button--attack {
+    width: 84px;
+    height: 84px;
+  }
+
+  .multiplayer-touch-action-button--jump {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .multiplayer-touch-move-button {
+    width: 72px;
+    height: 72px;
+  }
+
+  .multiplayer-touch-action-button {
+    width: 50px;
+    height: 50px;
+  }
+
+  .multiplayer-touch-action-pad {
+    grid-template-columns: 54px 70px 84px;
+    grid-template-rows: 54px 54px 70px;
+    gap: 4px;
+  }
+
+  .multiplayer-touch-action-button--attack {
+    width: 50px;
+    height: 50px;
+  }
+
+  .multiplayer-touch-action-button--jump {
+    width: 70px;
+    height: 70px;
+    transform: translateY(10px);
+  }
+
+  .multiplayer-touch-action-button--attack:active {
+    transform: translateY(-44px) scale(0.94);
+  }
+
+  .multiplayer-touch-action-button--interact:active,
+  .multiplayer-touch-action-button--dropKey:active {
+    transform: translateX(16px) scale(0.94);
+  }
+
+  .multiplayer-touch-action-button--jump:active {
+    transform: translateY(10px) scale(0.94);
+  }
+
+  .multiplayer-touch-dash-hint {
+    display: none;
+  }
+
+  .multiplayer-controls-hint {
+    display: none;
+  }
+
+  .multiplayer-game-header {
+    top: max(env(safe-area-inset-top), 6px);
+    left: max(env(safe-area-inset-left), 8px);
+    right: max(env(safe-area-inset-right), 8px);
+    gap: 6px;
+  }
+
+  .multiplayer-room-label,
+  .multiplayer-player-list,
+  .multiplayer-exit-button {
+    padding: 5px 6px;
+    font-size: 6px;
+  }
+
+  .multiplayer-player-list {
+    margin-top: 3px;
+    max-width: 42vw;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 600px) {
+  .multiplayer-touch-move-button {
+    width: 60px;
+    height: 60px;
+    font-size: 18px;
+  }
+
+  .multiplayer-touch-action-pad {
+    grid-template-columns: 42px 62px 72px;
+    grid-template-rows: 42px 42px 62px;
+    gap: 4px;
+  }
+
+  .multiplayer-touch-action-button--attack {
+    width: 62px;
+    height: 62px;
+    transform: translateY(-40px);
+  }
+
+  .multiplayer-touch-action-button {
+    width: 42px;
+    height: 42px;
+    border-radius: 9px;
+    font-size: 10px;
+  }
+
+  .multiplayer-touch-action-button--jump {
+    width: 72px;
+    height: 72px;
+    transform: translateY(12px);
+  }
+
+  .multiplayer-touch-action-button span {
+    font-size: 5px;
+  }
+
+  .multiplayer-touch-move-pad {
+    left: max(8px, env(safe-area-inset-left)) !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    gap: 6px;
+  }
+
+  .multiplayer-touch-action-pad {
+    right: max(20px, calc(env(safe-area-inset-right) + 12px)) !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 360px) {
+  .multiplayer-touch-move-button {
+    width: 52px;
+    height: 52px;
+  }
+
+  .multiplayer-touch-action-pad {
+    grid-template-columns: 36px 54px 64px;
+    grid-template-rows: 36px 36px 54px;
+    gap: 3px;
+  }
+
+  .multiplayer-touch-action-button--attack {
+    width: 54px;
+    height: 54px;
+    transform: translateY(-36px);
+  }
+
+  .multiplayer-touch-action-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .multiplayer-touch-action-button--jump {
+    width: 64px;
+    height: 64px;
+    transform: translateY(10px);
   }
 }
 </style>

@@ -710,4 +710,148 @@ function selectRoomFilter(filter) {
     font-size: clamp(7px, 2vw, 9px) !important;
   }
 }
+
+@media (any-pointer: coarse) and (orientation: landscape) and (max-height: 500px) {
+  .multiplayer-screen {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .multiplayer-layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 0.58fr) minmax(0, 1fr) !important;
+    align-items: stretch !important;
+    gap: clamp(7px, 1.6vw, 14px) !important;
+    width: 96% !important;
+    height: 96dvh !important;
+    margin: 2dvh auto 0 !important;
+    box-sizing: border-box;
+    padding: 52px 12px 10px !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel,
+  .multiplayer-screen .server-browser-panel {
+    position: relative !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .multiplayer-screen .private-lobby-panel {
+    gap: 0 !important;
+    overflow: hidden !important;
+    padding: 10px !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel h1 {
+    margin: 0 0 4px !important;
+    font-size: clamp(9px, 1.5vw, 13px) !important;
+    line-height: 1.25 !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel fieldset {
+    min-width: 0;
+    margin: 4px 0 0 !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel legend {
+    margin-bottom: 3px !important;
+    font-size: clamp(7px, 1.1vw, 9px) !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel .room-visibility-option {
+    min-height: 27px !important;
+    padding: 3px 5px !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel .room-visibility-option > span > span:last-child {
+    margin-top: 1px !important;
+    font-size: clamp(5px, 0.75vw, 7px) !important;
+    line-height: 1.15 !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel .room-create-button {
+    height: 31px !important;
+    min-height: 31px !important;
+    margin-top: 3px !important;
+    font-size: clamp(7px, 1vw, 9px) !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel > div {
+    margin-block: 5px !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel > label[for='room-code'] {
+    margin: 2px 0 3px !important;
+    font-size: clamp(7px, 1.1vw, 9px) !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel #room-code {
+    height: 32px !important;
+    min-height: 32px !important;
+    padding-inline: 6px !important;
+    font-size: clamp(8px, 1.1vw, 11px) !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel > button:not(.room-create-button) {
+    height: 34px !important;
+    min-height: 34px !important;
+    margin-top: 6px !important;
+    font-size: clamp(8px, 1.15vw, 10px) !important;
+  }
+
+  .multiplayer-screen .private-lobby-panel > p[aria-live] {
+    margin-top: 5px !important;
+    font-size: clamp(6px, 0.9vw, 8px) !important;
+    line-height: 1.2 !important;
+  }
+
+  .multiplayer-screen .server-browser-panel {
+    overflow: hidden !important;
+    padding: 12px !important;
+  }
+
+  .multiplayer-screen .server-browser-panel > div:first-child {
+    margin-bottom: 6px !important;
+    padding-bottom: 6px !important;
+  }
+
+  .multiplayer-screen .server-browser-panel h2 {
+    margin-bottom: 3px !important;
+    font-size: clamp(10px, 1.7vw, 15px) !important;
+  }
+
+  .multiplayer-screen .server-browser-panel > div:first-child p,
+  .multiplayer-screen .server-browser-panel > div:first-child button {
+    font-size: clamp(6px, 0.9vw, 8px) !important;
+  }
+
+  .multiplayer-screen .server-browser-empty,
+  .multiplayer-screen .server-browser-list {
+    min-height: 0 !important;
+    max-height: none !important;
+    flex: 1 1 auto !important;
+  }
+
+  .multiplayer-screen .server-browser-empty {
+    height: auto !important;
+  }
+
+  .multiplayer-screen .server-browser-empty p {
+    font-size: clamp(7px, 1vw, 9px) !important;
+  }
+}
 </style>

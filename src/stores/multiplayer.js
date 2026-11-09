@@ -44,6 +44,7 @@ export const useMultiplayerStore = defineStore('multiplayer', {
     connect() {
       if (this.socket) {
         if (this.socket.connected) this.fetchRooms()
+        else if (!this.socket.active) this.socket.connect()
         return
       }
 
@@ -61,6 +62,7 @@ export const useMultiplayerStore = defineStore('multiplayer', {
         this.connected = true
         this.fetchRooms()
         this.socket.emit('clockPing', { clientSentAt: Date.now() })
+        if (this.roomCode) this.socket.emit('syncRoom', { roomCode: this.roomCode })
       })
 
       this.socket.on('clockPong', ({ clientSentAt, serverAt } = {}) => {
@@ -196,6 +198,35 @@ export const useMultiplayerStore = defineStore('multiplayer', {
 
       this.socket.on('roomList', (rooms) => {
         this.roomList = rooms
+      })
+
+      this.socket.on('roomSync', (data = {}) => {
+        if (!data.roomCode || data.roomCode !== this.roomCode) return
+
+        this.roomName = data.name || this.roomName
+        this.maxPlayers = Number(data.maxPlayers) || this.maxPlayers
+        this.players = Array.isArray(data.players) ? data.players : this.players
+        this.playerStates = data.playerStates || {}
+        this.enemySnapshot = data.enemySnapshot || this.enemySnapshot
+        if (data.enemySnapshot?.sequence) {
+          this.enemySnapshotHistory = [data.enemySnapshot]
+        }
+        if (data.levelState) {
+          this.levelState = data.levelState
+          this.defeatedEnemyIds = data.levelState.defeatedEnemyIds || []
+        }
+        const revision = Number(data.levelStateRevision)
+        if (Number.isFinite(revision)) this.levelStateRevision = revision
+        this.isPrivate = data.isPrivate === true
+
+        if (data.status === 'playing' || data.status === 'finished') {
+          this.gameMap = 'level6'
+          this.gameStarted = true
+        }
+        if (data.status === 'playing') this.matchResult = null
+        if (data.status === 'finished' && data.matchResult) {
+          this.matchResult = data.matchResult
+        }
       })
     },
     createRoom(username, isPrivate, name, maxPlayers, friendUsernames = [], characterId = 'cosa1') {

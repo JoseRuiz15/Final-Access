@@ -16,6 +16,8 @@ export default class MultiplayerLevel6Scene extends Level6Scene {
     // EventEmitter para que la vista pueda escuchar 'game-over'.
     this.events = new Phaser.Events.EventEmitter()
     this.multiplayerStore = multiplayerStore
+    // En multijugador la cámara móvil mantiene el zoom de PC para ampliar el campo visible.
+    this.mobileZoomFactor = 1
     this.remotePlayers = new Map()
     this.remoteProjectiles = new Map()
     this.lastPlayerStateAt = 0

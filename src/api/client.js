@@ -2,7 +2,11 @@ import axios from 'axios'
 
 const localHost = (typeof window !== 'undefined' && window.location.hostname) || 'localhost'
 const localApiHost = localHost.includes(':') ? `[${localHost}]` : localHost
-export const API_BASE_URL = import.meta.env.VITE_API_URL || `http://${localApiHost}:3000`
+// En producción, las peticiones REST pasan por /api en el mismo dominio del
+// frontend para que Safari/Chrome no dependan de cookies de terceros.
+export const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? '/api' : `http://${localApiHost}:3000`)
 
 export const api = axios.create({
   baseURL: API_BASE_URL,

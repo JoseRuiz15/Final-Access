@@ -23,10 +23,15 @@ const io = new Server(httpServer, {
     origin: '*',
     methods: ['GET', 'POST'],
   },
+  connectionStateRecovery: {
+    maxDisconnectionDuration: 45_000,
+    skipMiddlewares: true,
+  },
 })
 
 // Estado global de las salas
 const rooms = new Map()
+const pendingDisconnects = new Map()
 const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 
 const level6SimulationTimer = setInterval(() => {
@@ -116,6 +121,22 @@ function broadcastRoomLists() {
   }
 }
 
+function removeDisconnectedPlayer(roomCode, playerId) {
+  const room = rooms.get(roomCode)
+  if (!room) return
+  const playerIndex = room.players.findIndex((player) => player.id === playerId)
+  if (playerIndex === -1) return
+
+  room.players.splice(playerIndex, 1)
+  delete room.playerStates[playerId]
+  io.to(roomCode).emit('playerLeft', {
+    players: room.players,
+    playerStates: room.playerStates,
+  })
+  if (room.players.length === 0) rooms.delete(roomCode)
+  broadcastRoomLists()
+}
+
 function broadcastLevelState(roomCode, room) {
   room.levelStateRevision += 1
   io.to(roomCode).emit('levelStateUpdate', {
@@ -126,6 +147,12 @@ function broadcastLevelState(roomCode, room) {
 
 io.on('connection', (socket) => {
   console.log(`Usuario conectado: ${socket.id}`)
+
+  const pendingDisconnect = pendingDisconnects.get(socket.id)
+  if (pendingDisconnect) {
+    clearTimeout(pendingDisconnect)
+    pendingDisconnects.delete(socket.id)
+  }
 
   socket.on('clockPing', (data = {}) => {
     socket.emit('clockPong', {
@@ -197,6 +224,15 @@ io.on('connection', (socket) => {
     socket.data.roomFilter = socket.data.roomFilter || 'public'
     const player = { id: socket.id, username, ready: false, characterId }
     newRoom.players.push(player)
+    newRoom.playerStates[socket.id] = {
+      x: 58,
+      y: 736,
+      flipX: false,
+      moving: false,
+      dead: false,
+      attacking: false,
+      damaged: false,
+    }
 
     console.log(
       `Sala ${newRoom.isPrivate ? 'PRIVADA' : 'PÚBLICA'} creada: ${roomCode} por ${username}`,
@@ -253,7 +289,16 @@ io.on('connection', (socket) => {
     socket.data.username = normalizeUsername(username)
     const player = { id: socket.id, username, ready: false, characterId }
     room.players.push(player)
-    room.playerStates[socket.id] = {}
+    const spawnX = 58 + (room.players.length - 1) * 40
+    room.playerStates[socket.id] = {
+      x: spawnX,
+      y: 736,
+      flipX: false,
+      moving: false,
+      dead: false,
+      attacking: false,
+      damaged: false,
+    }
 
     console.log(`${username} se unió a la sala ${roomCode}`)
 
@@ -283,6 +328,31 @@ io.on('connection', (socket) => {
     socket.data.username = username
     socket.data.roomFilter = filter
     socket.emit('roomList', getAvailableRooms(filter, username))
+  })
+
+  socket.on('syncRoom', (data = {}) => {
+    const roomCode = String(data.roomCode || '').trim().toUpperCase()
+    const room = rooms.get(roomCode)
+    if (!room?.players.some((player) => player.id === socket.id)) return
+
+    socket.join(roomCode)
+    io.to(roomCode).emit('playerJoined', {
+      players: room.players,
+      playerStates: room.playerStates,
+    })
+    socket.emit('roomSync', {
+      roomCode,
+      name: room.name,
+      maxPlayers: room.maxPlayers,
+      players: room.players,
+      isPrivate: room.isPrivate,
+      status: room.status,
+      playerStates: room.playerStates,
+      enemySnapshot: room.enemySnapshot,
+      levelState: room.levelState,
+      levelStateRevision: room.levelStateRevision,
+      matchResult: room.matchResult,
+    })
   })
 
   // --- LÓGICA DE LOBBY ---
@@ -573,28 +643,27 @@ io.on('connection', (socket) => {
 
   // --- DESCONEXIÓN ---
 
-  socket.on('disconnect', () => {
-    console.log(`Usuario desconectado: ${socket.id}`)
+  socket.on('disconnect', (reason) => {
+    console.log(`Usuario desconectado: ${socket.id} (${reason})`)
 
-    // Eliminar jugador de cualquier sala
+    const mayReconnect = ['ping timeout', 'transport close', 'transport error'].includes(reason)
     rooms.forEach((room, roomCode) => {
-      const playerIndex = room.players.findIndex((p) => p.id === socket.id)
-      if (playerIndex !== -1) {
-        room.players.splice(playerIndex, 1)
-        delete room.playerStates[socket.id]
-        io.to(roomCode).emit('playerLeft', {
-          players: room.players,
-          playerStates: room.playerStates,
-        })
+      if (!room.players.some((player) => player.id === socket.id)) return
 
-        // Si la sala queda vacía, eliminarla
-        if (room.players.length === 0) {
-          rooms.delete(roomCode)
-        }
+      delete room.playerStates[socket.id]
+      if (!mayReconnect) {
+        removeDisconnectedPlayer(roomCode, socket.id)
+        return
       }
-    })
 
-    broadcastRoomLists()
+      const existingTimer = pendingDisconnects.get(socket.id)
+      if (existingTimer) clearTimeout(existingTimer)
+      const timer = setTimeout(() => {
+        pendingDisconnects.delete(socket.id)
+        removeDisconnectedPlayer(roomCode, socket.id)
+      }, 50_000)
+      pendingDisconnects.set(socket.id, timer)
+    })
   })
 })
 
