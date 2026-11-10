@@ -45,6 +45,18 @@ export const emailVerifications = pgTable('email_verifications', {
   emailIdx: index('idx_email_verifications_email').on(t.email),
 }));
 
+// --- PASSWORD RESET CODES ---
+export const passwordResetCodes = pgTable('password_reset_codes', {
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  userId: bigint('user_id', { mode: 'number' }).notNull().references(() => users.id, { onDelete: 'cascade' }),
+  codeHash: varchar('code_hash', { length: 64 }).notNull(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  attempts: smallint('attempts').notNull().default(0),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+  userIdx: index('idx_password_reset_codes_user').on(t.userId),
+}));
+
 // --- PLAYER_PROFILES ---
 export const playerProfiles = pgTable('player_profiles', {
   userId: bigint('user_id', { mode: 'number' }).primaryKey().references(() => users.id, { onDelete: 'cascade' }),
@@ -230,6 +242,8 @@ export const safeUserSchema = userSchema.omit({ passwordHash: true });
 // Email Verifications
 export const emailVerificationSchema = createSelectSchema(emailVerifications);
 export const insertEmailVerificationSchema = createInsertSchema(emailVerifications).omit({ id: true, createdAt: true });
+export const passwordResetCodeSchema = createSelectSchema(passwordResetCodes);
+export const insertPasswordResetCodeSchema = createInsertSchema(passwordResetCodes).omit({ id: true, createdAt: true });
 
 // Profiles
 export const profileSchema = createSelectSchema(playerProfiles);
@@ -269,6 +283,8 @@ export type SafeUser = z.infer<typeof safeUserSchema>;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type EmailVerification = z.infer<typeof emailVerificationSchema>;
 export type InsertEmailVerification = z.infer<typeof insertEmailVerificationSchema>;
+export type PasswordResetCode = z.infer<typeof passwordResetCodeSchema>;
+export type InsertPasswordResetCode = z.infer<typeof insertPasswordResetCodeSchema>;
 export type Profile = z.infer<typeof profileSchema>;
 export type InsertProfile = z.infer<typeof insertProfileSchema>;
 export type Character = z.infer<typeof characterSchema>;

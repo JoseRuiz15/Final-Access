@@ -9,6 +9,8 @@ import {
   registerStartBodySchema,
   resendVerificationBodySchema,
   loginBodySchema,
+  requestPasswordResetBodySchema,
+  resetPasswordBodySchema,
 } from '../schemas/auth.js';
 
 const verifyEmailBodySchema = z.object({
@@ -141,6 +143,59 @@ const authRoutes: FastifyPluginAsync = async (app) => {
     const body = resendVerificationBodySchema.parse(req.body);
     const result = await authService.resendVerification(body.email);
     return reply.code(200).send(result);
+  });
+
+  // POST /auth/forgot-password - enviar código de recuperación
+  app.post('/auth/forgot-password', {
+    config: {
+      public: true,
+      rateLimit: { max: 5, timeWindow: '15 minutes' },
+    },
+    schema: {
+      body: {
+        type: 'object',
+        required: ['email'],
+        properties: { email: { type: 'string', format: 'email' } },
+      },
+      tags: ['Auth'],
+      summary: 'Solicitar un código para recuperar la contraseña',
+    },
+  }, async (req, reply) => {
+    const body = requestPasswordResetBodySchema.parse(req.body);
+    const result = await authService.requestPasswordReset(body.email);
+    return reply.code(200).send(result);
+  });
+
+  // POST /auth/reset-password - validar código y actualizar contraseña
+  app.post('/auth/reset-password', {
+    config: {
+      public: true,
+      rateLimit: { max: 10, timeWindow: '15 minutes' },
+    },
+    schema: {
+      body: {
+        type: 'object',
+        required: ['email', 'code', 'password'],
+        properties: {
+          email: { type: 'string', format: 'email' },
+          code: { type: 'string', minLength: 6, maxLength: 6, pattern: '^\\d{6}$' },
+          password: { type: 'string', minLength: 8, maxLength: 128 },
+        },
+      },
+      tags: ['Auth'],
+      summary: 'Cambiar la contraseña con un código de recuperación',
+    },
+  }, async (req, reply) => {
+    const body = resetPasswordBodySchema.parse(req.body);
+    try {
+      const result = await authService.resetPassword(body.email, body.code, body.password);
+      return reply.code(200).send(result);
+    } catch (err: any) {
+      if (err.message?.startsWith('Código inválido o vencido')) {
+        return reply.code(400).send({ error: 'Bad Request', message: err.message });
+      }
+      throw err;
+    }
   });
 
   // POST /auth/login - Login tradicional

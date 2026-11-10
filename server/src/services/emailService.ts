@@ -134,6 +134,61 @@ export async function sendVerificationEmail(email: string, code: string): Promis
   }
 }
 
+export async function sendPasswordResetEmail(email: string, code: string): Promise<{ code: string } | void> {
+  const transporter = getTransporter();
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Recupera tu contraseña - Final Acces</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="background: #1a1a2e; border-radius: 12px; padding: 32px; color: #fff;">
+        <h1 style="color: #fb00ff; margin: 0 0 16px; font-size: 28px;">FINAL ACCES</h1>
+        <h2 style="color: #fff; margin: 0 0 24px; font-size: 20px;">Recupera tu contraseña</h2>
+        <p style="color: #ccc; margin: 0 0 24px; line-height: 1.6;">
+          Usa este código para elegir una contraseña nueva:
+        </p>
+        <div style="background: #0f0f1a; border: 2px solid #fb00ff; border-radius: 8px; padding: 24px; text-align: center; margin: 24px 0;">
+          <span style="font-size: 36px; font-weight: bold; color: #fb00ff; letter-spacing: 8px; font-family: monospace;">${code}</span>
+        </div>
+        <p style="color: #888; font-size: 14px; margin: 0;">
+          El código vence en ${env.EMAIL_VERIFICATION_TTL_MIN} minutos. Si no solicitaste recuperar tu contraseña, ignora este correo.
+        </p>
+      </div>
+    </body>
+    </html>
+  `;
+  const text = `FINAL ACCES - Recuperación de contraseña\n\nTu código es: ${code}\n\nVence en ${env.EMAIL_VERIFICATION_TTL_MIN} minutos. Si no solicitaste este cambio, ignora este correo.`;
+  const mailOptions = {
+    from: getFromAddress(),
+    to: email,
+    subject: 'Código para recuperar tu contraseña - Final Acces',
+    text,
+    html,
+  };
+
+  if (!usesSmtpTransport()) {
+    await transporter.sendMail(mailOptions);
+    console.log('📧 [LOCAL] Email para recuperar contraseña:');
+    console.log(`   To: ${email}`);
+    console.log(`   Code: ${code}`);
+    console.log(`   Expires: ${env.EMAIL_VERIFICATION_TTL_MIN} min`);
+    return { code };
+  }
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (err: any) {
+    console.error(
+      `❌ Error SMTP (${err.code ?? 'desconocido'} / ${err.responseCode ?? '-'}):`,
+      err.message,
+    );
+    throw new Error(`No se pudo enviar el código de recuperación (${err.code ?? 'SMTP_ERROR'})`);
+  }
+}
+
 /** Resumen de la configuración SMTP activa. No expone la clave completa. */
 export function getSmtpConfigSummary() {
   const password = env.SMTP_PASS.replace(/\s/g, '');

@@ -52,7 +52,7 @@ describe('Progression & Missions Endpoints', () => {
       headers: { cookie: authCookie },
     });
 
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode, response.body).toBe(200);
     const data = JSON.parse(response.body);
     expect(data.ok).toBe(true);
     expect(data.gameProgress).toBeDefined();
@@ -78,7 +78,7 @@ describe('Progression & Missions Endpoints', () => {
       },
     });
 
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode, response.body).toBe(200);
     const data = JSON.parse(response.body);
     expect(data.ok).toBe(true);
     expect(data.levelProgress.completed).toBe(true);
@@ -124,6 +124,8 @@ describe('Progression & Missions Endpoints', () => {
     expect(data.ok).toBe(true);
     // Second completion with better time
     expect(data.levelProgress.bestTimeSec).toBeLessThanOrEqual(120);
+    // Las monedas de repetición son una recompensa intencional y se conservan.
+    expect(data.coinGain).toBeGreaterThan(0);
   });
 
   it('POST /progress/999/complete - should fail with invalid level', async () => {
@@ -161,6 +163,37 @@ describe('Progression & Missions Endpoints', () => {
     expect(data.levelProgress.length).toBeGreaterThan(0);
     expect(data.levelProgress[0].completed).toBe(true);
     expect(data.levelProgress[0].stars).toBe(3);
+  });
+
+  it('POST /progress/3/complete - should reject skipping incomplete level 2', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/progress/3/complete',
+      headers: {
+        cookie: authCookie,
+        'Content-Type': 'application/json',
+      },
+      payload: {
+        timeSec: 100,
+        stars: 3,
+        deaths: 0,
+        keys: 2,
+        kills: 4,
+      },
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body).message).toContain('completar el nivel 2');
+
+    const progressResponse = await app.inject({
+      method: 'GET',
+      url: '/progress',
+      headers: { cookie: authCookie },
+    });
+    const progress = JSON.parse(progressResponse.body);
+    expect(progress.levelProgress.some((entry: { levelId: number; completed: boolean }) =>
+      entry.levelId === 3 && entry.completed,
+    )).toBe(false);
   });
 
   it('POST /progress/3..5/complete - should advance 3 -> 4 -> 5 and stop at 5', async () => {

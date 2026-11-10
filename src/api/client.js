@@ -10,6 +10,7 @@ export const API_BASE_URL =
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
+  timeout: 15000,
   withCredentials: true, // Important for HttpOnly cookies
   headers: {
     'Content-Type': 'application/json',
@@ -33,6 +34,8 @@ const RUTAS_SIN_REDIRECT = [
   '/auth/register',
   '/auth/verify-email',
   '/auth/resend-verification',
+  '/auth/forgot-password',
+  '/auth/reset-password',
   '/auth/logout',
   '/auth/me',
   '/health',
@@ -61,6 +64,8 @@ api.interceptors.response.use(
 export const authApi = {
   register: (data) => api.post('/auth/register', data),
   verifyEmail: (data) => api.post('/auth/verify-email', data),
+  requestPasswordReset: (data) => api.post('/auth/forgot-password', data),
+  resetPassword: (data) => api.post('/auth/reset-password', data),
   login: (data) => api.post('/auth/login', data),
   logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),

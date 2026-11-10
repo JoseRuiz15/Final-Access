@@ -71,7 +71,14 @@ export default class DoorManager {
 
   checkProximity(player, inputService) {
     this._ensureInit()
-    if (!this.doors || !this.doorSprite || !player) return false
+    if (
+      !this.doors ||
+      !this.doorSprite ||
+      !player?.active ||
+      player.muerto ||
+      this.scene.gameOver ||
+      Number(player.vidas ?? this.scene.gameRepository?.vidas) <= 0
+    ) return false
 
     let doorOpened = false
     this.doors.objects.forEach((puerta) => {

@@ -39,6 +39,7 @@ const pauseButtonY = ref(72)
 const gameStarted = ref(false)
 const assetsReady = ref(false)
 const assetsProgress = ref(0)
+const isSavingProgress = ref(false)
 const isTouchDevice = ref(false)
 const hasCompletedLevel3 = ref(gameStore.dashUnlocked)
 let isUnmounted = false
@@ -161,6 +162,7 @@ async function initializeGame() {
   game = new Phaser.Game(config)
   phaserGame.value = game
   activeScene.value = levelScene
+  game.events.on('game-over', handleGameOver)
   game.events.on('level-completed', handleLevelCompleted)
   game.events.on('level-assets-progress', handleAssetsProgress)
   game.events.once('level-assets-loaded', handleAssetsLoaded)
@@ -184,6 +186,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', handlePauseKey)
   window.removeEventListener('resize', updatePauseButtonPosition)
   hudResizeObserver?.disconnect()
+  game?.events.off('game-over', handleGameOver)
   game?.events.off('level-completed', handleLevelCompleted)
   game?.events.off('level-assets-progress', handleAssetsProgress)
   game?.events.off('level-assets-loaded', handleAssetsLoaded)
@@ -203,8 +206,18 @@ function handleAssetsLoaded() {
 }
 
 async function handleLevelCompleted(sceneCompletada, stats) {
-  if (levelTransitionStarted || sceneCompletada !== levelScene) return
+  if (
+    levelTransitionStarted ||
+    sceneCompletada !== levelScene ||
+    gameStore.vidas <= 0 ||
+    sceneCompletada.player?.muerto
+  ) return
   levelTransitionStarted = true
+  isSavingProgress.value = true
+  tiempoFinalizado.value = true
+  pausaAbierta.value = false
+  clearTouchControls()
+  sceneCompletada.scene.pause()
 
   const levelId = Number(gameStore.nivelActual)
   const vidasIniciales = levelScene?.config?.vidasIniciales ?? 5
@@ -227,7 +240,6 @@ async function handleLevelCompleted(sceneCompletada, stats) {
   // aportan un cuarto cada uno. Completar siempre concede la primera estrella.
   const rendimiento = proporcionTiempo * 50 + proporcionVidas * 25 + proporcionEnemigos * 25
   const stars = 1 + Number(rendimiento >= 40) + Number(rendimiento >= 70)
-  const nextLevelId = levelId < 5 ? levelId + 1 : null
   const firstLevel3Completion = levelId === 3 && !hasCompletedLevel3.value
 
   // Prepare level completion data
@@ -250,20 +262,28 @@ async function handleLevelCompleted(sceneCompletada, stats) {
     correctKeyFirstTry,
     correctKeys: completionData.correctKeys,
     stars,
-    nextLevelId,
+    nextLevelId: null,
     dashUnlocked: false,
   })
 
   try {
     const result = await progressionStore.completeLevel(levelId, completionData)
+    const savedAsCompleted = Boolean(result?.levelProgress?.completed)
+    if (!savedAsCompleted) {
+      throw new Error('El servidor no confirmó la finalización del nivel.')
+    }
+
     if (result?.coinsBalance !== undefined) {
       profileStore.setCoins(result.coinsBalance)
-      authStore.user && (authStore.user.coins = result.coinsBalance)
+      if (authStore.user) authStore.user.coins = result.coinsBalance
     }
-    if (levelId === 3) hasCompletedLevel3.value = true
-    if (levelId === 3) gameStore.unlockDash()
+    if (levelId === 3) {
+      hasCompletedLevel3.value = true
+      gameStore.unlockDash()
+    }
     gameStore.setLevelSummary({
       ...gameStore.levelSummary,
+      nextLevelId: levelId < 5 ? levelId + 1 : null,
       coinGain: result?.coinGain ?? 0,
       coinsBalance: result?.coinsBalance,
       coinBreakdown: result?.coinBreakdown,
@@ -273,7 +293,13 @@ async function handleLevelCompleted(sceneCompletada, stats) {
   } catch (err) {
     console.error('Error saving progress:', err)
     // No inventar un saldo local: solo el servidor confirma el guardado en BD.
-    gameStore.setLevelSummary({ ...gameStore.levelSummary, coinsSaved: false })
+    gameStore.setLevelSummary({
+      ...gameStore.levelSummary,
+      nextLevelId: null,
+      coinsSaved: false,
+    })
+  } finally {
+    isSavingProgress.value = false
   }
 
   router.push({ name: 'level-summary' })
@@ -297,6 +323,13 @@ function pauseLevelForTimeout() {
   clearTouchControls()
   tiempoFinalizado.value = true
   pausaAbierta.value = false
+  levelScene?.scene.pause()
+}
+
+function handleGameOver() {
+  clearTouchControls()
+  pausaAbierta.value = false
+  tiempoFinalizado.value = true
   levelScene?.scene.pause()
 }
 
@@ -411,9 +444,23 @@ function enfocarCanvasDelJuego() {
       </div>
     </div>
 
+    <div
+      v-if="isSavingProgress"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-[#050711]/85 px-4 text-white backdrop-blur-sm"
+      role="status"
+      aria-live="polite"
+    >
+      <div class="w-[min(82vw,420px)] border border-[#00D9FF]/60 bg-[#07101f] p-7 text-center">
+        <p class="font-pixel text-xs tracking-[0.18em] text-[#00D9FF]">GUARDANDO PROGRESO</p>
+        <p class="mt-4 font-mono text-sm text-white/75">
+          Estamos confirmando tu resultado con el servidor.
+        </p>
+      </div>
+    </div>
+
     <Hud
       ref="hudRef"
-      :paused="pausaAbierta"
+      :paused="pausaAbierta || tiempoFinalizado"
       :started="gameStarted"
       @retry-level="restartLevel"
       @drop-key="soltarLlave"

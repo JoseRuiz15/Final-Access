@@ -16,6 +16,7 @@ const notice = ref(null)
 const success = ref(false)
 const devCode = ref(sessionStorage.getItem('verificationDevCode') || '')
 const codeDigits = ref(Array(6).fill(''))
+const codeInputs = ref([])
 const countdown = ref(600) // 10 minutes in seconds
 const countdownInterval = ref(null)
 
@@ -47,26 +48,56 @@ function formatTime(seconds) {
   return `${mins}:${secs.toString().padStart(2, '0')}`
 }
 
+function setCodeInputRef(element, index) {
+  codeInputs.value[index] = element
+}
+
+function focusCodeInput(index) {
+  const safeIndex = Math.max(0, Math.min(index, codeDigits.value.length - 1))
+  codeInputs.value[safeIndex]?.focus()
+}
+
+function syncCodeDigits(nextDigits) {
+  codeDigits.value = nextDigits
+  form.code = nextDigits.join('')
+}
+
 function updateCode(event, index) {
   const digits = event.target.value.replace(/\D/g, '').slice(0, 6 - index)
   const nextDigits = [...codeDigits.value]
 
-  if (digits.length) {
-    for (let offset = 0; offset < digits.length; offset++) {
-      nextDigits[index + offset] = digits[offset]
-    }
-  } else {
+  if (!digits) {
     nextDigits[index] = ''
+    syncCodeDigits(nextDigits)
+    return
   }
 
-  codeDigits.value = nextDigits
-  form.code = nextDigits.join('')
-  event.target.value = nextDigits[index]
+  digits.split('').forEach((digit, offset) => {
+    nextDigits[index + offset] = digit
+  })
 
-  if (digits.length) {
-    const inputs = document.querySelectorAll('.code-input')
-    inputs[Math.min(index + digits.length, 5)]?.focus()
-  }
+  syncCodeDigits(nextDigits)
+  focusCodeInput(index + digits.length)
+}
+
+function handleCodePaste(event) {
+  const digits = (event.clipboardData?.getData('text') || '').replace(/\D/g, '').slice(0, 6)
+  if (!digits) return
+
+  const focusedIndex = codeInputs.value.indexOf(document.activeElement)
+  const startIndex = digits.length === 6 || focusedIndex < 0 ? 0 : focusedIndex
+  const available = 6 - startIndex
+  const nextDigits = [...codeDigits.value]
+
+  digits
+    .slice(0, available)
+    .split('')
+    .forEach((digit, offset) => {
+      nextDigits[startIndex + offset] = digit
+    })
+
+  syncCodeDigits(nextDigits)
+  focusCodeInput(startIndex + Math.min(digits.length, available))
 }
 
 function handleCodeBackspace(event, index) {
@@ -74,11 +105,9 @@ function handleCodeBackspace(event, index) {
     event.preventDefault()
     const nextDigits = [...codeDigits.value]
     nextDigits[index] = ''
-    codeDigits.value = nextDigits
-    form.code = nextDigits.join('')
-    event.target.value = ''
+    syncCodeDigits(nextDigits)
   } else if (index > 0) {
-    document.querySelectorAll('.code-input')[index - 1]?.focus()
+    focusCodeInput(index - 1)
   }
 }
 
@@ -255,17 +284,22 @@ onUnmounted(() => {
         </p>
 
         <!--donde colocar el codigo-->
-        <div class="verification-digits flex items-center justify-center gap-4 mt-5">
+        <div
+          class="verification-digits flex items-center justify-center gap-4 mt-5"
+          @paste.prevent="handleCodePaste"
+        >
           <!--cajas donde se colocan los numeros-->
           <input
             v-for="i in 6"
             :key="i"
+            :ref="(element) => setCodeInputRef(element, i - 1)"
             type="text"
-            maxlength="6"
+            maxlength="1"
             :value="codeDigits[i - 1]"
             @input="updateCode($event, i - 1)"
             @keydown.backspace="handleCodeBackspace($event, i - 1)"
-            class="code-input rounded-lg border border-[#333553] border-4 bg-[#14182D] text-white font-pixel text-center w-[50px] h-[50px]"
+            @focus="$event.target.select()"
+            class="code-input rounded-lg border border-[#333553] border-4 bg-[#14182D] px-0 text-white font-pixel text-center text-[16px] leading-none w-[50px] h-[50px]"
             :disabled="isLoading || success"
             :autocomplete="i === 1 ? 'one-time-code' : 'off'"
             inputmode="numeric"

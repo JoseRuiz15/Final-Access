@@ -25,6 +25,16 @@ export const loginBodySchema = z.object({
   password: z.string().min(1),
 });
 
+export const requestPasswordResetBodySchema = z.object({
+  email: z.string().email(),
+});
+
+export const resetPasswordBodySchema = z.object({
+  email: z.string().email(),
+  code: z.string().length(6).regex(/^\d{6}$/),
+  password: z.string().min(8).max(128),
+});
+
 // Response schemas
 export const userResponseSchema = z.object({
   id: z.number().int().positive(),
@@ -55,6 +65,8 @@ export type RegisterStartBody = z.infer<typeof registerStartBodySchema>;
 export type VerifyEmailBody = z.infer<typeof verifyEmailBodySchema>;
 export type ResendVerificationBody = z.infer<typeof resendVerificationBodySchema>;
 export type LoginBody = z.infer<typeof loginBodySchema>;
+export type RequestPasswordResetBody = z.infer<typeof requestPasswordResetBodySchema>;
+export type ResetPasswordBody = z.infer<typeof resetPasswordBodySchema>;
 export type UserResponse = z.infer<typeof userResponseSchema>;
 export type AuthResponse = z.infer<typeof authResponseSchema>;
 export type MessageResponse = z.infer<typeof messageResponseSchema>;

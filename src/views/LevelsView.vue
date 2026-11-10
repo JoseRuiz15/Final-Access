@@ -12,6 +12,7 @@ const progressionStore = useProgressionStore()
 const mostrarModalNivel = ref(false)
 const nivelSeleccionado = ref(null)
 const isLoading = ref(false)
+const progressLoadError = ref('')
 
 function volverASeleccionarModo() {
   router.push('/gamemode')
@@ -83,8 +84,28 @@ function getBestTime(level) {
   return `${mins}:${secs.toString().padStart(2, '0')}`
 }
 
-onMounted(async () => {
-  await progressionStore.fetchProgress()
+function getProgressLoadError(error) {
+  if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+    return 'El servidor está tardando en responder. Revisa tu conexión e inténtalo de nuevo.'
+  }
+
+  return (
+    error.response?.data?.error ||
+    'No se pudo cargar tu progreso. Revisa tu conexión e inténtalo de nuevo.'
+  )
+}
+
+async function loadProgress() {
+  progressLoadError.value = ''
+  try {
+    await progressionStore.fetchProgress()
+  } catch (error) {
+    progressLoadError.value = getProgressLoadError(error)
+  }
+}
+
+onMounted(() => {
+  void loadProgress()
 })
 </script>
 
@@ -96,6 +117,23 @@ onMounted(async () => {
     >
       &lt;- VOLVER AL MENU
     </button>
+
+    <div
+      v-if="progressLoadError"
+      class="fixed top-5 left-1/2 z-30 flex w-[min(92vw,680px)] -translate-x-1/2 flex-col gap-3 border border-rose-300/50 bg-[#170d1a]/95 p-4 text-white shadow-[0_12px_35px_#0008] sm:flex-row sm:items-center sm:justify-between"
+      role="alert"
+      aria-live="assertive"
+    >
+      <p class="font-mono text-sm leading-6 text-rose-100">{{ progressLoadError }}</p>
+      <button
+        type="button"
+        class="shrink-0 border border-[#00D9FF]/60 px-4 py-2 font-pixel text-[9px] text-[#9af5ff] transition hover:bg-[#00D9FF]/15 disabled:opacity-50"
+        :disabled="progressionStore.isLoading"
+        @click="loadProgress"
+      >
+        {{ progressionStore.isLoading ? 'CARGANDO…' : 'REINTENTAR' }}
+      </button>
+    </div>
 
     <!-- El mapa ocupa el lienzo completo y los niveles conservan sus posiciones porcentuales. -->
     <div class="absolute inset-0 z-10">

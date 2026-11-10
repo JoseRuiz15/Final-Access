@@ -31,6 +31,13 @@ export async function completeLevel(
   const gameProgress = await queries.getGameProgress(userId);
   if (!gameProgress) throw new Error('Progreso de juego no encontrado');
 
+  if (levelId > 1) {
+    const previousLevelProgress = await queries.getLevelProgress(userId, levelId - 1);
+    if (!previousLevelProgress?.completed) {
+      throw new Error(`Debes completar el nivel ${levelId - 1} antes de desbloquear el nivel ${levelId}`);
+    }
+  }
+
   const levelProg = await queries.getLevelProgress(userId, levelId);
   const isFirstCompletion = !levelProg || !levelProg.completed;
 

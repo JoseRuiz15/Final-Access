@@ -69,6 +69,34 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function requestPasswordReset(email) {
+    isLoading.value = true
+    error.value = null
+    try {
+      const response = await authApi.requestPasswordReset({ email })
+      return response.data
+    } catch (err) {
+      error.value = err.response?.data?.message || 'No se pudo solicitar el código de recuperación'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function resetPassword(data) {
+    isLoading.value = true
+    error.value = null
+    try {
+      const response = await authApi.resetPassword(data)
+      return response.data
+    } catch (err) {
+      error.value = err.response?.data?.message || 'No se pudo actualizar la contraseña'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   async function logout() {
     isLoading.value = true
     try {
@@ -116,6 +144,8 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     verifyEmail,
     login,
+    requestPasswordReset,
+    resetPassword,
     logout,
     fetchMe,
     clearError,

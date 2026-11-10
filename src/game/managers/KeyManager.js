@@ -39,7 +39,16 @@ export default class KeyManager {
 
   update(player, inputService) {
     this._ensureInit()
-    if (!this.keysGroup || !player) return
+    if (
+      !this.keysGroup ||
+      !player?.active ||
+      player.muerto ||
+      this.scene.gameOver ||
+      Number(player.vidas ?? this.scene.gameRepository?.vidas) <= 0
+    ) {
+      this.llaveCercana = null
+      return
+    }
 
     const limites = this.scene.physics.world.bounds
     this.keysGroup.getChildren().forEach((llave) => {

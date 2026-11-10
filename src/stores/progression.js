@@ -17,46 +17,18 @@ export const useProgressionStore = defineStore('progression', () => {
   const currentLevel = computed(() => gameProgress.value?.currentLevel || 1)
   const coins = computed(() => profileStore.coins)
 
-  function mergeLevelProgress(previous, incoming) {
-    if (!previous) return incoming
-    if (!incoming) return previous
-
-    const bestTimes = [previous.bestTimeSec, incoming.bestTimeSec]
-      .map(Number)
-      .filter((time) => Number.isFinite(time) && time > 0)
-
-    return {
-      ...previous,
-      ...incoming,
-      completed: Boolean(previous.completed || incoming.completed),
-      stars: Math.max(Number(previous.stars) || 0, Number(incoming.stars) || 0),
-      bestTimeSec: bestTimes.length ? Math.min(...bestTimes) : null,
-    }
-  }
-
   function upsertLevelProgress(progress) {
-    const index = levelProgress.value.findIndex((item) => item.levelId === progress.levelId)
-    if (index === -1) {
-      levelProgress.value.push(progress)
-      return
-    }
-
-    levelProgress.value[index] = mergeLevelProgress(levelProgress.value[index], progress)
+    levelProgress.value = [
+      ...levelProgress.value.filter((item) => item.levelId !== progress.levelId),
+      progress,
+    ].sort((a, b) => a.levelId - b.levelId)
   }
 
   function mergeProgressList(incoming = []) {
-    const playableIncoming = incoming.filter((item) => item.levelId <= MAX_PLAYABLE_LEVEL_ID)
-    const serverIds = new Set(playableIncoming.map((item) => item.levelId))
-    const merged = playableIncoming.map((item) => {
-      const previous = levelProgress.value.find((progress) => progress.levelId === item.levelId)
-      return mergeLevelProgress(previous, item)
-    })
-
-    levelProgress.value
-      .filter((item) => item.levelId <= MAX_PLAYABLE_LEVEL_ID && !serverIds.has(item.levelId))
-      .forEach((item) => merged.push(item))
-
-    levelProgress.value = merged
+    levelProgress.value = incoming
+      .filter((item) => Number(item.levelId) <= MAX_PLAYABLE_LEVEL_ID)
+      .map((item) => ({ ...item, levelId: Number(item.levelId) }))
+      .sort((a, b) => a.levelId - b.levelId)
   }
 
   const isLevelCompleted = (levelId) => {
@@ -79,10 +51,12 @@ export const useProgressionStore = defineStore('progression', () => {
     error.value = null
     try {
       const response = await progressionApi.getProgress()
-      if (response.data.ok) {
-        gameProgress.value = response.data.gameProgress
-        mergeProgressList(response.data.levelProgress || [])
+      if (!response.data?.ok) {
+        throw new Error(response.data?.error || 'El servidor no pudo cargar el progreso.')
       }
+
+      gameProgress.value = response.data.gameProgress
+      mergeProgressList(response.data.levelProgress || [])
       return response.data
     } catch (err) {
       error.value = err.response?.data?.error || 'Error al cargar progreso'
@@ -96,24 +70,14 @@ export const useProgressionStore = defineStore('progression', () => {
     isLoading.value = true
     error.value = null
 
-    // Refleja el mejor resultado inmediatamente para que el mapa no muestre una
-    // puntuación antigua mientras termina la petición de guardado.
-    const previous = levelProgress.value.find((item) => item.levelId === levelId)
-    upsertLevelProgress(
-      mergeLevelProgress(previous, {
-        levelId,
-        completed: true,
-        stars: data.stars,
-        bestTimeSec: data.timeSec,
-      }),
-    )
-
     try {
       const response = await progressionApi.completeLevel(levelId, data)
-      if (response.data.ok) {
-        gameProgress.value = response.data.gameProgress
-        upsertLevelProgress(response.data.levelProgress)
+      if (!response.data?.ok || !response.data.levelProgress) {
+        throw new Error(response.data?.error || 'El servidor no confirmó el progreso.')
       }
+
+      gameProgress.value = response.data.gameProgress
+      upsertLevelProgress(response.data.levelProgress)
       return response.data
     } catch (err) {
       error.value = err.response?.data?.error || 'Error al completar nivel'

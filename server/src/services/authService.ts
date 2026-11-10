@@ -1,11 +1,11 @@
-import { randomInt } from 'node:crypto';
+import { createHmac, randomInt, timingSafeEqual } from 'node:crypto';
 import bcrypt from 'bcrypt';
 import { env } from '../config/env.js';
 import * as queries from '../db/queries/auth.js';
 import * as profileQueries from '../db/queries/profile.js';
 import * as progressionQueries from '../db/queries/progression.js';
 import * as missionQueries from '../db/queries/missions.js';
-import { sendVerificationEmail } from './emailService.js';
+import { sendPasswordResetEmail, sendVerificationEmail } from './emailService.js';
 import type { User } from '../db/schema.js';
 
 // ============================================
@@ -193,4 +193,81 @@ export async function login(email: string, password: string): Promise<User> {
   }
 
   return user;
+}
+
+const PASSWORD_RESET_MESSAGE = 'Si el correo está asociado a una cuenta, recibirás un código de recuperación.';
+
+function hashPasswordResetCode(userId: number, code: string): string {
+  return createHmac('sha256', env.JWT_SECRET).update(`${userId}:${code}`).digest('hex');
+}
+
+export async function requestPasswordReset(
+  email: string,
+): Promise<{ ok: true; message: string; devCode?: string }> {
+  const normalizedEmail = email.trim().toLowerCase();
+  const user = await queries.findUserByEmail(normalizedEmail);
+  if (!user || (user.provider && user.provider !== 'local')) {
+    return { ok: true, message: PASSWORD_RESET_MESSAGE };
+  }
+
+  const code = generateVerificationCode();
+  await queries.deletePasswordResetCodes(user.id);
+  await queries.createPasswordResetCode({
+    userId: user.id,
+    codeHash: hashPasswordResetCode(user.id, code),
+    expiresAt: calculateExpiry(env.EMAIL_VERIFICATION_TTL_MIN),
+    attempts: 0,
+  });
+
+  try {
+    const emailResult = await sendPasswordResetEmail(normalizedEmail, code);
+    return {
+      ok: true,
+      message: PASSWORD_RESET_MESSAGE,
+      ...(emailResult ? { devCode: emailResult.code } : {}),
+    };
+  } catch (error) {
+    await queries.deletePasswordResetCodes(user.id);
+    console.error('No se pudo enviar el código de recuperación:', error);
+    // Se conserva la misma respuesta para no revelar si el correo está registrado.
+    return { ok: true, message: PASSWORD_RESET_MESSAGE };
+  }
+}
+
+export async function resetPassword(
+  email: string,
+  code: string,
+  password: string,
+): Promise<{ ok: true; message: string }> {
+  const user = await queries.findUserByEmail(email.trim().toLowerCase());
+  if (!user || (user.provider && user.provider !== 'local')) {
+    throw new Error('Código inválido o vencido. Solicita uno nuevo.');
+  }
+
+  const resetCode = await queries.findLatestPasswordResetCode(user.id);
+  const candidateHash = hashPasswordResetCode(user.id, code);
+  const storedHash = resetCode ? Buffer.from(resetCode.codeHash, 'hex') : Buffer.alloc(0);
+  const candidate = Buffer.from(candidateHash, 'hex');
+  const matches = storedHash.length === candidate.length && timingSafeEqual(storedHash, candidate);
+  const isUsable = resetCode && resetCode.expiresAt > new Date() &&
+    resetCode.attempts < env.EMAIL_VERIFICATION_MAX_ATTEMPTS;
+
+  if (!isUsable || !matches) {
+    if (resetCode && resetCode.expiresAt > new Date() &&
+      resetCode.attempts < env.EMAIL_VERIFICATION_MAX_ATTEMPTS) {
+      await queries.incrementPasswordResetAttempts(resetCode.id);
+    }
+    throw new Error('Código inválido o vencido. Solicita uno nuevo.');
+  }
+
+  const passwordHash = await hashPassword(password);
+  const changed = await queries.consumePasswordResetCode(
+    resetCode.id,
+    user.id,
+    candidateHash,
+    passwordHash,
+  );
+  if (!changed) throw new Error('Código inválido o vencido. Solicita uno nuevo.');
+
+  return { ok: true, message: 'Contraseña actualizada correctamente.' };
 }

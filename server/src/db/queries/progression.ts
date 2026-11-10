@@ -108,7 +108,7 @@ export async function completeLevel(
       .set({
         currentLevelId: sql`CASE 
           WHEN ${gameProgress.currentLevelId} = ${levelId} AND ${gameProgress.currentLevelId} < ${MAX_PLAYABLE_LEVEL_ID}
-          THEN LEAST(${MAX_PLAYABLE_LEVEL_ID}, ${levelId + 1})
+          THEN LEAST(${MAX_PLAYABLE_LEVEL_ID}::smallint, ${levelId + 1}::smallint)
           ELSE ${gameProgress.currentLevelId}
         END`,
         keysCollected: sql`${gameProgress.keysCollected} + ${data.keys}`,

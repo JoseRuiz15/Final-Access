@@ -35,6 +35,7 @@ export default class BaseScene extends Phaser.Scene {
     this.mapResult = null
     this.tutorialElements = null
     this.doorSprite = null
+    this.gameOver = false
   }
 
   preload() {
@@ -67,6 +68,7 @@ export default class BaseScene extends Phaser.Scene {
 
   create(data = {}) {
     this._deathHandled = false // Limpia la protección al iniciar o reintentar el nivel.
+    this.gameOver = false
     this.levelStartTime = Date.now() // Base para calcular el tiempo del nivel al completarlo.
 
     console.log(`${this.scene.key} iniciado`)
@@ -227,6 +229,15 @@ export default class BaseScene extends Phaser.Scene {
   }
 
   update() {
+    if (
+      this.gameOver ||
+      !this.player?.active ||
+      this.player.muerto ||
+      this.gameRepository.vidas <= 0
+    ) {
+      return
+    }
+
     // Parallax update
     if (this.parallax) {
       ParallaxBuilder.update(this.parallax, this.cameras.main.scrollX)
@@ -283,8 +294,15 @@ export default class BaseScene extends Phaser.Scene {
     this._deathHandled = true
 
     if (this.gameRepository.vidas <= 0) {
+      this.gameOver = true
+      if (this.player.body) {
+        this.player.body.stop?.()
+        this.player.body.enable = false
+      }
       playPlayerSoundEffect(this, 'gameOver')
       this.events.emit('game-over')
+      this.game?.events?.emit('game-over', this)
+      this.scene.pause()
       return
     }
 

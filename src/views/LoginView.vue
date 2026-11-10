@@ -9,15 +9,23 @@ const route = useRoute()
 const authStore = useAuthStore()
 
 const form = reactive({
-  email: '',
+  email: typeof route.query.email === 'string' ? route.query.email : '',
   password: '',
 })
 
 const isLoading = ref(false)
 const error = ref(null)
+const showRecoveryOption = ref(false)
 
 function irRegister() {
   router.push('/register')
+}
+
+function irRecuperacion() {
+  router.push({
+    name: 'password-recovery',
+    query: form.email ? { email: form.email } : undefined,
+  })
 }
 
 async function handleLogin() {
@@ -35,6 +43,7 @@ async function handleLogin() {
     const redirect = route.query.redirect || '/lobby'
     router.push(redirect)
   } catch (err) {
+    if (err.response?.status === 401) showRecoveryOption.value = true
     error.value =
       err.response?.data?.message ||
       err.response?.data?.error ||
@@ -111,6 +120,16 @@ async function handleLogin() {
             placeholder="••••••••"
             :disabled="isLoading"
           />
+        </div>
+
+        <div v-if="showRecoveryOption" class="login-forgot-row flex justify-center mt-3">
+          <button
+            type="button"
+            @click="irRecuperacion"
+            class="font-pixel text-[#1FD0E4] text-[11px] transition-all duration-300 hover:drop-shadow-[0_0_18px_#00AAFF]"
+          >
+            ¿OLVIDASTE TU CONTRASEÑA? RECUPÉRALA
+          </button>
         </div>
 
         <!--boton inicio de sesion-->

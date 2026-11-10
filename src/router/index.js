@@ -19,6 +19,12 @@ const router = createRouter({
       beforeEnter: guestOnly,
     },
     {
+      path: '/recover-password',
+      name: 'password-recovery',
+      component: () => import('../views/PasswordRecoveryView.vue'),
+      beforeEnter: guestOnly,
+    },
+    {
       path: '/register',
       name: 'register',
       component: () => import('../views/RegisterView.vue'),

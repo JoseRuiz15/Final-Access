@@ -1,8 +1,16 @@
 import { db } from '../pool.js';
-import { users, emailVerifications } from '../schema.js';
+import { users, emailVerifications, passwordResetCodes } from '../schema.js';
 import { eq, and, gt, lt, desc, sql } from 'drizzle-orm';
 import { env } from '../../config/env.js';
-import type { InsertUser, InsertEmailVerification, User, EmailVerification } from '../schema.js';
+import { timingSafeEqual } from 'node:crypto';
+import type {
+  InsertUser,
+  InsertEmailVerification,
+  InsertPasswordResetCode,
+  User,
+  EmailVerification,
+  PasswordResetCode,
+} from '../schema.js';
 
 // ============================================
 // AUTH QUERIES
@@ -75,6 +83,72 @@ export async function incrementVerificationAttempts(id: number): Promise<void> {
 
 export async function deleteVerification(email: string): Promise<void> {
   await db.delete(emailVerifications).where(eq(emailVerifications.email, email));
+}
+
+export async function createPasswordResetCode(data: InsertPasswordResetCode): Promise<PasswordResetCode> {
+  const result = await db.insert(passwordResetCodes).values(data).returning();
+  return result[0];
+}
+
+export async function findLatestPasswordResetCode(userId: number): Promise<PasswordResetCode | null> {
+  const result = await db
+    .select()
+    .from(passwordResetCodes)
+    .where(eq(passwordResetCodes.userId, userId))
+    .orderBy(desc(passwordResetCodes.createdAt))
+    .limit(1);
+  return result[0] ?? null;
+}
+
+export async function deletePasswordResetCodes(userId: number): Promise<void> {
+  await db.delete(passwordResetCodes).where(eq(passwordResetCodes.userId, userId));
+}
+
+export async function incrementPasswordResetAttempts(id: number): Promise<void> {
+  await db
+    .update(passwordResetCodes)
+    .set({ attempts: sql`${passwordResetCodes.attempts} + 1` })
+    .where(eq(passwordResetCodes.id, id));
+}
+
+export async function consumePasswordResetCode(
+  id: number,
+  userId: number,
+  codeHash: string,
+  passwordHash: string,
+): Promise<boolean> {
+  return db.transaction(async (tx) => {
+    const result = await tx
+      .select()
+      .from(passwordResetCodes)
+      .where(and(eq(passwordResetCodes.id, id), eq(passwordResetCodes.userId, userId)))
+      .limit(1)
+      .for('update');
+    const resetCode = result[0];
+    if (!resetCode || resetCode.expiresAt <= new Date() || resetCode.attempts >= env.EMAIL_VERIFICATION_MAX_ATTEMPTS) {
+      return false;
+    }
+
+    const storedHash = Buffer.from(resetCode.codeHash, 'hex');
+    const candidateHash = Buffer.from(codeHash, 'hex');
+    if (storedHash.length !== candidateHash.length || !timingSafeEqual(storedHash, candidateHash)) {
+      await tx
+        .update(passwordResetCodes)
+        .set({ attempts: sql`${passwordResetCodes.attempts} + 1` })
+        .where(eq(passwordResetCodes.id, id));
+      return false;
+    }
+
+    const updatedUser = await tx
+      .update(users)
+      .set({ passwordHash, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning({ id: users.id });
+    if (!updatedUser.length) return false;
+
+    await tx.delete(passwordResetCodes).where(eq(passwordResetCodes.userId, userId));
+    return true;
+  });
 }
 
 export async function deleteExpiredVerifications(): Promise<number> {
