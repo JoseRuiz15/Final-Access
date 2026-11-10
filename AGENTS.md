@@ -29,3 +29,9 @@
 
 - Prettier defaults: `semi: false`, `singleQuote`, `printWidth: 100`. Older game code (`src/game/`) predates this and uses semicolons/double quotes/4-space indent — match the surrounding file rather than reformatting whole files; `npm run format` is the normalization path.
 - Comments and console logs in the codebase are frequently in Spanish; leave them consistent.
+
+## CodeGraph local
+
+- Before analyzing or refactoring a file, query `.opencode/graph.json` with `npm run graph:query -- src/ruta/al/archivo.js` to identify only its directly connected files and dependencies. Load only the signatures/interfaces returned for those connected modules; do not read the entire graph into context.
+- The graph is generated locally with `npm run graph:build`; it is intentionally ignored by Git. If it is missing or stale, rebuild it before using it.
+- OpenCode: load the project `codegraph` skill before code analysis or refactoring. Codex: follow this CodeGraph workflow directly.

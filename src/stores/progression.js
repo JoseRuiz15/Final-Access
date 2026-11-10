@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { progressionApi } from '@/api/client'
 import { useProfileStore } from '@/stores/profile'
 
-const MAX_PLAYABLE_LEVEL_ID = 3
+const MAX_PLAYABLE_LEVEL_ID = 5
 
 export const useProgressionStore = defineStore('progression', () => {
   const profileStore = useProfileStore()

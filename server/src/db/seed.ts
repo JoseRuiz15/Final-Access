@@ -32,6 +32,22 @@ export async function seedLevels() {
       isBossLevel: false,
       parTimeSec: 180,
     },
+    {
+      id: 4,
+      name: 'Nivel 4 - La Ciudad Dorada',
+      description: 'Avanza por la ciudad dorada, supera las trampas y plataformas móviles',
+      unlockOrder: 4,
+      isBossLevel: false,
+      parTimeSec: 240,
+    },
+    {
+      id: 5,
+      name: 'Nivel 5 - La Ciudad en Llamas',
+      description: 'Escapa de la ciudad en llamas con las tres llaves',
+      unlockOrder: 5,
+      isBossLevel: false,
+      parTimeSec: 240,
+    },
   ]).onConflictDoUpdate({
     target: levels.id,
     // Mantiene sincronizados los metadatos de los niveles ya sembrados.

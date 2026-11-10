@@ -3,6 +3,7 @@ import { authGuard } from '../plugins/authGuard.js';
 import fp from 'fastify-plugin';
 import { z } from 'zod';
 import * as progressionService from '../services/progressionService.js';
+import { MAX_PLAYABLE_LEVEL_ID } from '../config/gameProgression.js';
 
 const progressionRoutes: FastifyPluginAsync = async (app) => {
   // Auth middleware
@@ -65,7 +66,7 @@ const progressionRoutes: FastifyPluginAsync = async (app) => {
         type: 'object',
         required: ['levelId'],
         properties: {
-          levelId: { type: 'number', minimum: 1, maximum: 3 },
+          levelId: { type: 'number', minimum: 1, maximum: MAX_PLAYABLE_LEVEL_ID },
         },
       },
       body: {
@@ -146,7 +147,7 @@ const progressionRoutes: FastifyPluginAsync = async (app) => {
       summary: 'Completar nivel - otorga XP, coins, actualiza misiones',
     },
   }, async (req, reply) => {
-    const params = z.object({ levelId: z.number().int().min(1).max(3) }).parse(req.params);
+    const params = z.object({ levelId: z.number().int().min(1).max(MAX_PLAYABLE_LEVEL_ID) }).parse(req.params);
     const body = z.object({
       timeSec: z.number().int().positive(),
       stars: z.number().int().min(0).max(3),

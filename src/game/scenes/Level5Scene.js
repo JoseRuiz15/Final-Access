@@ -92,13 +92,18 @@ export default class Level5Scene extends BaseScene {
   update() {
     super.update()
 
-    // Checkpoint en X:1530 - guarda posición actual del jugador al cruzarla
-    const cpX = this.config.checkpointX
-    if (cpX && !this._checkpointActivado && this.player?.active && this.player.x >= cpX) {
-      this.player.spawnX = this.player.x
-      this.player.spawnY = this.player.y
+    // Checkpoint fijo bajo el puente, sobre suelo estático (no guarda posiciones aéreas).
+    const checkpoint = this.config.checkpoint
+    if (
+      checkpoint &&
+      !this._checkpointActivado &&
+      this.player?.active &&
+      this.player.x >= checkpoint.triggerX
+    ) {
+      this.player.spawnX = checkpoint.spawnX
+      this.player.spawnY = checkpoint.spawnY
       this._checkpointActivado = true
-      console.log('✅ Checkpoint activado en', this.player.x, this.player.y)
+      console.log('✅ Checkpoint activado; respawn en', checkpoint.spawnX, checkpoint.spawnY)
     }
 
     this.traps?.getChildren().forEach((trap) => {

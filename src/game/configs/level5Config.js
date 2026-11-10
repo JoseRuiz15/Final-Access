@@ -11,7 +11,11 @@ export const LEVEL5_CONFIG = {
     pista: 'Consigue tres llaves: una dorada grande y dos plateadas de distinto tamaño.',
   },
 
-  checkpointX: 1530,
+  checkpoint: {
+    triggerX: 1530,
+    spawnX: 1540,
+    spawnY: 690,
+  },
 
   assets: {
     tilemaps: [['level5', '/maps/Mapa_level_5.json']],

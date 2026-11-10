@@ -55,3 +55,6 @@ __screenshots__/
 /.agents/skills/
 /.codex/hooks.json
 /.impeccable/
+
+# Grafo local generado por scripts/build-codegraph.js.
+/.opencode/graph.json

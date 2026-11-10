@@ -295,9 +295,9 @@ export default class MovingPlatformManager {
       body.enable = true
       body.setAllowGravity(false)
       body.setVelocity(0, 0)
-      // Restaura la posición inicial del objeto Tiled (borde izquierdo), no del centro del body.
-      body.x = platform.left + platform.width / 2
-      body.y = platform.top + platform.height / 2
+      // xInicial/yInicial guardan la posición exacta del body al crearse.
+      body.x = platform.xInicial
+      body.y = platform.yInicial
       body.updateCenter()
       body.setVelocityX(platform.velocidadXInicial)
 

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createTestApp, registerUser, getCookie, parseCookie } from './helpers.js';
+import { seedLevels } from '../src/db/seed.js';
 import type { FastifyInstance } from 'fastify';
 
 describe('Progression & Missions Endpoints', () => {
@@ -10,6 +11,8 @@ describe('Progression & Missions Endpoints', () => {
 
   beforeAll(async () => {
     app = await createTestApp();
+    // Garantiza que la BD de test tenga los cinco niveles jugables.
+    await seedLevels();
 
     // El endpoint de registro no devuelve username/email, así que se guardan
     // aquí para reutilizarlos en la verificación.
@@ -140,7 +143,8 @@ describe('Progression & Missions Endpoints', () => {
       },
     });
 
-    expect(response.statusCode).toBe(404);
+    // 999 queda fuera del rango validado por el esquema (1..5).
+    expect(response.statusCode).toBe(400);
   });
 
   it('GET /progress after completion - should show updated progress', async () => {
@@ -159,7 +163,7 @@ describe('Progression & Missions Endpoints', () => {
     expect(data.levelProgress[0].stars).toBe(3);
   });
 
-  it('POST /progress/3/complete - should keep currentLevelId at 3 (last playable level)', async () => {
+  it('POST /progress/3..5/complete - should advance 3 -> 4 -> 5 and stop at 5', async () => {
     const complete = async (levelId: number) =>
       app.inject({
         method: 'POST',
@@ -182,11 +186,23 @@ describe('Progression & Missions Endpoints', () => {
     expect(level2.statusCode).toBe(200);
     expect(JSON.parse(level2.body).gameProgress.currentLevelId).toBe(3);
 
-    // Nivel 3 → se queda en 3: no existe un nivel 4 jugable.
+    // Nivel 3 → 4
     const level3 = await complete(3);
     expect(level3.statusCode).toBe(200);
-    const data = JSON.parse(level3.body);
-    expect(data.levelProgress.completed).toBe(true);
-    expect(data.gameProgress.currentLevelId).toBe(3);
+    const data3 = JSON.parse(level3.body);
+    expect(data3.levelProgress.completed).toBe(true);
+    expect(data3.gameProgress.currentLevelId).toBe(4);
+
+    // Nivel 4 → 5
+    const level4 = await complete(4);
+    expect(level4.statusCode).toBe(200);
+    expect(JSON.parse(level4.body).gameProgress.currentLevelId).toBe(5);
+
+    // Nivel 5 → se queda en 5 (último nivel jugable)
+    const level5 = await complete(5);
+    expect(level5.statusCode).toBe(200);
+    const data5 = JSON.parse(level5.body);
+    expect(data5.levelProgress.completed).toBe(true);
+    expect(data5.gameProgress.currentLevelId).toBe(5);
   });
 });

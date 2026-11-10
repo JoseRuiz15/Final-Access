@@ -227,7 +227,7 @@ async function handleLevelCompleted(sceneCompletada, stats) {
   // aportan un cuarto cada uno. Completar siempre concede la primera estrella.
   const rendimiento = proporcionTiempo * 50 + proporcionVidas * 25 + proporcionEnemigos * 25
   const stars = 1 + Number(rendimiento >= 40) + Number(rendimiento >= 70)
-  const nextLevelId = levelId < 3 ? levelId + 1 : null
+  const nextLevelId = levelId < 5 ? levelId + 1 : null
   const firstLevel3Completion = levelId === 3 && !hasCompletedLevel3.value
 
   // Prepare level completion data
