@@ -2,6 +2,7 @@
 import { onMounted, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Phaser from 'phaser'
+import SecretLevelScene from '@/game/scenes/SecretLevelScene.js'
 import Hud from '@/components/HUD.vue'
 import Level1TutorialOverlay from '@/components/Level1TutorialOverlay.vue'
 import SceneFactory from '@/game/factories/SceneFactory.js'
@@ -37,12 +38,14 @@ const tiempoFinalizado = ref(false)
 const volumenMusica = ref(getMusicVolume())
 const pauseButtonY = ref(72)
 const gameStarted = ref(false)
+const confirmSecretLevel = ref(false)
 const assetsReady = ref(false)
 const assetsProgress = ref(0)
 const isSavingProgress = ref(false)
 const isTouchDevice = ref(false)
 const hasCompletedLevel3 = ref(gameStore.dashUnlocked)
 let isUnmounted = false
+let godSequenceIndex = 0
 
 const touchActions = [
   { id: 'jump', icon: '↑', shortLabel: 'SALTO', label: 'Saltar' },
@@ -156,7 +159,7 @@ async function initializeGame() {
       },
     },
 
-    scene: levelScene,
+    scene: [levelScene, new SecretLevelScene()],
   }
 
   game = new Phaser.Game(config)
@@ -167,6 +170,7 @@ async function initializeGame() {
   game.events.on('level-assets-progress', handleAssetsProgress)
   game.events.once('level-assets-loaded', handleAssetsLoaded)
   window.addEventListener('keydown', handlePauseKey)
+  window.addEventListener('keydown', handleSecretLevelCode)
   window.addEventListener('resize', updatePauseButtonPosition)
   updatePauseButtonPosition()
   const hudElement = document.querySelector('#game-hud')
@@ -184,6 +188,7 @@ onBeforeUnmount(() => {
   isUnmounted = true
   clearTouchControls()
   window.removeEventListener('keydown', handlePauseKey)
+  window.removeEventListener('keydown', handleSecretLevelCode)
   window.removeEventListener('resize', updatePauseButtonPosition)
   hudResizeObserver?.disconnect()
   game?.events.off('game-over', handleGameOver)
@@ -336,7 +341,53 @@ function handleGameOver() {
 function handlePauseKey(event) {
   if (event.code !== 'Escape' || event.repeat || tiempoFinalizado.value) return
   event.preventDefault()
+  if (confirmSecretLevel.value) {
+    cancelSecretLevel()
+    return
+  }
   togglePause()
+}
+
+function handleSecretLevelCode(event) {
+  if (
+    event.repeat ||
+    !gameStarted.value ||
+    !game ||
+    !levelScene?.scene.isActive() ||
+    confirmSecretLevel.value ||
+    tiempoFinalizado.value ||
+    pausaAbierta.value
+  ) return
+
+  const code = ['KeyG', 'KeyO', 'KeyD'][godSequenceIndex]
+  if (event.code === code) {
+    godSequenceIndex += 1
+  } else {
+    godSequenceIndex = event.code === 'KeyG' ? 1 : 0
+  }
+
+  if (godSequenceIndex > 0) event.preventDefault()
+
+  if (godSequenceIndex !== 3) return
+  godSequenceIndex = 0
+
+  const secretScene = game.scene.getScene('SecretLevelScene')
+  if (secretScene.scene.isActive()) return
+
+  levelScene.scene.pause()
+  confirmSecretLevel.value = true
+}
+
+function enterSecretLevel() {
+  confirmSecretLevel.value = false
+  levelScene.scene.launch('SecretLevelScene', {
+    returnScene: levelScene.scene.key,
+  })
+}
+
+function cancelSecretLevel() {
+  confirmSecretLevel.value = false
+  levelScene?.scene.resume()
 }
 
 function togglePause() {
@@ -421,6 +472,48 @@ function enfocarCanvasDelJuego() {
       :game="phaserGame"
       :items="activeScene.config.tutorialOverlays"
     />
+
+    <div
+      v-if="confirmSecretLevel"
+      class="secret-access-backdrop fixed inset-0 z-50 flex items-center justify-center px-4 text-white"
+    >
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="secret-access-title"
+        class="secret-access-panel relative w-full max-w-lg overflow-hidden border border-[#00D9FF]/70 bg-[#07101f] px-7 py-8 shadow-[0_0_60px_#00D9FF33] sm:px-10"
+      >
+        <div class="pointer-events-none absolute inset-2 border border-[#00D9FF]/15"></div>
+        <div class="relative">
+          <p class="mb-3 text-center font-pixel text-[9px] tracking-[0.35em] text-[#00D9FF]/75">
+            SEÑAL OCULTA // GOD
+          </p>
+          <h2 id="secret-access-title" class="mb-4 text-center font-pixel text-xl text-[#00D9FF]">
+            ¿ENTRAR A LA ZONA SECRETA?
+          </h2>
+          <p class="mb-7 text-center font-mono text-sm leading-relaxed text-white/70">
+            Se abrirá un mapa especial con un personaje y un enemigo. ¿Quieres continuar?
+          </p>
+          <div class="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              autofocus
+              class="bg-[#00D9FF] px-5 py-4 font-pixel text-[10px] text-[#050711] transition hover:bg-white hover:shadow-[0_0_24px_#00D9FF66]"
+              @click="enterSecretLevel"
+            >
+              SÍ, CONTINUAR
+            </button>
+            <button
+              type="button"
+              class="border border-white/25 bg-[#0c1929] px-5 py-4 font-pixel text-[10px] text-white/75 transition hover:border-white/60 hover:text-white"
+              @click="cancelSecretLevel"
+            >
+              NO, VOLVER
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
 
     <div
       v-if="!assetsReady"
@@ -629,6 +722,30 @@ function enfocarCanvasDelJuego() {
 </template>
 
 <style scoped>
+.secret-access-backdrop {
+  background:
+    radial-gradient(ellipse at 50% 45%, rgb(0 217 255 / 13%), transparent 42%),
+    rgb(2 5 12 / 86%);
+  backdrop-filter: blur(8px);
+  animation: secret-backdrop-in 180ms ease-out both;
+}
+
+.secret-access-panel {
+  background-image: linear-gradient(135deg, rgb(0 217 255 / 6%), transparent 42%);
+  box-shadow: 0 0 70px rgb(0 217 255 / 13%), inset 0 0 35px rgb(0 217 255 / 3%);
+  animation: secret-panel-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes secret-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes secret-panel-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .game-viewport {
   position: fixed;
   inset: 0;

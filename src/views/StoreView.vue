@@ -74,7 +74,7 @@ onMounted(() => {
       alt="imagen del la tienda"
       fetchpriority="high"
       decoding="async"
-      class="absolute inset-0 w-full h-full object-cover -z-10"
+      class="store-background absolute inset-0 w-full h-full object-cover -z-10"
     />
     <!-- Contenido -->
     <div class="relative flex flex-col items-center justify-center">
@@ -99,10 +99,22 @@ onMounted(() => {
                   : 'border-2 border-[#45495C] hover:border-fuchsia-500 hover:shadow-[inset_0_0_20px_#FB00FF] hover:-translate-y-2',
               ]"
             >
-              <span class="font-pixel text-white text-[10px]">{{ personaje.nombre }}</span>
-              <span class="font-pixel" :style="{ color: personaje.color }">{{
-                personaje.rareza
+              <img
+                :src="`/img/store/${personaje.id}.png`"
+                :alt="personaje.nombre"
+                loading="lazy"
+                decoding="async"
+                class="w-20 h-20 object-contain"
+              />
+              <span class="store-character-label store-character-name font-pixel text-white">{{
+                personaje.nombre
               }}</span>
+              <span
+                class="store-character-label store-character-rarity font-pixel"
+                :style="{ color: personaje.color }"
+              >
+                {{ personaje.rareza }}
+              </span>
             </button>
           </div>
         </div>
@@ -114,7 +126,7 @@ onMounted(() => {
           >
             <img
               v-if="personajeSeleccionado"
-              :src="`/img/characters/${personajeSeleccionado.id}.png`"
+              :src="`/img/store/${personajeSeleccionado.id}.png`"
               :alt="personajeSeleccionado.nombre"
               class="w-full h-full object-contain p-8"
             />

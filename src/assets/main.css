@@ -2760,6 +2760,129 @@ button:disabled,
   }
 }
 
+.store-character-label {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  line-height: 1.35;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.store-character-name {
+  font-size: clamp(7px, 0.58vw, 8px);
+}
+
+.store-character-rarity {
+  font-size: clamp(6px, 0.52vw, 7px);
+}
+
+/* En móviles, la tienda se desplaza sobre un fondo fijo y muestra retratos verticales. */
+@media (max-width: 768px), (any-pointer: coarse) {
+  .store-screen {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    max-height: 100dvh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .store-background {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    object-fit: cover !important;
+  }
+
+  .store-screen > div.relative {
+    height: auto !important;
+    min-height: 100dvh !important;
+    justify-content: flex-start !important;
+  }
+
+  .store-content {
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
+    justify-content: flex-start !important;
+    gap: clamp(12px, 2.5vh, 22px) !important;
+    margin: 0 !important;
+    padding: 12px 10px max(24px, env(safe-area-inset-bottom)) !important;
+    overflow: visible !important;
+  }
+
+  .store-inventory {
+    width: min(94vw, 520px) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    flex: 0 0 auto;
+    padding: clamp(10px, 2.5vw, 16px) !important;
+  }
+
+  .store-inventory > div {
+    height: auto !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: clamp(10px, 3vw, 16px) !important;
+  }
+
+  .store-inventory > div > button {
+    width: 100% !important;
+    height: clamp(124px, 19vh, 164px) !important;
+    aspect-ratio: auto !important;
+    gap: 3px !important;
+    padding: 6px !important;
+  }
+
+  .store-inventory > div > button img {
+    width: clamp(58px, 19vw, 104px) !important;
+    height: clamp(74px, 14vh, 112px) !important;
+    flex: 0 0 auto;
+    object-fit: contain;
+  }
+
+  .store-inventory > div > button .store-character-label {
+    font-size: clamp(5px, 1.5vw, 7px) !important;
+    line-height: 1.35 !important;
+    text-align: center;
+  }
+
+  .store-preview {
+    width: min(94vw, 360px) !important;
+    grid-template-rows: auto auto !important;
+    gap: 6px !important;
+  }
+
+  .store-preview-image {
+    width: 100% !important;
+    height: clamp(210px, 38vh, 340px) !important;
+  }
+
+  .store-preview > div:last-child {
+    gap: 6px !important;
+  }
+
+  .store-preview > div:last-child > div,
+  .store-preview > div:last-child > button {
+    width: min(100%, 220px) !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    font-size: clamp(7px, 1.8vw, 10px) !important;
+  }
+}
+
 @media (orientation: landscape) and (max-height: 500px) and (pointer: coarse),
   (orientation: landscape) and (max-height: 500px) and (any-pointer: coarse) {
   #code-screen .verification-panel {

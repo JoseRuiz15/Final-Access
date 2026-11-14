@@ -13,6 +13,7 @@ const props = defineProps({
     default: 430,
   },
 })
+const emit = defineEmits(['select'])
 
 const character = computed(() => getLobbyCharacter(props.characterId))
 
@@ -44,6 +45,7 @@ const portraitStyle = computed(() => ({
 }))
 
 const characterLabel = computed(() => `${character.value.name} equipado`)
+const changeCharacterLabel = computed(() => `Cambiar personaje: ${character.value.name}`)
 
 const particleSeeds = [
   { position: -0.94, size: 6, delay: '0s', duration: '4.6s' },
@@ -103,7 +105,14 @@ const particles = computed(() => {
       aria-hidden="true"
     ></span>
 
-    <div class="showcase-portrait-wrap" :style="portraitStyle">
+    <button
+      type="button"
+      class="showcase-portrait-wrap"
+      :style="portraitStyle"
+      :aria-label="changeCharacterLabel"
+      title="Cambiar personaje"
+      @click="emit('select')"
+    >
       <img
         class="showcase-portrait"
         :src="character.lobbyImage"
@@ -112,7 +121,7 @@ const particles = computed(() => {
         fetchpriority="high"
         draggable="false"
       />
-    </div>
+    </button>
   </div>
 </template>
 
@@ -223,6 +232,17 @@ const particles = computed(() => {
   bottom: var(--portrait-bottom);
   z-index: 3;
   transform: translateX(-50%);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.showcase-portrait-wrap:focus-visible {
+  border-radius: 8px;
+  outline: 2px solid #67e8f9;
+  outline-offset: 4px;
 }
 
 .showcase-portrait {

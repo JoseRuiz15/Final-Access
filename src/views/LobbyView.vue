@@ -46,6 +46,10 @@ function irStore() {
   router.push('/store')
 }
 
+function irPersonajes() {
+  router.push('/characters')
+}
+
 async function fetchLobbies() {
   await lobbyStore.fetchLobbies()
 }
@@ -252,7 +256,7 @@ onUnmounted(() => {
         <div
           class="lobby-character-stage pointer-events-none hidden min-w-0 flex-1 -translate-y-10 justify-center self-center xl:flex"
         >
-          <CharacterShowcase :character-id="showcaseCharacterId" />
+          <CharacterShowcase :character-id="showcaseCharacterId" @select="irPersonajes" />
         </div>
 
         <!-- Lado derecho -->
@@ -261,7 +265,7 @@ onUnmounted(() => {
           <button
             v-if="!lobbyStore.isInLobby"
             type="button"
-            class="lobby-play-button mt-134 cursor-pointer select-none w-80 bg-[#00D9FF] border border-[#00D9FF]/70 px-6 py-4 font-pixel text-[10px] text-[#050711] shadow-[0_0_60px_#00D9FF33] transition hover:bg-white hover:shadow-[0_0_24px_#00D9FF66]"
+            class="lobby-play-button mt-134 cursor-pointer select-none w-80 bg-[#00D9FF] border border-[#00D9FF]/70 px-6 py-4 font-pixel text-[10px] text-[#050711] shadow-[0_0_60px_#00D9FF33] transition-transform duration-200 hover:scale-105 active:scale-95 focus-visible:scale-105 hover:bg-white hover:shadow-[0_0_24px_#00D9FF66]"
             @click="irGameMode"
           >
             JUGAR
