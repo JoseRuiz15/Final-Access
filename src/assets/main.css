@@ -533,7 +533,7 @@ button:disabled,
     gap: 12px !important;
   }
 
-  .store-inventory > div > button {
+  .store-inventory > div > .store-character-item > button {
     width: min(100%, 140px) !important;
     height: auto !important;
     aspect-ratio: 1;
@@ -1698,15 +1698,15 @@ button:disabled,
     gap: clamp(6px, 1.4vw, 16px) !important;
   }
 
-  .store-inventory > div > button {
+  .store-inventory > div > .store-character-item > button {
     width: min(100%, clamp(54px, 9vh, 94px)) !important;
     height: auto !important;
     aspect-ratio: 1;
     padding: 4px;
   }
 
-  .store-inventory > div > button span {
-    font-size: clamp(5px, 0.68vw, 8px) !important;
+  .store-inventory > div > .store-character-item .store-character-label {
+    font-size: clamp(9px, 1.8vw, 11px) !important;
     line-height: 1.5;
     text-align: center;
   }
@@ -2525,7 +2525,7 @@ button:disabled,
     gap: clamp(8px, 2.5vw, 14px) !important;
   }
 
-  .store-inventory > div > button {
+  .store-inventory > div > .store-character-item > button {
     width: min(100%, clamp(96px, 28vw, 140px)) !important;
     height: auto !important;
     aspect-ratio: 1;
@@ -2771,12 +2771,23 @@ button:disabled,
   white-space: nowrap;
 }
 
+.store-character-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.store-character-caption {
+  width: 100%;
+}
+
 .store-character-name {
-  font-size: clamp(7px, 0.58vw, 8px);
+  font-size: clamp(10px, 0.78vw, 11px);
 }
 
 .store-character-rarity {
-  font-size: clamp(6px, 0.52vw, 7px);
+  font-size: clamp(9px, 0.68vw, 10px);
 }
 
 /* En móviles, la tienda se desplaza sobre un fondo fijo y muestra retratos verticales. */
@@ -2838,7 +2849,7 @@ button:disabled,
     gap: clamp(10px, 3vw, 16px) !important;
   }
 
-  .store-inventory > div > button {
+  .store-inventory > div > .store-character-item > button {
     width: 100% !important;
     height: clamp(124px, 19vh, 164px) !important;
     aspect-ratio: auto !important;
@@ -2846,15 +2857,15 @@ button:disabled,
     padding: 6px !important;
   }
 
-  .store-inventory > div > button img {
+  .store-inventory > div > .store-character-item > button img {
     width: clamp(58px, 19vw, 104px) !important;
     height: clamp(74px, 14vh, 112px) !important;
     flex: 0 0 auto;
     object-fit: contain;
   }
 
-  .store-inventory > div > button .store-character-label {
-    font-size: clamp(5px, 1.5vw, 7px) !important;
+  .store-inventory > div > .store-character-item .store-character-label {
+    font-size: clamp(9px, 2vw, 11px) !important;
     line-height: 1.35 !important;
     text-align: center;
   }

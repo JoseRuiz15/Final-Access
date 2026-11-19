@@ -12,20 +12,78 @@ const personajeSeleccionado = ref(null)
 const isLoading = ref(false)
 
 const storeCharacters = ref([
-  { id: 'samurai', nombre: 'SAMURAI', rareza: 'Épica', color: '#973BE8', precio: 12000 },
-  { id: 'nomada', nombre: 'NOMADA', rareza: 'Épica', color: '#973BE8', precio: 12000 },
-  { id: 'pirata', nombre: 'PIRATA', rareza: 'Épica', color: '#973BE8', precio: 12000 },
-  { id: 'selva', nombre: 'SELVA', rareza: 'Rara', color: '#AEC87D', precio: 5000 },
+  {
+    id: 'samurai',
+    imagen: '/img/store/sam.png',
+    vistaPrevia: '/img/store/samurai.png',
+    nombre: 'SAMURAI',
+    rareza: 'Épica',
+    color: '#973BE8',
+    precio: 12000,
+  },
+  {
+    id: 'nomada',
+    imagen: '/img/store/nom.png',
+    vistaPrevia: '/img/store/nomada.png',
+    nombre: 'NOMADA',
+    rareza: 'Épica',
+    color: '#973BE8',
+    precio: 12000,
+  },
+  {
+    id: 'pirata',
+    imagen: '/img/store/pir.png',
+    vistaPrevia: '/img/store/pirata.png',
+    nombre: 'PIRATA',
+    rareza: 'Épica',
+    color: '#973BE8',
+    precio: 12000,
+  },
+  {
+    id: 'selva',
+    imagen: '/img/store/sel.png',
+    vistaPrevia: '/img/store/selva.png',
+    nombre: 'SELVA',
+    rareza: 'Rara',
+    color: '#AEC87D',
+    precio: 5000,
+  },
   {
     id: 'apocalipsis',
+    imagen: '/img/store/apo.png',
+    vistaPrevia: '/img/store/apocalipsis.png',
     nombre: 'APOCALIPSIS',
     rareza: 'Legendaria',
     color: '#F7A129',
     precio: 50000,
   },
-  { id: 'tecnoangel', nombre: 'TECNOÁNGEL', rareza: 'Legendaria', color: '#F7A129', precio: 50000 },
-  { id: 'nemesis', nombre: 'NEMESIS', rareza: 'Mítica', color: '#D02470', precio: 100000 },
-  { id: 'eclipse', nombre: 'ECLIPSE', rareza: 'Mítica', color: '#D02470', precio: 100000 },
+  {
+    id: 'nucleo07',
+    imagen: '/img/store/nucl.png',
+    vistaPrevia: '/img/store/nucleo07.png',
+    nombre: 'NÚCLEO 07',
+    rareza: 'Mítica',
+    color: '#D02470',
+    precio: 100000,
+  },
+  {
+    id: 'nemesis',
+    imagen: '/img/store/nem.png',
+    vistaPrevia: '/img/store/nemesis.png',
+    nombre: 'NEMESIS',
+    rareza: 'Mítica',
+    color: '#D02470',
+    precio: 100000,
+  },
+  {
+    id: 'eclipse',
+    imagen: '/img/store/eclip.png',
+    vistaPrevia: '/img/store/eclipse.png',
+    nombre: 'ECLIPSE',
+    rareza: 'Mítica',
+    color: '#D02470',
+    precio: 100000,
+  },
 ])
 
 function seleccionarPersonaje(personaje) {
@@ -85,48 +143,55 @@ onMounted(() => {
       <div class="store-content flex justify-center gap-10 mt-30">
         <!-- Panel izquierdo -->
         <div
-          class="store-inventory w-[650px] h-[470px] bg-black/70 rounded-lg border-2 border-gray-500 p-8"
+          class="store-inventory w-[650px] h-[470px] bg-black/70 rounded-lg border-2 border-[#00D9FF] p-8 shadow-[0_0_60px_#00D9FF33]"
         >
           <div class="grid grid-cols-4 gap-8">
-            <button
+            <div
               v-for="personaje in storeCharacters"
               :key="personaje.id"
-              @click="seleccionarPersonaje(personaje)"
-              :class="[
-                'w-32 h-32 bg-[#161C37] rounded-xl flex flex-col items-center justify-center transition-all duration-300',
-                personajeSeleccionado?.id === personaje.id
-                  ? 'border-2 border-fuchsia-500 shadow-[inset_0_0_20px_#FB00FF] -translate-y-2'
-                  : 'border-2 border-[#45495C] hover:border-fuchsia-500 hover:shadow-[inset_0_0_20px_#FB00FF] hover:-translate-y-2',
-              ]"
+              class="store-character-item"
             >
-              <img
-                :src="`/img/store/${personaje.id}.png`"
-                :alt="personaje.nombre"
-                loading="lazy"
-                decoding="async"
-                class="w-20 h-20 object-contain"
-              />
-              <span class="store-character-label store-character-name font-pixel text-white">{{
-                personaje.nombre
-              }}</span>
-              <span
-                class="store-character-label store-character-rarity font-pixel"
-                :style="{ color: personaje.color }"
+              <button
+                @click="seleccionarPersonaje(personaje)"
+                :aria-label="`Seleccionar ${personaje.nombre}`"
+                :class="[
+                  'store-character-card w-32 h-32 bg-[#161C37] rounded-xl flex items-center justify-center transition-all duration-300',
+                  personajeSeleccionado?.id === personaje.id
+                    ? 'border-2 border-fuchsia-500 shadow-[inset_0_0_20px_#FB00FF] -translate-y-2'
+                    : 'border-2 border-[#45495C] hover:border-fuchsia-500 hover:shadow-[inset_0_0_20px_#FB00FF] hover:-translate-y-2',
+                ]"
               >
-                {{ personaje.rareza }}
-              </span>
-            </button>
+                <img
+                  :src="personaje.imagen"
+                  :alt="personaje.nombre"
+                  loading="lazy"
+                  decoding="async"
+                  class="w-20 h-20 object-contain"
+                />
+              </button>
+              <div class="store-character-caption">
+                <span class="store-character-label store-character-name font-pixel text-white">{{
+                  personaje.nombre
+                }}</span>
+                <span
+                  class="store-character-label store-character-rarity font-pixel"
+                  :style="{ color: personaje.color }"
+                >
+                  {{ personaje.rareza }}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Panel derecho -->
         <div class="store-preview grid grid-rows-[470px_auto] gap-4">
           <div
-            class="store-preview-image w-[300px] h-[470px] bg-black/70 rounded-lg border-2 border-gray-500 flex items-center justify-center"
+            class="store-preview-image w-[300px] h-[470px] bg-black/70 rounded-lg border-2 border-[#00D9FF] flex items-center justify-center shadow-[0_0_60px_#00D9FF33]"
           >
             <img
               v-if="personajeSeleccionado"
-              :src="`/img/store/${personajeSeleccionado.id}.png`"
+              :src="personajeSeleccionado.vistaPrevia"
               :alt="personajeSeleccionado.nombre"
               class="w-full h-full object-contain p-8"
             />
